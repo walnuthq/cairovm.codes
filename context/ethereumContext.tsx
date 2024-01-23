@@ -68,6 +68,7 @@ type ContextProps = {
     to?: Address,
   ) => Promise<TypedTransaction | TxData>
   loadInstructions: (byteCode: string) => void
+  loadCasmInstructions: (casmCode: string) => void
   startExecution: (byteCode: string, value: bigint, data: string) => void
   startTransaction: (tx: TypedTransaction | TxData) => Promise<{
     error?: EvmError
@@ -112,6 +113,7 @@ export const EthereumContext = createContext<ContextProps>({
       resolve({})
     }),
   loadInstructions: () => undefined,
+  loadCasmInstructions: () => undefined,
   startExecution: () => undefined,
   startTransaction: () => Promise.reject(),
   continueExecution: () => undefined,
@@ -268,6 +270,26 @@ export const EthereumProvider: React.FC<{}> = ({ children }) => {
     }
 
     setInstructions(instructions)
+  }
+
+  /**
+   * Loads CASM instructions to the context state.
+   * @param casmCode The CASM code.
+   */
+  const loadCasmInstructions = (casmCode: string) => {
+    const instructions: IInstruction[] = []
+
+    casmCode.split((/\r?\n/)).forEach((line, index) => {
+      console.log('line:', line);
+      instructions.push({
+        id: index,
+        name: line,
+        // value: "00",
+        hasBreakpoint: false,
+      })  
+    });
+
+    setInstructions(instructions);
   }
 
   /**
@@ -760,6 +782,7 @@ export const EthereumProvider: React.FC<{}> = ({ children }) => {
         onForkChange,
         transactionData,
         loadInstructions,
+        loadCasmInstructions,
         startExecution,
         startTransaction,
         continueExecution,

@@ -73,6 +73,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const {
     transactionData,
     loadInstructions,
+    loadCasmInstructions,
     startExecution,
     startTransaction,
     deployedContractAddress,
@@ -84,7 +85,8 @@ const Editor = ({ readOnly = false }: Props) => {
     onForkChange,
   } = useContext(EthereumContext)
 
-  const [code, setCode] = useState('')
+  const [cairoCode, setCairoCode] = useState('')
+  const [sierraCode, setSierraCode] = useState('')
   const [timeOutId, setTimeOutId] = useState<NodeJS.Timeout | undefined>(
     undefined,
   )
@@ -222,15 +224,17 @@ const Editor = ({ readOnly = false }: Props) => {
 
     if ('codeType' in query && 'code' in query) {
       setCodeType(query.codeType as string)
-      setCode(JSON.parse('{"a":' + decode(query.code as string) + '}').a)
+      setCairoCode(JSON.parse('{"a":' + decode(query.code as string) + '}').a)
     } else {
       const initialCodeType: CodeType =
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
-      setCode(examples[initialCodeType][0])
-      console.log('initialCodeType', initialCodeType)
+      setCairoCode(examples[initialCodeType][0])
     }
+
+    // TODO: Remove this when we have a way how to query it from an API
+    setSierraCode(examples[CodeType.Sierra][0])
 
     if ('fork' in query) {
       onForkChange(query.fork as string)
@@ -296,7 +300,7 @@ const Editor = ({ readOnly = false }: Props) => {
   }
 
   const handleCodeChange = (value: string) => {
-    setCode(value)
+    setCairoCode(value)
     setCodeModified(true)
 
     try {
@@ -340,21 +344,21 @@ const Editor = ({ readOnly = false }: Props) => {
     setIsExpanded(false)
 
     if (!codeModified && codeType) {
-      setCode(examples[value as CodeType][0])
+      setCairoCode(examples[value as CodeType][0])
     } else if (
       value &&
       value === CodeType.Mnemonic &&
       instructions?.length > 0
     ) {
       const code = getBytecodeLinesFromInstructions(instructions)
-      setCode(code)
+      setCairoCode(code)
     } else if (
       value &&
       value === CodeType.Bytecode &&
       instructions?.length > 0
     ) {
       const code = getMnemonicFromBytecode(instructions, opcodes)
-      setCode(code)
+      setCairoCode(code)
     }
 
     // NOTE: SCEditor does not expose input ref as public /shrug
@@ -367,6 +371,12 @@ const Editor = ({ readOnly = false }: Props) => {
   }
 
   const handleRun = useCallback(() => {
+    loadCasmInstructions(examples[CodeType.Casm][0]);
+    console.log('loading casm instructions')
+    // setCasmCode(examples[CodeType.Casm][0]);
+
+    return;
+
     if (!isEmpty(callValue) && !/^[0-9]+$/.test(callValue)) {
       log('Callvalue should be a positive integer', 'error')
       return
@@ -385,11 +395,11 @@ const Editor = ({ readOnly = false }: Props) => {
       const _callValue = getCallValue()
 
       if (codeType === CodeType.Mnemonic) {
-        const bytecode = getBytecodeFromMnemonic(code, opcodes)
+        const bytecode = getBytecodeFromMnemonic(cairoCode, opcodes)
         loadInstructions(bytecode)
         startExecution(bytecode, _callValue, _callData)
       } else if (codeType === CodeType.Bytecode) {
-        const cleanBytecode = stripBytecode(code)
+        const cleanBytecode = stripBytecode(cairoCode)
         if (cleanBytecode.length % 2 !== 0) {
           log('There should be at least 2 characters per byte', 'error')
           return
@@ -408,7 +418,7 @@ const Editor = ({ readOnly = false }: Props) => {
           solcWorkerRef.current.postMessage({
             language: codeType,
             evmVersion: getTargetEvmVersion(selectedFork?.name),
-            source: code,
+            source: cairoCode,
           })
         }
       }
@@ -416,7 +426,7 @@ const Editor = ({ readOnly = false }: Props) => {
       log((error as Error).message, 'error')
     }
   }, [
-    code,
+    cairoCode,
     codeType,
     opcodes,
     selectedFork,
@@ -436,16 +446,16 @@ const Editor = ({ readOnly = false }: Props) => {
       unit,
       callData,
       codeType,
-      code: encodeURIComponent(encode(JSON.stringify(code))),
+      code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
     }
 
     copy(`${getAbsoluteURL('/playground')}?${objToQueryString(params)}`)
     log('Link to current fork, code, calldata and value copied to clipboard')
-  }, [selectedFork, callValue, unit, callData, codeType, code, log])
+  }, [selectedFork, callValue, unit, callData, codeType, cairoCode, log])
 
   const isRunDisabled = useMemo(() => {
-    return compiling || isEmpty(code)
-  }, [compiling, code])
+    return compiling || isEmpty(cairoCode)
+  }, [compiling, cairoCode])
 
   const isBytecode = useMemo(() => codeType === CodeType.Bytecode, [codeType])
   const isCallDataActive = useMemo(
@@ -468,7 +478,7 @@ const Editor = ({ readOnly = false }: Props) => {
   return (
     <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
       <div className="flex flex-col md:flex-row">
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/3">
           <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
             <Header
               onCodeTypeChange={handleCodeTypeChange}
@@ -484,7 +494,7 @@ const Editor = ({ readOnly = false }: Props) => {
               <SCEditor
                 // @ts-ignore: SCEditor is not TS-friendly
                 ref={editorRef}
-                value={code}
+                value={cairoCode}
                 readOnly={readOnly}
                 onValueChange={handleCodeChange}
                 highlight={highlightCode}
@@ -499,25 +509,25 @@ const Editor = ({ readOnly = false }: Props) => {
               {!showAdvanceMode && (
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
                   <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
-                    {isCallDataActive && (
+                    {/* {isCallDataActive && (
                       <Input
                         placeholder="Calldata in HEX"
                         className="bg-white dark:bg-black-500"
                         value={callData}
                         onChange={(e) => setCallData(e.target.value)}
                       />
-                    )}
+                    )} */}
 
-                    <Input
+                    {/* <Input
                       type="number"
                       step="1"
                       placeholder="Value to send"
                       className="bg-white dark:bg-black-500"
                       value={callValue}
                       onChange={(e) => setCallValue(e.target.value)}
-                    />
+                    /> */}
 
-                    <Select
+                    {/* <Select
                       onChange={(option: OnChangeValue<any, any>) =>
                         setUnit(option.value)
                       }
@@ -526,7 +536,7 @@ const Editor = ({ readOnly = false }: Props) => {
                       isSearchable={false}
                       classNamePrefix="select"
                       menuPlacement="auto"
-                    />
+                    /> */}
 
                     <Button
                       onClick={handleCopyPermalink}
@@ -546,20 +556,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   </div>
 
                   <div>
-                    <Fragment>
-                      {codeType === CodeType.Cairo && (
-                        <Button
-                          onClick={() => setIsExpanded(!isExpanded)}
-                          tooltip={'Please run your contract first.'}
-                          transparent
-                          padded={false}
-                        >
-                          <span className="inline-block mr-4 text-indigo-500">
-                            Advance Mode
-                          </span>
-                        </Button>
-                      )}
-                    </Fragment>
+                    
 
                     <Button
                       onClick={handleRun}
@@ -574,7 +571,7 @@ const Editor = ({ readOnly = false }: Props) => {
               )}
             </Fragment>
 
-            <SolidityAdvanceModeTab
+            {/* <SolidityAdvanceModeTab
               log={log}
               selectedContract={contract}
               handleCompile={handleRun}
@@ -588,11 +585,34 @@ const Editor = ({ readOnly = false }: Props) => {
               getCallValue={getCallValue}
               methodByteCode={methodByteCode}
               handleCopyPermalink={handleCopyPermalink}
-            />
+            /> */}
           </div>
         </div>
 
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/3">
+          <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
+            <span className='text-gray-600 text-sm'>Sierra</span>
+          </div>
+
+          <div className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 h-full"
+            style={{ height: editorHeight }}
+          >
+            <SCEditor
+              // @ts-ignore: SCEditor is not TS-friendly
+              ref={editorRef}
+              value={sierraCode}
+              readOnly={readOnly}
+              onValueChange={handleCodeChange}
+              highlight={highlightCode}
+              tabSize={4}
+              className={cn('code-editor', {
+                'with-numbers': !isBytecode,
+              })}
+            />      
+          </div>
+        </div>
+
+        <div className="w-full md:w-1/3">
           <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
             <ExecutionStatus />
           </div>

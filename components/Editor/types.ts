@@ -1,5 +1,7 @@
 export enum CodeType {
   Cairo = 'Cairo',
+  Sierra = 'Sierra',
+  Casm = 'Casm',
   Bytecode = 'Bytecode',
   Mnemonic = 'Mnemonic',
 }
