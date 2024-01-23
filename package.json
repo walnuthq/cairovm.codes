@@ -1,8 +1,8 @@
 {
-  "name": "evm.codes",
+  "name": "cairovm.codes",
   "version": "0.1.0",
-  "description": "An interactive reference to Ethereum Virtual Machine Opcodes",
-  "homepage": "https://github.com/smlxl/evm.codes",
+  "description": "An interactive reference to Cairo Virtual Machine",
+  "homepage": "https://github.com/walnuthq/cairovm.codes",
   "license": "MIT",
   "scripts": {
     "build": "next build",

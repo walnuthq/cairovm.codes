@@ -12,15 +12,15 @@ const HomeLayout: NextPage = ({ children }) => {
       <html lang="en"></html>
       <Head>
         <title>
-          EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference
+          Cairo VM Codes
         </title>
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="EVM Codes" />
+        <meta property="og:title" content="Cairo VM Codes" />
         <meta
           property="og:description"
-          content="An Ethereum Virtual Machine Opcodes Interactive Reference"
+          content="An Cairo Virtual Machine Interactive Reference"
         />
-        <meta property="og:image" content={`${getAbsoluteURL('/og.png')}`} />
+        <meta property="og:image" content={`${getAbsoluteURL('/cairo_logo_full.png')}`} />
         <meta property="og:url" content={getAbsoluteURL()} />
 
         <link rel="icon" href="/favicon.ico" />
