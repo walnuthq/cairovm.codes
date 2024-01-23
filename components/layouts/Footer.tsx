@@ -12,33 +12,24 @@ const Footer = () => {
               Brought to you by{' '}
               <a
                 className="underline font-medium"
-                href="https://smlxl.io"
+                href="https://walnut.dev"
                 target="_blank"
                 rel="noreferrer"
               >
-                smlXL, Inc
+                Walnut
               </a>
               .
             </span>
 
             <span className="md:mx-2">
-              Powered by{' '}
+              Forked from{' '}
               <a
                 className="underline font-medium"
-                href="https://github.com/ethereumjs/ethereumjs-monorepo"
+                href="https://evm.codes"
                 target="_blank"
                 rel="noreferrer"
               >
-                EthereumJS
-              </a>{' '}
-              and{' '}
-              <a
-                className="underline font-medium"
-                href="https://github.com/ethereum/solc-js"
-                target="_blank"
-                rel="noreferrer"
-              >
-                SolcJS
+                evm.codes
               </a>
               .
             </span>

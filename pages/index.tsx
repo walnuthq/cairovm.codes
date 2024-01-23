@@ -17,6 +17,7 @@ import EvmStorageBanner from 'components/EvmStorageBanner'
 import HomeLayout from 'components/layouts/Home'
 import ReferenceTable from 'components/Reference'
 import { H1, Container } from 'components/ui'
+import Editor from 'components/Editor'
 
 const { serverRuntimeConfig } = getConfig()
 
@@ -39,22 +40,16 @@ const HomePage = ({
           content="An Ethereum Virtual Machine Opcodes Interactive Reference"
         />
       </Head>
-      <EvmStorageBanner />
-      <Container>
+      {/* <EvmStorageBanner /> */}
+      {/* <Container>
         <H1>
           An Ethereum Virtual Machine <br></br> Opcodes Interactive Reference
         </H1>
-      </Container>
+      </Container> */}
 
-      <section className="py-10 md:py-20 bg-gray-50 dark:bg-black-700">
-        <Container>
-          <ReferenceTable
-            reference={opcodes}
-            itemDocs={opcodeDocs}
-            gasDocs={gasDocs}
-          />
-        </Container>
-      </section>
+      <Container>
+        <Editor />
+      </Container>
 
       <section className="pt-20 pb-10 text-center">
         <ContributeBox />
