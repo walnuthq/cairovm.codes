@@ -5025,10 +5025,10 @@ highlight.js@^11.3.1:
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-11.3.1.tgz"
   integrity sha512-PUhCRnPjLtiLHZAQ5A/Dt5F8cWZeMyj9KRsACsWT+OD6OP0x6dp5OmT5jdx0JgEyPxPZZIPQpRN2TciUT7occw==
 
-highlightjs-solidity@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/highlightjs-solidity/-/highlightjs-solidity-2.0.1.tgz"
-  integrity sha512-9YY+HQpXMTrF8HgRByjeQhd21GXAz2ktMPTcs6oWSj5HJR52fgsNoelMOmgigwcpt9j4tu4IVSaWaJB2n2TbvQ==
+highlightjs-cairo@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/highlightjs-cairo/-/highlightjs-cairo-0.4.0.tgz#c7b0e45b8c3f61a77a2235ecb00b55c3cb3b9be1"
+  integrity sha512-d2w8A+02Asq9QIAI6XOyxgKXCzqC/MMNreRjb7Ia2mhpjzVDbU7JaXK+hMlJkVs1MaqKuD1mTLQ7HxAlcOenSw==
 
 hmac-drbg@^1.0.1:
   version "1.0.1"

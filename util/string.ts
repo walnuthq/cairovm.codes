@@ -1,5 +1,5 @@
 import hljs from 'highlight.js/lib/core'
-import hljsDefineSolidity from 'highlightjs-solidity'
+import hljsDefineCairo from 'highlightjs-cairo';
 
 import hljsDefineBytecode from '../bytecode.js'
 import hljsDefineMnemonic from '../mnemonic.js'
@@ -7,8 +7,8 @@ import hljsDefineMnemonic from '../mnemonic.js'
 const reHex = /^[0-9a-fA-F]+$/
 const reFullHex = /^(0x|0X)([0-9a-fA-F][0-9a-fA-F])+$/
 
-// Add Solidity to Highlight
-hljsDefineSolidity(hljs)
+// Add Cairo to Highlight
+hljsDefineCairo(hljs)
 hljs.registerLanguage('mnemonic', hljsDefineMnemonic)
 hljs.registerLanguage('bytecode', hljsDefineBytecode)
 
@@ -52,7 +52,7 @@ export const isFullHex = (text: string) => {
  * @returns Highlighted text.
  */
 export const codeHighlight = (text: string, extension: string) => {
-  return hljs.highlight(text, {
+    return hljs.highlight(text, {
     language: extension,
     ignoreIllegals: true,
   })

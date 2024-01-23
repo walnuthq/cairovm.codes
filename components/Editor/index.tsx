@@ -146,7 +146,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
         const result = await startTransaction(transaction)
         if (
-          codeType === CodeType.Solidity &&
+          codeType === CodeType.Cairo &&
           !result.error &&
           result.returnValue
         ) {
@@ -195,7 +195,7 @@ const Editor = ({ readOnly = false }: Props) => {
         return
       }
 
-      if (codeType === CodeType.Solidity) {
+      if (codeType === CodeType.Cairo) {
         setContract(contracts[0])
       }
 
@@ -225,10 +225,11 @@ const Editor = ({ readOnly = false }: Props) => {
       setCode(JSON.parse('{"a":' + decode(query.code as string) + '}').a)
     } else {
       const initialCodeType: CodeType =
-        getSetting(Setting.EditorCodeType) || CodeType.Yul
+        getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
       setCode(examples[initialCodeType][0])
+      console.log('initialCodeType', initialCodeType)
     }
 
     if ('fork' in query) {
@@ -453,15 +454,16 @@ const Editor = ({ readOnly = false }: Props) => {
   )
 
   const showAdvanceMode = useMemo(() => {
-    return codeType === CodeType.Solidity && isExpanded
-  }, [codeType, isExpanded])
+    return codeType === CodeType.Cairo && isExpanded
+  }, [codeType, isExpanded]);
+
   const unitValue = useMemo(
     () => ({
       value: unit,
       label: unit,
     }),
     [unit],
-  )
+  );
 
   return (
     <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
@@ -545,7 +547,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
                   <div>
                     <Fragment>
-                      {codeType === CodeType.Solidity && (
+                      {codeType === CodeType.Cairo && (
                         <Button
                           onClick={() => setIsExpanded(!isExpanded)}
                           tooltip={'Please run your contract first.'}
