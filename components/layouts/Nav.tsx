@@ -50,7 +50,7 @@ const Nav = () => {
           </ul>
 
           <div className="items-center ml-auto flex">
-            <ChainSelector />
+            {/* <ChainSelector /> */}
             <ThemeSelector />
           </div>
 
