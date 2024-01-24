@@ -1,3 +1,5 @@
+import { GoogleAnalytics } from '@next/third-parties/google'
+
 import type { NextPage } from 'next'
 import Head from 'next/head'
 
@@ -33,6 +35,7 @@ const HomeLayout: NextPage = ({ children }) => {
         <main className="mb-auto mt-20 pb-10">{children}</main>
 
         <Footer />
+        <GoogleAnalytics gaId="G-E1BJYMMWDD" />
       </div>
     </>
   )

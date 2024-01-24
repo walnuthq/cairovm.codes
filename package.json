@@ -26,6 +26,7 @@
     "@kunigi/string-compression": "1.0.2",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
+    "@next/third-parties": "^14.1.0",
     "@types/ethereumjs-abi": "^0.6.3",
     "assert": "^2.0.0",
     "babel-preset-es2020": "^1.0.2",
