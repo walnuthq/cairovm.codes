@@ -1,5 +1,5 @@
 import hljs from 'highlight.js/lib/core'
-import hljsDefineCairo from 'highlightjs-cairo';
+import hljsDefineCairo from 'highlightjs-cairo'
 
 import hljsDefineBytecode from '../bytecode.js'
 import hljsDefineMnemonic from '../mnemonic.js'
@@ -52,7 +52,7 @@ export const isFullHex = (text: string) => {
  * @returns Highlighted text.
  */
 export const codeHighlight = (text: string, extension: string) => {
-    return hljs.highlight(text, {
+  return hljs.highlight(text, {
     language: extension,
     ignoreIllegals: true,
   })

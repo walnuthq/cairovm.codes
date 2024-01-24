@@ -2,12 +2,12 @@ import { ExampleCode } from './types'
 
 const examples: ExampleCode = {
   Cairo: [
-`fn main() -> felt252 {
+    `fn main() -> felt252 {
     1
-}`
+}`,
   ],
   Sierra: [
-`type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
+    `type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
 type core::panics::Panic = Struct<ut@core::panics::Panic> [storable: true, drop: true, dup: true, zero_sized: true];
 type Array<felt252> = Array<felt252> [storable: true, drop: true, dup: false, zero_sized: false];
 type NonZero<felt252> = NonZero<felt252> [storable: true, drop: true, dup: true, zero_sized: false];
@@ -136,10 +136,10 @@ return([8], [9], [33]); // 84
 
 fibonacci::fibonacci::main@0([0]: RangeCheck, [1]: GasBuiltin) -> (RangeCheck, GasBuiltin, core::panics::PanicResult::<(core::felt252,)>);
 fibonacci::fibonacci::fib@25([0]: RangeCheck, [1]: GasBuiltin, [2]: felt252, [3]: felt252, [4]: felt252) -> (RangeCheck, GasBuiltin, core::panics::PanicResult::<(core::felt252,)>);
-`
+`,
   ],
   Casm: [
-`[ap + 0] = [fp + -4], ap++;
+    `[ap + 0] = [fp + -4], ap++;
 [ap + 0] = [fp + -3], ap++;
 [ap + 0] = 1, ap++;
 [ap + 0] = 1, ap++;
@@ -207,7 +207,7 @@ ap += 1;
 [ap + 0] = [ap + -5], ap++;
 [ap + 0] = [ap + -6] + 1, ap++;
 ret;
-`
+`,
   ],
   Bytecode: ['604260005260206000F3'],
   Mnemonic: [

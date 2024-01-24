@@ -15,7 +15,7 @@ import { encode, decode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { useRouter } from 'next/router'
-import Select, { OnChangeValue } from 'react-select'
+import { OnChangeValue } from 'react-select'
 import SCEditor from 'react-simple-code-editor'
 
 import { EthereumContext } from 'context/ethereumContext'
@@ -39,13 +39,12 @@ import {
 
 import examples from 'components/Editor/examples'
 import InstructionList from 'components/Editor/Instructions'
-import { Button, Input, Icon } from 'components/ui'
+import { Button, Icon } from 'components/ui'
 
 import Console from './Console'
 import ExecutionState from './ExecutionState'
 import ExecutionStatus from './ExecutionStatus'
 import Header from './Header'
-import SolidityAdvanceModeTab from './SolidityAdvanceModeTab'
 import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
 
 type Props = {
@@ -60,11 +59,6 @@ const editorHeight = 350
 const consoleHeight = 350
 const instructionsListHeight = editorHeight + 52 // RunBar
 const instructionsListWithExpandHeight = editorHeight + 156 // Advance Mode bar
-
-const unitOptions = Object.keys(ValueUnit).map((value) => ({
-  value,
-  label: value,
-}))
 
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting, setSetting } = useContext(SettingsContext)
@@ -371,11 +365,11 @@ const Editor = ({ readOnly = false }: Props) => {
   }
 
   const handleRun = useCallback(() => {
-    loadCasmInstructions(examples[CodeType.Casm][0]);
+    loadCasmInstructions(examples[CodeType.Casm][0])
     console.log('loading casm instructions')
     // setCasmCode(examples[CodeType.Casm][0]);
 
-    return;
+    return
 
     if (!isEmpty(callValue) && !/^[0-9]+$/.test(callValue)) {
       log('Callvalue should be a positive integer', 'error')
@@ -465,7 +459,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const showAdvanceMode = useMemo(() => {
     return codeType === CodeType.Cairo && isExpanded
-  }, [codeType, isExpanded]);
+  }, [codeType, isExpanded])
 
   const unitValue = useMemo(
     () => ({
@@ -473,7 +467,7 @@ const Editor = ({ readOnly = false }: Props) => {
       label: unit,
     }),
     [unit],
-  );
+  )
 
   return (
     <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
@@ -556,8 +550,6 @@ const Editor = ({ readOnly = false }: Props) => {
                   </div>
 
                   <div>
-                    
-
                     <Button
                       onClick={handleRun}
                       disabled={isRunDisabled}
@@ -591,10 +583,11 @@ const Editor = ({ readOnly = false }: Props) => {
 
         <div className="w-full md:w-1/3">
           <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
-            <span className='text-gray-600 text-sm'>Sierra</span>
+            <span className="text-gray-600 text-sm">Sierra</span>
           </div>
 
-          <div className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 h-full"
+          <div
+            className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 h-full"
             style={{ height: editorHeight }}
           >
             <SCEditor
@@ -608,7 +601,7 @@ const Editor = ({ readOnly = false }: Props) => {
               className={cn('code-editor', {
                 'with-numbers': !isBytecode,
               })}
-            />      
+            />
           </div>
         </div>
 

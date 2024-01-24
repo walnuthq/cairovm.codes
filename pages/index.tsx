@@ -13,11 +13,11 @@ import { IItemDocs, IGasDocs, IDocMeta } from 'types'
 import { EthereumContext } from 'context/ethereumContext'
 
 import ContributeBox from 'components/ContributeBox'
+import Editor from 'components/Editor'
 import EvmStorageBanner from 'components/EvmStorageBanner'
 import HomeLayout from 'components/layouts/Home'
 import ReferenceTable from 'components/Reference'
 import { H1, Container } from 'components/ui'
-import Editor from 'components/Editor'
 
 const { serverRuntimeConfig } = getConfig()
 

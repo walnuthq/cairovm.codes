@@ -279,17 +279,17 @@ export const EthereumProvider: React.FC<{}> = ({ children }) => {
   const loadCasmInstructions = (casmCode: string) => {
     const instructions: IInstruction[] = []
 
-    casmCode.split((/\r?\n/)).forEach((line, index) => {
-      console.log('line:', line);
+    casmCode.split(/\r?\n/).forEach((line, index) => {
+      console.log('line:', line)
       instructions.push({
         id: index,
         name: line,
         // value: "00",
         hasBreakpoint: false,
-      })  
-    });
+      })
+    })
 
-    setInstructions(instructions);
+    setInstructions(instructions)
   }
 
   /**
