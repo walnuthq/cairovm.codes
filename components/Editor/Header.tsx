@@ -31,14 +31,15 @@ const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
       </h3>
 
       <div className="flex items-center justify-between w-full xl:w-auto">
-        <Select
+        <span className="text-gray-600 dark:text-gray-400 text-sm">Cairo</span>
+        {/* <Select
           onChange={onCodeTypeChange}
           options={codeLangOptions}
           value={codeTypeValue}
           isSearchable={false}
           classNamePrefix="select"
           menuPlacement="auto"
-        />
+        /> */}
       </div>
     </div>
   )

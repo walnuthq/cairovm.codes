@@ -56,7 +56,7 @@ type SCEditorRef = {
 } & RefObject<React.FC>
 
 const editorHeight = 350
-const consoleHeight = 350
+const consoleHeight = 150
 const instructionsListHeight = editorHeight + 52 // RunBar
 const instructionsListWithExpandHeight = editorHeight + 156 // Advance Mode bar
 
@@ -90,10 +90,10 @@ const Editor = ({ readOnly = false }: Props) => {
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
       type: 'info',
-      message: `Loading Solidity compiler ${compilerSemVer}...`,
+      message: 'App initialised...',
     },
   ])
-  const solcWorkerRef = useRef<null | Worker>(null)
+  // const solcWorkerRef = useRef<null | Worker>(null)
   const instructionsRef = useRef() as MutableRefObject<HTMLDivElement>
   const editorRef = useRef<SCEditorRef>()
   const [callData, setCallData] = useState('')
@@ -236,27 +236,27 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
-  useEffect(() => {
-    solcWorkerRef.current = new Worker(
-      new URL('../../lib/solcWorker.js', import.meta.url),
-    )
-    solcWorkerRef.current.onmessage = handleWorkerMessage
-    log('Solidity compiler loaded')
+  // useEffect(() => {
+  //   // solcWorkerRef.current = new Worker(
+  //   //   new URL('../../lib/solcWorker.js', import.meta.url),
+  //   // )
+  //   // solcWorkerRef.current.onmessage = handleWorkerMessage
+  //   // log('Solidity compiler loaded')
 
-    return () => {
-      if (solcWorkerRef?.current) {
-        solcWorkerRef.current.terminate()
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  //   // return () => {
+  //   //   if (solcWorkerRef?.current) {
+  //   //     solcWorkerRef.current.terminate()
+  //   //   }
+  //   // }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
 
-  useEffect(() => {
-    if (solcWorkerRef && solcWorkerRef.current) {
-      // @ts-ignore change the worker message, when value and args changed.
-      solcWorkerRef.current?.onmessage = handleWorkerMessage
-    }
-  }, [solcWorkerRef, handleWorkerMessage])
+  // useEffect(() => {
+  //   if (solcWorkerRef && solcWorkerRef.current) {
+  //     // @ts-ignore change the worker message, when value and args changed.
+  //     solcWorkerRef.current?.onmessage = handleWorkerMessage
+  //   }
+  // }, [solcWorkerRef, handleWorkerMessage])
 
   useEffect(() => {
     if (deployedContractAddress) {
@@ -366,7 +366,6 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const handleRun = useCallback(() => {
     loadCasmInstructions(examples[CodeType.Casm][0])
-    console.log('loading casm instructions')
     // setCasmCode(examples[CodeType.Casm][0]);
 
     return
@@ -408,13 +407,13 @@ const Editor = ({ readOnly = false }: Props) => {
         setIsCompiling(true)
         log('Starting compilation...')
 
-        if (solcWorkerRef?.current) {
-          solcWorkerRef.current.postMessage({
-            language: codeType,
-            evmVersion: getTargetEvmVersion(selectedFork?.name),
-            source: cairoCode,
-          })
-        }
+        // if (solcWorkerRef?.current) {
+        //   solcWorkerRef.current.postMessage({
+        //     language: codeType,
+        //     evmVersion: getTargetEvmVersion(selectedFork?.name),
+        //     source: cairoCode,
+        //   })
+        // }
       }
     } catch (error) {
       log((error as Error).message, 'error')
@@ -503,35 +502,6 @@ const Editor = ({ readOnly = false }: Props) => {
               {!showAdvanceMode && (
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
                   <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
-                    {/* {isCallDataActive && (
-                      <Input
-                        placeholder="Calldata in HEX"
-                        className="bg-white dark:bg-black-500"
-                        value={callData}
-                        onChange={(e) => setCallData(e.target.value)}
-                      />
-                    )} */}
-
-                    {/* <Input
-                      type="number"
-                      step="1"
-                      placeholder="Value to send"
-                      className="bg-white dark:bg-black-500"
-                      value={callValue}
-                      onChange={(e) => setCallValue(e.target.value)}
-                    /> */}
-
-                    {/* <Select
-                      onChange={(option: OnChangeValue<any, any>) =>
-                        setUnit(option.value)
-                      }
-                      options={unitOptions}
-                      value={unitValue}
-                      isSearchable={false}
-                      classNamePrefix="select"
-                      menuPlacement="auto"
-                    /> */}
-
                     <Button
                       onClick={handleCopyPermalink}
                       transparent
@@ -562,32 +532,16 @@ const Editor = ({ readOnly = false }: Props) => {
                 </div>
               )}
             </Fragment>
-
-            {/* <SolidityAdvanceModeTab
-              log={log}
-              selectedContract={contract}
-              handleCompile={handleRun}
-              setShowSimpleMode={() => setIsExpanded(false)}
-              show={showAdvanceMode}
-              deployByteCode={deployByteCode}
-              callValue={callValue}
-              setCallValue={setCallValue}
-              setUnit={setUnit}
-              unitValue={unit}
-              getCallValue={getCallValue}
-              methodByteCode={methodByteCode}
-              handleCopyPermalink={handleCopyPermalink}
-            /> */}
           </div>
         </div>
 
         <div className="w-full md:w-1/3">
           <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
-            <span className="text-gray-600 text-sm">Sierra</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Sierra</span>
           </div>
 
           <div
-            className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 h-full"
+            className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 h-full"
             style={{ height: editorHeight }}
           >
             <SCEditor
@@ -625,15 +579,15 @@ const Editor = ({ readOnly = false }: Props) => {
       </div>
 
       <div className="flex flex-col md:flex-row-reverse">
-        <div className="w-full md:w-1/2">
+        {/* <div className="w-full md:w-1/2">
           <div
             className="pane pane-dark overflow-auto border-t border-black-900/25 bg-gray-800 dark:bg-black-700 text-white px-4 py-3"
             style={{ height: consoleHeight }}
           >
             <ExecutionState />
           </div>
-        </div>
-        <div className="w-full md:w-1/2">
+        </div> */}
+        <div className="w-full">
           <div
             className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"
             style={{ height: consoleHeight }}

@@ -37,6 +37,11 @@ const ExecutionStatus = () => {
   return (
     <div className="flex flex-grow justify-between items-center text-sm">
       <div>
+        <span className="text-gray-600 dark:text-gray-400 text-sm">
+          CASM
+        </span>
+      </div>
+      {/* <div>
         <span className="inline-block ml-1 mr-2 text-gray-400">
           <Icon name="gas-station-fill" className="text-indigo-500" />
         </span>
@@ -60,7 +65,7 @@ const ExecutionStatus = () => {
         </span>
 
         <ReactTooltip className="tooltip" effect="solid" />
-      </div>
+      </div> */}
 
       <div>
         <Button
@@ -69,7 +74,7 @@ const ExecutionStatus = () => {
           onClick={nextExecution}
           padded={false}
           className="mr-4"
-          tooltip="Step into"
+          tooltip="Coming soon: Step into"
           tooltipId="step"
         >
           <Icon name="arrow-go-forward-line" className="text-indigo-500" />
@@ -80,7 +85,7 @@ const ExecutionStatus = () => {
           disabled={!isExecuting}
           onClick={continueExecution}
           padded={false}
-          tooltip="Continue execution"
+          tooltip="Coming soon: Continue execution"
           tooltipId="continue"
         >
           <Icon name="play-circle-line" className="text-indigo-500" />
