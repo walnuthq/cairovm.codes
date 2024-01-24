@@ -55,10 +55,12 @@ type SCEditorRef = {
   _input: HTMLTextAreaElement
 } & RefObject<React.FC>
 
-const editorHeight = 350
+const cairoEditorHeight = 350
+const runBarHeight = 52;
+const sierraEditorHeight = cairoEditorHeight + runBarHeight;
+const casmInstructionsListHeight = cairoEditorHeight + runBarHeight;
+const instructionsListWithExpandHeight = cairoEditorHeight + 156 // Advance Mode bar
 const consoleHeight = 150
-const instructionsListHeight = editorHeight + 52 // RunBar
-const instructionsListWithExpandHeight = editorHeight + 156 // Advance Mode bar
 
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting, setSetting } = useContext(SettingsContext)
@@ -482,7 +484,7 @@ const Editor = ({ readOnly = false }: Props) => {
           <div>
             <div
               className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: editorHeight }}
+              style={{ height: cairoEditorHeight }}
             >
               <SCEditor
                 // @ts-ignore: SCEditor is not TS-friendly
@@ -542,7 +544,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
           <div
             className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 h-full"
-            style={{ height: editorHeight }}
+            style={{ height: sierraEditorHeight }}
           >
             <SCEditor
               // @ts-ignore: SCEditor is not TS-friendly
@@ -570,7 +572,7 @@ const Editor = ({ readOnly = false }: Props) => {
             style={{
               height: isExpanded
                 ? instructionsListWithExpandHeight
-                : instructionsListHeight,
+                : casmInstructionsListHeight,
             }}
           >
             <InstructionList containerRef={instructionsRef} />
