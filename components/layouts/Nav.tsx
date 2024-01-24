@@ -39,7 +39,7 @@ const Nav = () => {
             {/* <NavLink href="/">Opcodes</NavLink> */}
             {/* <NavLink href="/precompiled">Precompiled Contracts</NavLink> */}
             {/* <NavLink href="/playground">Playground</NavLink> */}
-            <NavLink href="/about">About</NavLink>
+            {/* <NavLink href="/about">About</NavLink> */}
 
             {/* <li className="hidden lg:inline-block">
               <KBarButton />

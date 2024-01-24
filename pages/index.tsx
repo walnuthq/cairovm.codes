@@ -14,7 +14,7 @@ import { EthereumContext } from 'context/ethereumContext'
 
 import ContributeBox from 'components/ContributeBox'
 import Editor from 'components/Editor'
-import EvmStorageBanner from 'components/EvmStorageBanner'
+import AboutCairoVMBanner from 'components/AboutCairoVMBanner'
 import HomeLayout from 'components/layouts/Home'
 import ReferenceTable from 'components/Reference'
 import { H1, Container } from 'components/ui'
@@ -40,7 +40,7 @@ const HomePage = ({
           content="An Ethereum Virtual Machine Opcodes Interactive Reference"
         />
       </Head>
-      {/* <EvmStorageBanner /> */}
+      <AboutCairoVMBanner />
       {/* <Container>
         <H1>
           An Ethereum Virtual Machine <br></br> Opcodes Interactive Reference
