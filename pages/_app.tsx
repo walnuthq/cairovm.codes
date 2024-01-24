@@ -4,7 +4,6 @@ import { KBarProvider } from 'kbar'
 import useActions from 'lib/useActions'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
-import PlausibleProvider from 'next-plausible'
 import { ThemeProvider } from 'next-themes'
 
 import { EthereumProvider } from 'context/ethereumContext'
@@ -31,18 +30,16 @@ const Main = ({ Component, pageProps }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout ?? ((page) => page)
 
   return (
-    <PlausibleProvider domain="cairovm.codes">
-      <ThemeProvider attribute="class">
-        <SettingsProvider>
-          <EthereumProvider>
-            <KBarProvider actions={actions}>
-              {getLayout(<Component {...pageProps} />)}
-              <KBar />
-            </KBarProvider>
-          </EthereumProvider>
-        </SettingsProvider>
-      </ThemeProvider>
-    </PlausibleProvider>
+    <ThemeProvider attribute="class">
+      <SettingsProvider>
+        <EthereumProvider>
+          <KBarProvider actions={actions}>
+            {getLayout(<Component {...pageProps} />)}
+            <KBar />
+          </KBarProvider>
+        </EthereumProvider>
+      </SettingsProvider>
+    </ThemeProvider>
   )
 }
 

@@ -6394,11 +6394,6 @@ next-mdx-remote@^3.0.8:
     esbuild "^0.12.9"
     pkg-dir "^5.0.0"
 
-next-plausible@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.npmjs.org/next-plausible/-/next-plausible-3.1.4.tgz"
-  integrity sha512-NMLKJ0AKlKuvYU//RytyqSES5NtLRoH/ym3fCC02w2Ed1SrTgNRUrgpxyJrcguY/DYGPncQ3a0/nQ358vUTAwQ==
-
 next-themes@^0.0.15:
   version "0.0.15"
   resolved "https://package-cluster.production.groovehq.com/next-themes/-/next-themes-0.0.15.tgz"
