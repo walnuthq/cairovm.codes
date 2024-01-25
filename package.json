@@ -49,7 +49,9 @@
     "react-select": "^5.8.0",
     "react-simple-code-editor": "^0.11.2",
     "react-table": "^7.8.0",
-    "react-tooltip": "^4.2.21"
+    "react-tooltip": "^4.2.21",
+    "vercel": "^33.2.0",
+    "wrangler": "^3.24.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
