@@ -216,9 +216,7 @@ const Editor = ({ readOnly = false }: Props) => {
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-1/3">
           <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
-            <Header
-              codeType={codeType}
-            />
+            <Header/>
           </div>
 
           <div>
