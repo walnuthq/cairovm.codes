@@ -56,9 +56,9 @@ type SCEditorRef = {
 } & RefObject<React.FC>
 
 const cairoEditorHeight = 350
-const runBarHeight = 52;
-const sierraEditorHeight = cairoEditorHeight + runBarHeight;
-const casmInstructionsListHeight = cairoEditorHeight + runBarHeight;
+const runBarHeight = 52
+const sierraEditorHeight = cairoEditorHeight + runBarHeight
+const casmInstructionsListHeight = cairoEditorHeight + runBarHeight
 const instructionsListWithExpandHeight = cairoEditorHeight + 156 // Advance Mode bar
 const consoleHeight = 150
 
@@ -539,7 +539,9 @@ const Editor = ({ readOnly = false }: Props) => {
 
         <div className="w-full md:w-1/3">
           <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Sierra</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">
+              Sierra
+            </span>
           </div>
 
           <div

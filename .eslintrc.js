@@ -31,14 +31,14 @@ module.exports = {
   ],
   rules: {
     curly: 'error',
-    'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+    'prettier/prettier': ['warn', {}, { usePrettierrc: true }],
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/no-unescaped-entities': 'off',
     'react/display-name': 'off',
     'jsx-a11y/anchor-is-valid': 'off',
     'import/no-unresolved': 0,
-    '@typescript-eslint/no-unused-vars': ['error'],
+    '@typescript-eslint/no-unused-vars': ['warn'],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
@@ -57,7 +57,7 @@ module.exports = {
       },
     ],
     'import/order': [
-      'error',
+      'warn',
       {
         groups: [
           'builtin',

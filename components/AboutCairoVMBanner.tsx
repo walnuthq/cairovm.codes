@@ -44,19 +44,20 @@ const AboutCairoVMBanner = () => {
         </svg>
       </button>
       <div className="container mx-auto px-4 md:px-6">
-        <p className="font-medium md:text-xl mb-4 pt-6">
-          About cairovm.codes
-        </p>
+        <p className="font-medium md:text-xl mb-4 pt-6">About cairovm.codes</p>
         <p className="font-normal text-2base text-gray-400 mb-4">
-          Built by{" "}
+          Built by{' '}
           <a
             className="underline text-indigo-500"
             href="https://walnut.dev"
             target="_blank"
+            rel="noreferrer"
           >
             Walnut
           </a>
-          , this page lets you compile Cairo programs into Sierra and CASM. Gradually, we will introduce step-through execution for CASM, Sierra, and Cairo, as part of our Cairo debugger development.
+          , this page lets you compile Cairo programs into Sierra and CASM.
+          Gradually, we will introduce step-through execution for CASM, Sierra,
+          and Cairo, as part of our Cairo debugger development.
         </p>
       </div>
     </div>

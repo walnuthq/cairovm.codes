@@ -5,7 +5,7 @@ export const Logo: React.FC = () => {
   return (
     <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
       <span className="pr-2">cairovm</span>
-      <Image src={cairoLogo} width={20} height={20} />
+      <Image src={cairoLogo} width={20} height={20} alt="cairo" />
       <span className="pl-2">codes</span>
     </div>
   )

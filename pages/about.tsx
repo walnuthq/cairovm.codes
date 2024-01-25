@@ -37,7 +37,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
         id={anchorKey}
         className="font-mono mb-4 justify-start relative items-center scroll-mt-14"
       >
-        <Link href={`/about#${anchorKey}`}>
+        <Link href={`/about#${anchorKey}`} legacyBehavior>
           <a className="absolute -left-6">
             <Icon name="links-line" className="text-indigo-500" />
           </a>

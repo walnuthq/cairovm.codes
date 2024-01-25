@@ -1,4 +1,5 @@
 import hljs from 'highlight.js/lib/core'
+// @ts-ignore - Cairo is not part of the official highlightjs package
 import hljsDefineCairo from 'highlightjs-cairo'
 
 import hljsDefineBytecode from '../bytecode.js'

@@ -7,7 +7,7 @@ import ResultItem from './ResultItem'
 const NO_GROUP = 'none'
 
 const Results = () => {
-  const groups = useMatches()
+  const groups = useMatches().results
   const flattened = useMemo(
     () =>
       groups.reduce((acc: any, curr: any) => {

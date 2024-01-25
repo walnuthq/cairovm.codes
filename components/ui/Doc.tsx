@@ -75,7 +75,7 @@ export const TD: React.FC<Props> = ({ children }) => (
 )
 
 export const A: React.FC<LinkProps> = ({ children, href }) => (
-  <Link href={href as string} scroll={false}>
+  <Link href={href as string} scroll={false} legacyBehavior>
     <a className="underline">{children}</a>
   </Link>
 )
