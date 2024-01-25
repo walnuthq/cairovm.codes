@@ -15,7 +15,7 @@ cairovm.codes is brought to you by [Walnut](https://www.walnut.dev).
 The app requires the following dependencies:
 
 - [NodeJS](https://nodejs.org/) >= 18
-- [Yarn](https://yarnpkg.com/)
+- [npm](https://www.npmjs.com/)
 
 ## 👩‍💻 Local Development
 
@@ -23,19 +23,19 @@ For contributing to the project, you can quickly get the application running by 
 
 Clone this repository:
 
-    git clone git@github.com:smlxl/evm.codes.git
+    git clone git@github.com:walnuthq/cairovm.codes.git
 
 Install the dependencies:
 
-    yarn install
+    npm install
 
 Start up the app and see it running at http://localhost:3000
 
-    yarn dev
+    npm run dev
 
 ## 🚀 Deploying
 
-Deployments are handled automatically by [Vercel](https://vercel.com/), as soon as your PR is merged to `main`.
+Deployments are handled automatically by [Cloudflare](https://www.cloudflare.com/), as soon as your PR is merged to `main`.
 
 ## 🤗 Contributing
 
@@ -51,15 +51,15 @@ The project is already pre-configured with [Eslint](.eslintrc.js), [TypeScript](
 
 Check for any linting issues and fix:
 
-    yarn lint --fix
+    npm run lint --fix
 
 Check for any TypeScript issues:
 
-    yarn typecheck
+    npm run typecheck
 
 Sort the `package.json`:
 
-    yarn lint:package
+    npm run lint:package
 
 ## Architecture
 

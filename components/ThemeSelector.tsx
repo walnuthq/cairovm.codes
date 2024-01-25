@@ -8,6 +8,12 @@ const ThemeSelector = () => {
 
   const actions: Action[] = [
     {
+      id: 'theme',
+      name: 'Change theme…',
+      keywords: 'interface color dark light',
+      section: 'Preferences',
+    },
+    {
       id: 'theme-light',
       name: 'Light',
       shortcut: [],
@@ -40,7 +46,7 @@ const ThemeSelector = () => {
       shortcut: ['t'],
       keywords: 'theme appearance',
       section: 'Preferences',
-      children: ['theme-light', 'theme-dark', 'theme-system'],
+      // children: ['theme-light', 'theme-dark', 'theme-system'],
     },
   ]
 

@@ -1,6 +1,6 @@
 import { GoogleAnalytics } from '@next/third-parties/google'
-
 import type { NextPage } from 'next'
+// import { Html } from 'next/document'
 import Head from 'next/head'
 
 import { getAbsoluteURL } from 'util/browser'
@@ -11,7 +11,6 @@ import Nav from './Nav'
 const HomeLayout: NextPage = ({ children }) => {
   return (
     <>
-      <html lang="en"></html>
       <Head>
         <title>Cairo VM Codes</title>
         <meta property="og:type" content="website" />

@@ -8,7 +8,7 @@ type Props = {
 }
 
 export const RelativeLink: React.FC<Props> = ({ title, to }: Props) => (
-  <Link href={to ? `/${to}` : '/'} passHref>
+  <Link href={to ? `/${to}` : '/'} passHref legacyBehavior>
     <a className="underline font-mono">{title}</a>
   </Link>
 )

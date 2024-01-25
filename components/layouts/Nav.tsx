@@ -5,12 +5,12 @@ import Link from 'next/link'
 
 import { GITHUB_REPO_URL } from 'util/constants'
 
-import KBarButton from 'components/KBar/Button'
+// import KBarButton from 'components/KBar/Button'
 import NavLink from 'components/NavLink'
 import ThemeSelector from 'components/ThemeSelector'
 import { Container, Logo, Hamburger } from 'components/ui'
 
-import ChainSelector from '../ChainSelector'
+// import ChainSelector from '../ChainSelector'
 
 const Nav = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false)
@@ -19,7 +19,7 @@ const Nav = () => {
     <nav className="fixed z-40 top-0 inset-x-0 py-2 bg-white dark:bg-black-800">
       <Container>
         <div className="h-10 flex items-center justify-between">
-          <Link href="/" passHref>
+          <Link href="/" passHref legacyBehavior>
             <a>
               <Logo />
             </a>

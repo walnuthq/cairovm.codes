@@ -251,6 +251,7 @@ const ReferenceTable = ({
                                 : `/#${opcodeOrAddress}?fork=${selectedFork?.name}`
                             }
                             passHref
+                            legacyBehavior
                           >
                             <a className="underline font-mono">
                               <Icon
