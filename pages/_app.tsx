@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'next-themes'
 
 import { EthereumProvider } from 'context/ethereumContext'
+import { CairoVMApiProvider } from 'context/cairoVMApiContext'
 import { SettingsProvider } from 'context/settingsContext'
 
 import KBar from 'components/KBar'
@@ -33,10 +34,12 @@ const Main = ({ Component, pageProps }: AppPropsWithLayout) => {
     <ThemeProvider attribute="class">
       <SettingsProvider>
         <EthereumProvider>
-          <KBarProvider actions={actions}>
-            {getLayout(<Component {...pageProps} />)}
-            <KBar />
-          </KBarProvider>
+          <CairoVMApiProvider>
+            <KBarProvider actions={actions}>
+              {getLayout(<Component {...pageProps} />)}
+              <KBar />
+            </KBarProvider>
+          </CairoVMApiProvider>
         </EthereumProvider>
       </SettingsProvider>
     </ThemeProvider>

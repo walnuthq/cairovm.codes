@@ -46,6 +46,7 @@ import ExecutionState from './ExecutionState'
 import ExecutionStatus from './ExecutionStatus'
 import Header from './Header'
 import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
+import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
 
 type Props = {
   readOnly?: boolean
@@ -67,28 +68,22 @@ const Editor = ({ readOnly = false }: Props) => {
   const router = useRouter()
 
   const {
-    transactionData,
-    loadInstructions,
-    loadCasmInstructions,
-    startExecution,
-    startTransaction,
     deployedContractAddress,
-    vmError,
     selectedFork,
     opcodes,
     instructions,
-    resetExecution,
     onForkChange,
   } = useContext(EthereumContext)
 
+  const {
+    sierraCode,
+    isCompiling,
+    compileCairoCode,
+  } = useContext(CairoVMApiContext)
+
   const [cairoCode, setCairoCode] = useState('')
-  const [sierraCode, setSierraCode] = useState('')
-  const [timeOutId, setTimeOutId] = useState<NodeJS.Timeout | undefined>(
-    undefined,
-  )
-  const [compiling, setIsCompiling] = useState(false)
   const [codeType, setCodeType] = useState<string | undefined>()
-  const [codeModified, setCodeModified] = useState(false)
+  const [cairoCodeModified, setCairoCodeModified] = useState(false)
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
       type: 'info',
@@ -102,9 +97,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const [callValue, setCallValue] = useState('')
   const [unit, setUnit] = useState(ValueUnit.Wei as string)
 
-  const [contract, setContract] = useState<Contract | undefined>(undefined)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [methodByteCode, setMethodByteCode] = useState<string | undefined>()
 
   const log = useCallback(
     (line: string, type = 'info') => {
@@ -116,94 +109,6 @@ const Editor = ({ readOnly = false }: Props) => {
       })
     },
     [setOutput],
-  )
-
-  const getCallValue = useCallback(() => {
-    const _callValue = BigInt(callValue)
-    switch (unit) {
-      case ValueUnit.Gwei:
-        return _callValue * BigInt('1000000000')
-      case ValueUnit.Finney:
-        return _callValue * BigInt('1000000000000000')
-      case ValueUnit.Ether:
-        return _callValue * BigInt('1000000000000000000')
-      default:
-        return _callValue
-    }
-  }, [callValue, unit])
-
-  const deployByteCode = useCallback(
-    async (bc, args = '', callValue) => {
-      try {
-        if (!callValue) {
-          callValue = getCallValue()
-        }
-        const transaction = await transactionData(bc + args, callValue)
-        loadInstructions(bc)
-        setIsCompiling(false)
-
-        const result = await startTransaction(transaction)
-        if (
-          codeType === CodeType.Cairo &&
-          !result.error &&
-          result.returnValue
-        ) {
-          setMethodByteCode(bufferToHex(result.returnValue))
-        }
-        return result
-      } catch (error) {
-        log((error as Error).message, 'error')
-        setIsCompiling(false)
-      }
-    },
-    [
-      transactionData,
-      getCallValue,
-      loadInstructions,
-      startTransaction,
-      codeType,
-      log,
-    ],
-  )
-
-  const handleWorkerMessage = useCallback(
-    (event: MessageEvent) => {
-      const { warning, error, contracts } = event.data
-      resetExecution()
-      setContract(undefined)
-
-      if (error) {
-        log(error, 'error')
-        setIsCompiling(false)
-        return
-      }
-
-      if (warning) {
-        log(warning, 'warn')
-      }
-
-      log('Compilation successful')
-
-      if (contracts.length > 1) {
-        setIsCompiling(false)
-        log(
-          'The source should contain only one contract, Please select one to deploy.',
-          'error',
-        )
-        return
-      }
-
-      if (codeType === CodeType.Cairo) {
-        setContract(contracts[0])
-      }
-
-      if (!isExpanded) {
-        deployByteCode(contracts[0].code, '', undefined)
-      } else {
-        setIsCompiling(false)
-      }
-    },
-    [resetExecution, log, codeType, isExpanded, deployByteCode],
   )
 
   useEffect(() => {
@@ -229,36 +134,25 @@ const Editor = ({ readOnly = false }: Props) => {
       setCairoCode(examples[initialCodeType][0])
     }
 
-    // TODO: Remove this when we have a way how to query it from an API
-    setSierraCode(examples[CodeType.Sierra][0])
-
     if ('fork' in query) {
       onForkChange(query.fork as string)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
-  // useEffect(() => {
-  //   // solcWorkerRef.current = new Worker(
-  //   //   new URL('../../lib/solcWorker.js', import.meta.url),
-  //   // )
-  //   // solcWorkerRef.current.onmessage = handleWorkerMessage
-  //   // log('Solidity compiler loaded')
+  useEffect(() => {
+    if (isCompiling === CompilationState.Compiling) {
+      log('Compiling...')
+    }
 
-  //   // return () => {
-  //   //   if (solcWorkerRef?.current) {
-  //   //     solcWorkerRef.current.terminate()
-  //   //   }
-  //   // }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
+    else if (isCompiling === CompilationState.Compiled) {
+      log('Compilation successful')
+    }
 
-  // useEffect(() => {
-  //   if (solcWorkerRef && solcWorkerRef.current) {
-  //     // @ts-ignore change the worker message, when value and args changed.
-  //     solcWorkerRef.current?.onmessage = handleWorkerMessage
-  //   }
-  // }, [solcWorkerRef, handleWorkerMessage])
+    else if (isCompiling === CompilationState.Error) {
+      log('Compilation failed: ', 'error')
+    }
+  }, [isCompiling])
 
   useEffect(() => {
     if (deployedContractAddress) {
@@ -267,54 +161,9 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deployedContractAddress])
 
-  useEffect(() => {
-    if (vmError) {
-      log(vmError, 'error')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vmError])
-
-  const validateBytecode = (bytecode: string) => {
-    if (bytecode.length % 2 !== 0) {
-      log('There should be at least 2 characters per byte', 'error')
-      return
-    }
-    if (!isHex(bytecode)) {
-      log('Only hexadecimal characters are allowed', 'error')
-      return
-    }
-  }
-
-  const stripBytecode = (value: string) => {
-    const findHexPrefix = /^0x/
-    return value
-      .replaceAll(/\/\/.*$/gm, '')
-      .replaceAll(/;.*$/gm, '')
-      .replaceAll(/#.*$/gm, '')
-      .replaceAll(/\s/gm, '')
-      .replace(findHexPrefix, '')
-  }
-
-  const handleCodeChange = (value: string) => {
+  const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
-    setCodeModified(true)
-
-    try {
-      if (codeType === CodeType.Bytecode) {
-        const cleanBytecode = stripBytecode(value)
-
-        if (timeOutId) {
-          clearTimeout(timeOutId)
-          setTimeOutId(undefined)
-        }
-        setTimeOutId(setTimeout(() => validateBytecode(cleanBytecode), 1000))
-
-        loadInstructions(cleanBytecode)
-        // startExecution(value, _callValue, _callData)
-      }
-    } catch (error) {
-      log((error as Error).message, 'error')
-    }
+    setCairoCodeModified(true)
   }
 
   const highlightCode = (value: string) => {
@@ -331,106 +180,10 @@ const Editor = ({ readOnly = false }: Props) => {
       .join('\n')
   }
 
-  const handleCodeTypeChange = (option: OnChangeValue<any, any>) => {
-    const { value } = option
-    setCodeType(value)
-    setSetting(Setting.EditorCodeType, value)
-    setContract(undefined)
-    setMethodByteCode(undefined)
-    setIsExpanded(false)
-
-    if (!codeModified && codeType) {
-      setCairoCode(examples[value as CodeType][0])
-    } else if (
-      value &&
-      value === CodeType.Mnemonic &&
-      instructions?.length > 0
-    ) {
-      const code = getBytecodeLinesFromInstructions(instructions)
-      setCairoCode(code)
-    } else if (
-      value &&
-      value === CodeType.Bytecode &&
-      instructions?.length > 0
-    ) {
-      const code = getMnemonicFromBytecode(instructions, opcodes)
-      setCairoCode(code)
-    }
-
-    // NOTE: SCEditor does not expose input ref as public /shrug
-    if (editorRef?.current?._input) {
-      const input = editorRef?.current?._input
-
-      input.focus()
-      input.select()
-    }
-  }
-
-  const handleRun = useCallback(() => {
-    loadCasmInstructions(examples[CodeType.Casm][0])
-    // setCasmCode(examples[CodeType.Casm][0]);
-
-    return
-
-    if (!isEmpty(callValue) && !/^[0-9]+$/.test(callValue)) {
-      log('Callvalue should be a positive integer', 'error')
-      return
-    }
-
-    if (!isEmpty(callData) && !isFullHex(callData)) {
-      log(
-        'Calldata should be a hexadecimal string with 2 digits per byte',
-        'error',
-      )
-      return
-    }
-
-    try {
-      const _callData = callData.substr(2)
-      const _callValue = getCallValue()
-
-      if (codeType === CodeType.Mnemonic) {
-        const bytecode = getBytecodeFromMnemonic(cairoCode, opcodes)
-        loadInstructions(bytecode)
-        startExecution(bytecode, _callValue, _callData)
-      } else if (codeType === CodeType.Bytecode) {
-        const cleanBytecode = stripBytecode(cairoCode)
-        if (cleanBytecode.length % 2 !== 0) {
-          log('There should be at least 2 characters per byte', 'error')
-          return
-        }
-        if (!isHex(cleanBytecode)) {
-          log('Only hexadecimal characters are allowed', 'error')
-          return
-        }
-        loadInstructions(cleanBytecode)
-        startExecution(cleanBytecode, _callValue, _callData)
-      } else {
-        setIsCompiling(true)
-        log('Starting compilation...')
-
-        // if (solcWorkerRef?.current) {
-        //   solcWorkerRef.current.postMessage({
-        //     language: codeType,
-        //     evmVersion: getTargetEvmVersion(selectedFork?.name),
-        //     source: cairoCode,
-        //   })
-        // }
-      }
-    } catch (error) {
-      log((error as Error).message, 'error')
-    }
+  const handleCompileRun = useCallback(() => {
+    compileCairoCode(cairoCode)
   }, [
     cairoCode,
-    codeType,
-    opcodes,
-    selectedFork,
-    callData,
-    callValue,
-    loadInstructions,
-    log,
-    startExecution,
-    getCallValue,
   ])
 
   const handleCopyPermalink = useCallback(() => {
@@ -448,27 +201,15 @@ const Editor = ({ readOnly = false }: Props) => {
     log('Link to current fork, code, calldata and value copied to clipboard')
   }, [selectedFork, callValue, unit, callData, codeType, cairoCode, log])
 
-  const isRunDisabled = useMemo(() => {
-    return compiling || isEmpty(cairoCode)
-  }, [compiling, cairoCode])
+  const isCompileDisabled = useMemo(() => {
+    return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
+  }, [isCompiling, cairoCode])
 
   const isBytecode = useMemo(() => codeType === CodeType.Bytecode, [codeType])
-  const isCallDataActive = useMemo(
-    () => codeType === CodeType.Mnemonic || codeType === CodeType.Bytecode,
-    [codeType],
-  )
 
   const showAdvanceMode = useMemo(() => {
     return codeType === CodeType.Cairo && isExpanded
   }, [codeType, isExpanded])
-
-  const unitValue = useMemo(
-    () => ({
-      value: unit,
-      label: unit,
-    }),
-    [unit],
-  )
 
   return (
     <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
@@ -476,7 +217,6 @@ const Editor = ({ readOnly = false }: Props) => {
         <div className="w-full md:w-1/3">
           <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
             <Header
-              onCodeTypeChange={handleCodeTypeChange}
               codeType={codeType}
             />
           </div>
@@ -491,7 +231,7 @@ const Editor = ({ readOnly = false }: Props) => {
                 ref={editorRef}
                 value={cairoCode}
                 readOnly={readOnly}
-                onValueChange={handleCodeChange}
+                onValueChange={handleCairoCodeChange}
                 highlight={highlightCode}
                 tabSize={4}
                 className={cn('code-editor', {
@@ -523,12 +263,12 @@ const Editor = ({ readOnly = false }: Props) => {
 
                   <div>
                     <Button
-                      onClick={handleRun}
-                      disabled={isRunDisabled}
+                      onClick={handleCompileRun}
+                      disabled={isCompileDisabled}
                       size="sm"
                       contentClassName="justify-center"
                     >
-                      Run
+                      Compile
                     </Button>
                   </div>
                 </div>
@@ -551,7 +291,7 @@ const Editor = ({ readOnly = false }: Props) => {
               ref={editorRef}
               value={sierraCode}
               readOnly={readOnly}
-              onValueChange={handleCodeChange}
+              onValueChange={handleCairoCodeChange}
               highlight={highlightCode}
               tabSize={4}
               className={cn('code-editor', {
