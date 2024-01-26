@@ -79,6 +79,7 @@ const Editor = ({ readOnly = false }: Props) => {
     sierraCode,
     isCompiling,
     compileCairoCode,
+    cairoLangCompilerVersion,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -143,13 +144,9 @@ const Editor = ({ readOnly = false }: Props) => {
   useEffect(() => {
     if (isCompiling === CompilationState.Compiling) {
       log('Compiling...')
-    }
-
-    else if (isCompiling === CompilationState.Compiled) {
+    } else if (isCompiling === CompilationState.Compiled) {
       log('Compilation successful')
-    }
-
-    else if (isCompiling === CompilationState.Error) {
+    } else if (isCompiling === CompilationState.Error) {
       log('Compilation failed: ', 'error')
     }
   }, [isCompiling])
@@ -182,9 +179,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const handleCompileRun = useCallback(() => {
     compileCairoCode(cairoCode)
-  }, [
-    cairoCode,
-  ])
+  }, [cairoCode])
 
   const handleCopyPermalink = useCallback(() => {
     const fork = selectedFork?.name
@@ -216,7 +211,7 @@ const Editor = ({ readOnly = false }: Props) => {
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-1/3">
           <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
-            <Header/>
+            <Header />
           </div>
 
           <div>
@@ -340,8 +335,9 @@ const Editor = ({ readOnly = false }: Props) => {
       </div>
 
       <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
-        Cairo Compiler v2.5.0
-         {/* {compilerSemVer} */}
+        {cairoLangCompilerVersion !== ''
+          ? `Cairo Compiler v${cairoLangCompilerVersion}`
+          : ' '}
       </div>
     </div>
   )

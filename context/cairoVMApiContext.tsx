@@ -1,9 +1,7 @@
-import React, { createContext, useState } from 'react';
-import { CAIRO_VM_API_URL } from 'util/constants';
+import React, { createContext, useState } from 'react'
+import { CAIRO_VM_API_URL } from 'util/constants'
 
-import {
-  IInstruction,
-} from 'types'
+import { IInstruction } from 'types'
 
 export enum CompilationState {
   Idle,
@@ -12,28 +10,30 @@ export enum CompilationState {
   Error,
 }
 
-
 type ContextProps = {
-  sierraCode: string,
-  casmInstructions: IInstruction[],
-  isCompiling: CompilationState,
+  sierraCode: string
+  casmInstructions: IInstruction[]
+  isCompiling: CompilationState
+  cairoLangCompilerVersion: string
 
-  compileCairoCode: (cairoCode: string) => void,
+  compileCairoCode: (cairoCode: string) => void
 }
 
 export const CairoVMApiContext = createContext<ContextProps>({
   sierraCode: '',
   casmInstructions: [],
+  cairoLangCompilerVersion: '',
   isCompiling: CompilationState.Idle,
   compileCairoCode: () => undefined,
-});
-
+})
 
 export const CairoVMApiProvider: React.FC = ({ children }) => {
-
   const [sierraCode, setSierraCode] = useState<string>('')
   const [casmInstructions, setCasmInstructions] = useState<IInstruction[]>([])
-  const [isCompiling, setIsCompiling] = useState<CompilationState>(CompilationState.Idle)
+  const [cairoLangCompilerVersion, setCairoLangCompilerVersion] = useState('')
+  const [isCompiling, setIsCompiling] = useState<CompilationState>(
+    CompilationState.Idle,
+  )
 
   const compileCairoCode = (cairoCode: string) => {
     setIsCompiling(CompilationState.Compiling)
@@ -41,21 +41,22 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
     fetch(CAIRO_VM_API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({cairo_program_code: cairoCode})
+      body: JSON.stringify({ cairo_program_code: cairoCode }),
     })
-    .then(response => response.json())
-    .then(data => {
-      setIsCompiling(CompilationState.Compiled)
-      setCasmInstructions(_parseCasmInstructions(data.casm_program_code))
-      setSierraCode(data.sierra_program_code);
-    })
-    .catch((error) => {
-      setIsCompiling(CompilationState.Error)
-      console.error('Error:', error);
-    });
-  };
+      .then((response) => response.json())
+      .then((data) => {
+        setIsCompiling(CompilationState.Compiled)
+        setCasmInstructions(_parseCasmInstructions(data.casm_program_code))
+        setSierraCode(data.sierra_program_code)
+        setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
+      })
+      .catch((error) => {
+        setIsCompiling(CompilationState.Error)
+        console.error('Error:', error)
+      })
+  }
 
   const _parseCasmInstructions = (casmCode: string) => {
     const instructions: IInstruction[] = []
@@ -71,23 +72,23 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
           hasBreakpoint: false,
         })
       }
-      
     })
 
-    return instructions;
+    return instructions
   }
 
   return (
-    <CairoVMApiContext.Provider 
+    <CairoVMApiContext.Provider
       value={{
         sierraCode,
         casmInstructions,
         isCompiling,
+        cairoLangCompilerVersion,
 
-        compileCairoCode 
+        compileCairoCode,
       }}
     >
       {children}
     </CairoVMApiContext.Provider>
-  );
-};
+  )
+}
