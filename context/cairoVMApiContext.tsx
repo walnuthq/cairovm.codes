@@ -15,6 +15,7 @@ type ContextProps = {
   casmInstructions: IInstruction[]
   isCompiling: CompilationState
   cairoLangCompilerVersion: string
+  serializedOutput?: string
 
   compileCairoCode: (cairoCode: string) => void
 }
@@ -23,6 +24,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   sierraCode: '',
   casmInstructions: [],
   cairoLangCompilerVersion: '',
+  serializedOutput: undefined,
   isCompiling: CompilationState.Idle,
   compileCairoCode: () => undefined,
 })
@@ -33,6 +35,9 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
   const [cairoLangCompilerVersion, setCairoLangCompilerVersion] = useState('')
   const [isCompiling, setIsCompiling] = useState<CompilationState>(
     CompilationState.Idle,
+  )
+  const [serializedOutput, setSerializedOutput] = useState<string | undefined>(
+    undefined,
   )
 
   const compileCairoCode = (cairoCode: string) => {
@@ -51,6 +56,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         setCasmInstructions(_parseCasmInstructions(data.casm_program_code))
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
+        setSerializedOutput(data.serialized_output)
       })
       .catch((error) => {
         setIsCompiling(CompilationState.Error)
@@ -84,6 +90,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         casmInstructions,
         isCompiling,
         cairoLangCompilerVersion,
+        serializedOutput,
 
         compileCairoCode,
       }}

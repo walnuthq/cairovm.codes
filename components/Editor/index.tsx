@@ -80,6 +80,7 @@ const Editor = ({ readOnly = false }: Props) => {
     isCompiling,
     compileCairoCode,
     cairoLangCompilerVersion,
+    serializedOutput,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -146,6 +147,9 @@ const Editor = ({ readOnly = false }: Props) => {
       log('Compiling...')
     } else if (isCompiling === CompilationState.Compiled) {
       log('Compilation successful')
+      if (serializedOutput) {
+        log(`Execution output: ${serializedOutput}`)
+      }
     } else if (isCompiling === CompilationState.Error) {
       log('Compilation failed: ', 'error')
     }
