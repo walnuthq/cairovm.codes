@@ -61,6 +61,13 @@ Sort the `package.json`:
 
     npm run lint:package
 
+## Roadmap
+- [x] Web app to compile & present Cairo > Sierra > CASM
+- [ ] Step-by-step execution of CASM
+- [ ] Step-by-step execution of Sierra
+- [ ] Step-by-step execution of Cairo
+- [ ] Visual gas metering
+
 ## Architecture
 
 If you would like to contribute, make sure to check the [architecture document](docs/ARCHITECTURE.md) to learn about the code structure, and how the app is built.
