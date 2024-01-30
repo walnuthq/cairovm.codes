@@ -265,7 +265,7 @@ const Editor = ({ readOnly = false }: Props) => {
                       size="sm"
                       contentClassName="justify-center"
                     >
-                      Compile
+                      Compile and run
                     </Button>
                   </div>
                 </div>
