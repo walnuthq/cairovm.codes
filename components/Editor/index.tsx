@@ -43,10 +43,11 @@ import { Button, Icon } from 'components/ui'
 
 import Console from './Console'
 import ExecutionState from './ExecutionState'
-import ExecutionStatus from './ExecutionStatus'
+import ExecutionStatus from '../Tracer/ExecutionStatus'
 import Header from './Header'
 import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
 import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
+import { Tracer } from 'components/Tracer'
 
 type Props = {
   readOnly?: boolean
@@ -67,20 +68,22 @@ const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting, setSetting } = useContext(SettingsContext)
   const router = useRouter()
 
-  const {
-    deployedContractAddress,
-    selectedFork,
-    opcodes,
-    instructions,
-    onForkChange,
-  } = useContext(EthereumContext)
+  // const {
+  //   deployedContractAddress,
+  //   selectedFork,
+  //   opcodes,
+  //   instructions,
+  //   onForkChange,
+  // } = useContext(EthereumContext)
 
   const {
     sierraCode,
+    casmInstructions,
     isCompiling,
     compileCairoCode,
     cairoLangCompilerVersion,
     serializedOutput,
+    tracerData,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -136,9 +139,9 @@ const Editor = ({ readOnly = false }: Props) => {
       setCairoCode(examples[initialCodeType][0])
     }
 
-    if ('fork' in query) {
-      onForkChange(query.fork as string)
-    }
+    // if ('fork' in query) {
+    //   onForkChange(query.fork as string)
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
@@ -155,12 +158,12 @@ const Editor = ({ readOnly = false }: Props) => {
     }
   }, [isCompiling])
 
-  useEffect(() => {
-    if (deployedContractAddress) {
-      log(`Contract deployed at address: ${deployedContractAddress}`)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deployedContractAddress])
+  // useEffect(() => {
+  //   if (deployedContractAddress) {
+  //     log(`Contract deployed at address: ${deployedContractAddress}`)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [deployedContractAddress])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
@@ -172,10 +175,20 @@ const Editor = ({ readOnly = false }: Props) => {
       return value
     }
 
-    if (codeType === CodeType.Bytecode) {
-      return codeHighlight(value, codeType).value
+    // if (codeType === CodeType.Bytecode) {
+    //   return codeHighlight(value, codeType).value
+    // }
+    let _codeType = codeType
+
+    if (_codeType === CodeType.Sierra) {
+      _codeType = CodeType.Cairo
     }
-    return codeHighlight(value, codeType)
+
+    if (_codeType === CodeType.CASM) {
+      _codeType = 'bytecode'
+    }
+
+    return codeHighlight(value, _codeType)
       .value.split('\n')
       .map((line, i) => `<span class='line-number'>${i + 1}</span>${line}`)
       .join('\n')
@@ -185,26 +198,27 @@ const Editor = ({ readOnly = false }: Props) => {
     compileCairoCode(cairoCode)
   }, [cairoCode])
 
-  const handleCopyPermalink = useCallback(() => {
-    const fork = selectedFork?.name
-    const params = {
-      fork,
-      callValue,
-      unit,
-      callData,
-      codeType,
-      code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
-    }
+  // const handleCopyPermalink = useCallback(() => {
+  //   const fork = selectedFork?.name
+  //   const params = {
+  //     fork,
+  //     callValue,
+  //     unit,
+  //     callData,
+  //     codeType,
+  //     code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
+  //   }
 
-    copy(`${getAbsoluteURL('/playground')}?${objToQueryString(params)}`)
-    log('Link to current fork, code, calldata and value copied to clipboard')
-  }, [selectedFork, callValue, unit, callData, codeType, cairoCode, log])
+  //   copy(`${getAbsoluteURL('/playground')}?${objToQueryString(params)}`)
+  //   log('Link to current fork, code, calldata and value copied to clipboard')
+  // }, [selectedFork, callValue, unit, callData, codeType, cairoCode, log])
 
   const isCompileDisabled = useMemo(() => {
     return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
   }, [isCompiling, cairoCode])
 
-  const isBytecode = useMemo(() => codeType === CodeType.Bytecode, [codeType])
+  // const isBytecode = useMemo(() => codeType === CodeType.Bytecode, [codeType])
+  const isBytecode = false
 
   const showAdvanceMode = useMemo(() => {
     return codeType === CodeType.Cairo && isExpanded
@@ -213,9 +227,12 @@ const Editor = ({ readOnly = false }: Props) => {
   return (
     <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
       <div className="flex flex-col md:flex-row">
-        <div className="w-full md:w-1/3">
+        <div className="w-full md:w-1/2">
           <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
-            <Header />
+            <Header
+              codeType={codeType}
+              onCodeTypeChange={({ value }) => setCodeType(value)}
+            />
           </div>
 
           <div>
@@ -226,7 +243,15 @@ const Editor = ({ readOnly = false }: Props) => {
               <SCEditor
                 // @ts-ignore: SCEditor is not TS-friendly
                 ref={editorRef}
-                value={cairoCode}
+                value={
+                  codeType === CodeType.Cairo
+                    ? cairoCode
+                    : codeType === CodeType.Sierra
+                    ? sierraCode
+                    : codeType === CodeType.CASM
+                    ? casmInstructions
+                    : ''
+                }
                 readOnly={readOnly}
                 onValueChange={handleCairoCodeChange}
                 highlight={highlightCode}
@@ -242,7 +267,7 @@ const Editor = ({ readOnly = false }: Props) => {
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
                   <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
                     <Button
-                      onClick={handleCopyPermalink}
+                      // onClick={handleCopyPermalink}
                       transparent
                       padded={false}
                     >
@@ -274,7 +299,7 @@ const Editor = ({ readOnly = false }: Props) => {
           </div>
         </div>
 
-        <div className="w-full md:w-1/3">
+        {/* <div className="w-full md:w-1/3">
           <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
             <span className="text-gray-600 dark:text-gray-400 text-sm">
               Sierra
@@ -294,13 +319,13 @@ const Editor = ({ readOnly = false }: Props) => {
               highlight={highlightCode}
               tabSize={4}
               className={cn('code-editor', {
-                'with-numbers': !isBytecode,
+                // 'with-numbers': !isBytecode,
               })}
             />
           </div>
-        </div>
+        </div> */}
 
-        <div className="w-full md:w-1/3">
+        {/* <div className="w-full md:w-1/3">
           <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
             <ExecutionStatus />
           </div>
@@ -316,6 +341,14 @@ const Editor = ({ readOnly = false }: Props) => {
           >
             <InstructionList containerRef={instructionsRef} />
           </div>
+        </div> */}
+
+        <div className="w-full md:w-1/2">
+          <Tracer
+            tracerData={tracerData}
+            mainHeight={cairoEditorHeight}
+            barHeight={runBarHeight}
+          />
         </div>
       </div>
 

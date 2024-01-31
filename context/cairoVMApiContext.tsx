@@ -2,6 +2,7 @@ import React, { createContext, useState } from 'react'
 import { CAIRO_VM_API_URL } from 'util/constants'
 
 import { IInstruction } from 'types'
+import { TracerData } from 'components/Tracer'
 
 export enum CompilationState {
   Idle,
@@ -12,17 +13,18 @@ export enum CompilationState {
 
 type ContextProps = {
   sierraCode: string
-  casmInstructions: IInstruction[]
+  casmInstructions: string
   isCompiling: CompilationState
   cairoLangCompilerVersion: string
   serializedOutput?: string
+  tracerData?: TracerData
 
   compileCairoCode: (cairoCode: string) => void
 }
 
 export const CairoVMApiContext = createContext<ContextProps>({
   sierraCode: '',
-  casmInstructions: [],
+  casmInstructions: '',
   cairoLangCompilerVersion: '',
   serializedOutput: undefined,
   isCompiling: CompilationState.Idle,
@@ -31,12 +33,15 @@ export const CairoVMApiContext = createContext<ContextProps>({
 
 export const CairoVMApiProvider: React.FC = ({ children }) => {
   const [sierraCode, setSierraCode] = useState<string>('')
-  const [casmInstructions, setCasmInstructions] = useState<IInstruction[]>([])
+  const [casmInstructions, setCasmInstructions] = useState<string>('')
   const [cairoLangCompilerVersion, setCairoLangCompilerVersion] = useState('')
   const [isCompiling, setIsCompiling] = useState<CompilationState>(
     CompilationState.Idle,
   )
   const [serializedOutput, setSerializedOutput] = useState<string | undefined>(
+    undefined,
+  )
+  const [tracerData, setTracerData] = useState<TracerData | undefined>(
     undefined,
   )
 
@@ -53,10 +58,15 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
       .then((response) => response.json())
       .then((data) => {
         setIsCompiling(CompilationState.Compiled)
-        setCasmInstructions(_parseCasmInstructions(data.casm_program_code))
+        setCasmInstructions(data.casm_program_code)
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
         setSerializedOutput(data.serialized_output)
+        setTracerData({
+          memory: data.tracer_data.memory,
+          pcInstMap: data.tracer_data.pc_inst_map,
+          trace: data.tracer_data.trace,
+        })
       })
       .catch((error) => {
         setIsCompiling(CompilationState.Error)
@@ -91,6 +101,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         isCompiling,
         cairoLangCompilerVersion,
         serializedOutput,
+        tracerData,
 
         compileCairoCode,
       }}
