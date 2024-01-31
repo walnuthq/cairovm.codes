@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, RefObject, createRef, Ref } from 'react'
 import { EthereumContext } from 'context/ethereumContext'
 
 import InstructionRow from './InstructionRow'
-import { CairoVMApiContext } from 'context/cairoVMApiContext'
 
 type TableProps = {
   containerRef: RefObject<HTMLDivElement>
@@ -20,19 +19,16 @@ const EditorInstructions = ({ containerRef }: TableProps) => {
   const itemsRef = useRef<RowRefs>({})
   const tableRef = useRef() as React.MutableRefObject<HTMLTableElement>
   const {
+    instructions,
     executionState,
     isExecuting,
     addBreakpoint,
     removeBreakpoint,
   } = useContext(EthereumContext)
 
-  const {
-    casmInstructions,
-  } = useContext(CairoVMApiContext)
-
   useEffect(() => {
-    casmInstructions.forEach((i) => (itemsRef.current[i.id] = createRef()))
-  }, [casmInstructions])
+    instructions.forEach((i) => (itemsRef.current[i.id] = createRef()))
+  }, [instructions])
 
   useEffect(() => {
     if (!containerRef?.current) {
@@ -55,7 +51,7 @@ const EditorInstructions = ({ containerRef }: TableProps) => {
   return (
     <table className="w-full font-mono text-tiny" ref={tableRef}>
       <tbody>
-        {casmInstructions.map(({ id, name, value, hasBreakpoint }) => {
+        {instructions.map(({ id, name, value, hasBreakpoint }) => {
           return (
             <InstructionRow
               key={id}
