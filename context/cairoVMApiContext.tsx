@@ -13,7 +13,7 @@ export enum CompilationState {
 
 type ContextProps = {
   sierraCode: string
-  casmInstructions: string
+  casmCode: string
   isCompiling: CompilationState
   cairoLangCompilerVersion: string
   serializedOutput?: string
@@ -24,7 +24,7 @@ type ContextProps = {
 
 export const CairoVMApiContext = createContext<ContextProps>({
   sierraCode: '',
-  casmInstructions: '',
+  casmCode: '',
   cairoLangCompilerVersion: '',
   serializedOutput: undefined,
   isCompiling: CompilationState.Idle,
@@ -33,7 +33,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
 
 export const CairoVMApiProvider: React.FC = ({ children }) => {
   const [sierraCode, setSierraCode] = useState<string>('')
-  const [casmInstructions, setCasmInstructions] = useState<string>('')
+  const [casmCode, setCasmCode] = useState<string>('')
   const [cairoLangCompilerVersion, setCairoLangCompilerVersion] = useState('')
   const [isCompiling, setIsCompiling] = useState<CompilationState>(
     CompilationState.Idle,
@@ -58,7 +58,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
       .then((response) => response.json())
       .then((data) => {
         setIsCompiling(CompilationState.Compiled)
-        setCasmInstructions(data.casm_program_code)
+        setCasmCode(data.casm_program_code)
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
         setSerializedOutput(data.serialized_output)
@@ -74,7 +74,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
       })
   }
 
-  const _parseCasmInstructions = (casmCode: string) => {
+  const _parseCasmCode = (casmCode: string) => {
     const instructions: IInstruction[] = []
 
     casmCode.split(/\r?\n/).forEach((line, index) => {
@@ -97,7 +97,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
     <CairoVMApiContext.Provider
       value={{
         sierraCode,
-        casmInstructions,
+        casmCode: casmCode,
         isCompiling,
         cairoLangCompilerVersion,
         serializedOutput,

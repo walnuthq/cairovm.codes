@@ -78,7 +78,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const {
     sierraCode,
-    casmInstructions,
+    casmCode,
     isCompiling,
     compileCairoCode,
     cairoLangCompilerVersion,
@@ -249,7 +249,7 @@ const Editor = ({ readOnly = false }: Props) => {
                     : codeType === CodeType.Sierra
                     ? sierraCode
                     : codeType === CodeType.CASM
-                    ? casmInstructions
+                    ? casmCode
                     : ''
                 }
                 readOnly={readOnly}
@@ -322,24 +322,6 @@ const Editor = ({ readOnly = false }: Props) => {
                 // 'with-numbers': !isBytecode,
               })}
             />
-          </div>
-        </div> */}
-
-        {/* <div className="w-full md:w-1/3">
-          <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
-            <ExecutionStatus />
-          </div>
-
-          <div
-            className="pane pane-light overflow-auto bg-gray-50 dark:bg-black-600 h-full"
-            ref={instructionsRef}
-            style={{
-              height: isExpanded
-                ? instructionsListWithExpandHeight
-                : casmInstructionsListHeight,
-            }}
-          >
-            <InstructionList containerRef={instructionsRef} />
           </div>
         </div> */}
 

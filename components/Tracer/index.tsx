@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ExecutionStatus from './ExecutionStatus'
+import { Icon } from 'components/ui'
+import ReactTooltip from 'react-tooltip'
 
 export interface Instruction {
   ap_update: string
@@ -27,13 +29,13 @@ export interface TracerData {
   memory: { [key: string]: string }
 }
 
-interface Props {
+interface TracerProps {
   mainHeight: number
   barHeight: number
   tracerData?: TracerData
 }
 
-export const Tracer = ({ tracerData, mainHeight, barHeight }: Props) => {
+export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
   const [currentStep, setCurrentStep] = useState(0)
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[currentStep]
@@ -73,7 +75,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: Props) => {
             className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
             style={{ height: mainHeight }}
           >
-            <MemoryTable
+            <InstructionsTable
               memory={tracerData.memory}
               pcInstMap={tracerData.pcInstMap}
               currentTraceEntry={currentTraceEntry}
@@ -101,42 +103,61 @@ function InfoBar({
   currentTraceEntry: TraceEntry
   trace: TraceEntry[]
 }) {
-  const info = [
-    {
-      name: 'Step',
-      value: `${currentStep + 1}/${trace.length}`,
-    },
-    {
-      name: 'Pc',
-      value: currentTraceEntry.pc,
-    },
-    {
-      name: 'Ap',
-      value: currentTraceEntry.ap,
-    },
-    {
-      name: 'Fp',
-      value: currentTraceEntry.fp,
-    },
-  ]
-
   return (
-    <div className="h-full px-4 flex flex-row items-center gap-4">
-      {info.map((item) => (
-        <div key={item.name}>
-          <span className="inline-block mr-1 text-gray-500 select-none text-sm">
-            {item.name}:
+    <div className="h-full px-4 flex items-center justify-between text-sm">
+      <div>
+        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
+          Current step:
+        </span>
+        <span
+          className="inline-block mr-4 select-all cursor-help"
+          data-tip="Step number of the current instruction"
+        >
+          {currentStep + 1}
+        </span>
+        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
+          Total:
+        </span>
+        <span
+          className="inline-block mr-4 select-all cursor-help"
+          data-tip="Total number of steps of the entire execution"
+        >
+          {trace.length}
+        </span>
+
+        <ReactTooltip className="tooltip" effect="solid" />
+      </div>
+      <div className="flex gap-2">
+        <span
+          className={`inline-flex items-center rounded-md bg-fuchsia-50 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
+        >
+          <span className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
+            pc
           </span>
-          <span className="inline-block select-all font-mono min-w-5">
-            {item.value}
+          {currentTraceEntry.pc}
+        </span>
+        <span
+          className={`inline-flex items-center rounded-md bg-green-50 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
+        >
+          <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
+            fp
           </span>
-        </div>
-      ))}
+          {currentTraceEntry.fp}
+        </span>
+        <span
+          className={`inline-flex items-center rounded-md bg-orange-50 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
+        >
+          <span className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
+            ap
+          </span>
+          {currentTraceEntry.ap}
+        </span>
+      </div>
     </div>
   )
 }
 
-function MemoryTable({
+function InstructionsTable({
   memory,
   pcInstMap,
   currentTraceEntry,
@@ -148,21 +169,22 @@ function MemoryTable({
   const { pc, ap, fp } = currentTraceEntry
 
   return (
-    <table className="text-xs font-mono">
-      <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 border-b border-gray-200 dark:border-black-500">
-        <th></th>
-        <th className="px-2">memory</th>
-        <th className="px-2">opcode</th>
-        <th className="px-2">off0</th>
-        <th className="px-2">off1</th>
-        <th className="px-2">off2</th>
-        <th className="px-2">dst</th>
-        <th className="px-2">op0</th>
-        <th className="px-2">op1</th>
-        <th className="px-2">res</th>
-        <th className="px-2">pc_update</th>
-        <th className="px-2">ap_update</th>
-        <th className="px-2">fp_update</th>
+    <table className="w-full font-mono text-tiny">
+      <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+        <th className="py-1"></th>
+        <th className="py-1"></th>
+        <th className="py-1 px-2 font-thin">memory</th>
+        <th className="py-1 px-2 font-thin">opcode</th>
+        <th className="py-1 px-2 font-thin">off0</th>
+        <th className="py-1 px-2 font-thin">off1</th>
+        <th className="py-1 px-2 font-thin">off2</th>
+        <th className="py-1 px-2 font-thin">dst</th>
+        <th className="py-1 px-2 font-thin">op0</th>
+        <th className="py-1 px-2 font-thin">op1</th>
+        <th className="py-1 px-2 font-thin">res</th>
+        <th className="py-1 px-2 font-thin">pc_update</th>
+        <th className="py-1 px-2 font-thin">ap_update</th>
+        <th className="py-1 px-2 font-thin">fp_update</th>
       </tr>
       {Object.keys(memory).map((addr) => {
         const isCurrent = pc.toString() === addr
@@ -172,34 +194,39 @@ function MemoryTable({
           <tr
             key={addr}
             id={isFocus ? 'focus_row' : undefined}
-            className={`border-b border-gray-200 dark:border-black-500 ${
-              isCurrent ? 'bg-gray-200 dark:bg-gray-800' : ''
+            className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
+              isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
             }`}
           >
+            <td className="pl-4 pr-2">
+              {addrNum === pc && <span className="text-fuchsia-700">[pc]</span>}
+              {addrNum === ap && <span className="text-green-700">[ap]</span>}
+              {addrNum === fp && <span className="text-orange-700">[fp]</span>}
+            </td>
             <td
-              className={`px-2 whitespace-nowrap ${
-                isCurrent
-                  ? 'text-gray-400 dark:text-gray-600'
-                  : 'text-gray-300 dark:text-gray-700'
+              className={`py-1 px-2 whitespace-nowrap ${
+                // isCurrent
+                // ? 'text-gray-400 dark:text-gray-600'
+                // : 'text-gray-300 dark:text-gray-700'
+                ''
               }`}
             >
               {addr}
-              {/* {addrNum === ap ? 'ap' : addrNum === fp ? 'fp' : ''} */}
             </td>
-            <td className="px-2 max-w-40 break-words">{memory[addr]}</td>
+            <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
             {pcInstMap[addr] && (
               <>
-                <td className="px-2">{pcInstMap[addr].opcode}</td>
-                <td className="px-2">{pcInstMap[addr].off0}</td>
-                <td className="px-2">{pcInstMap[addr].off1}</td>
-                <td className="px-2">{pcInstMap[addr].off2}</td>
-                <td className="px-2">{pcInstMap[addr].dst_register}</td>
-                <td className="px-2">{pcInstMap[addr].op0_register}</td>
-                <td className="px-2">{pcInstMap[addr].op1_addr}</td>
-                <td className="px-2">{pcInstMap[addr].res}</td>
-                <td className="px-2">{pcInstMap[addr].pc_update}</td>
-                <td className="px-2">{pcInstMap[addr].ap_update}</td>
-                <td className="px-2">{pcInstMap[addr].fp_update}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].opcode}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].off0}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].off1}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].off2}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].dst_register}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].op0_register}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].op1_addr}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].res}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].pc_update}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].ap_update}</td>
+                <td className="py-1 px-2">{pcInstMap[addr].fp_update}</td>
               </>
             )}
           </tr>
