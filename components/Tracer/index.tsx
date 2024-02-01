@@ -149,7 +149,7 @@ function MemoryTable({
 
   return (
     <table className="text-xs font-mono">
-      <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 border-b">
+      <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 border-b border-gray-200 dark:border-black-500">
         <th></th>
         <th className="px-2">memory</th>
         <th className="px-2">opcode</th>
@@ -172,11 +172,15 @@ function MemoryTable({
           <tr
             key={addr}
             id={isFocus ? 'focus_row' : undefined}
-            className={`border-b ${isCurrent ? 'bg-gray-200' : ''}`}
+            className={`border-b border-gray-200 dark:border-black-500 ${
+              isCurrent ? 'bg-gray-200 dark:bg-gray-800' : ''
+            }`}
           >
             <td
               className={`px-2 whitespace-nowrap ${
-                isCurrent ? 'text-gray-400' : 'text-gray-300'
+                isCurrent
+                  ? 'text-gray-400 dark:text-gray-600'
+                  : 'text-gray-300 dark:text-gray-700'
               }`}
             >
               {addr}
