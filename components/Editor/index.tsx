@@ -198,20 +198,20 @@ const Editor = ({ readOnly = false }: Props) => {
     compileCairoCode(cairoCode)
   }, [cairoCode])
 
-  // const handleCopyPermalink = useCallback(() => {
-  //   const fork = selectedFork?.name
-  //   const params = {
-  //     fork,
-  //     callValue,
-  //     unit,
-  //     callData,
-  //     codeType,
-  //     code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
-  //   }
+  const handleCopyPermalink = useCallback(() => {
+    // const fork = selectedFork?.name
+    const params = {
+      // fork,
+      // callValue,
+      // unit,
+      // callData,
+      codeType,
+      code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
+    }
 
-  //   copy(`${getAbsoluteURL('/playground')}?${objToQueryString(params)}`)
-  //   log('Link to current fork, code, calldata and value copied to clipboard')
-  // }, [selectedFork, callValue, unit, callData, codeType, cairoCode, log])
+    copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
+    log('Link with current Cairo code copied to clipboard')
+  }, [cairoCode, log])
 
   const isCompileDisabled = useMemo(() => {
     return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
@@ -267,7 +267,7 @@ const Editor = ({ readOnly = false }: Props) => {
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
                   <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
                     <Button
-                      // onClick={handleCopyPermalink}
+                      onClick={handleCopyPermalink}
                       transparent
                       padded={false}
                     >
