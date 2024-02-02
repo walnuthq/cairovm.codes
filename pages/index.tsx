@@ -10,7 +10,7 @@ import Head from 'next/head'
 import { serialize } from 'next-mdx-remote/serialize'
 import { IItemDocs, IGasDocs, IDocMeta } from 'types'
 
-import { EthereumContext } from 'context/ethereumContext'
+import { AppUiContext } from 'context/appUiContext'
 
 import ContributeBox from 'components/ContributeBox'
 import Editor from 'components/Editor'
@@ -28,7 +28,7 @@ const HomePage = ({
   opcodeDocs: IItemDocs
   gasDocs: IGasDocs
 }) => {
-  const { opcodes } = useContext(EthereumContext)
+  const { isFullScreen } = useContext(AppUiContext)
 
   return (
     <>
@@ -47,7 +47,7 @@ const HomePage = ({
         </H1>
       </Container> */}
 
-      <Container>
+      <Container fullWidth={isFullScreen}>
         <Editor />
       </Container>
 

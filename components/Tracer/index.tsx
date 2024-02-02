@@ -170,68 +170,76 @@ function InstructionsTable({
 
   return (
     <table className="w-full font-mono text-tiny">
-      <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
-        <th className="py-1"></th>
-        <th className="py-1"></th>
-        <th className="py-1 px-2 font-thin">memory</th>
-        <th className="py-1 px-2 font-thin">opcode</th>
-        <th className="py-1 px-2 font-thin">off0</th>
-        <th className="py-1 px-2 font-thin">off1</th>
-        <th className="py-1 px-2 font-thin">off2</th>
-        <th className="py-1 px-2 font-thin">dst</th>
-        <th className="py-1 px-2 font-thin">op0</th>
-        <th className="py-1 px-2 font-thin">op1</th>
-        <th className="py-1 px-2 font-thin">res</th>
-        <th className="py-1 px-2 font-thin">pc_update</th>
-        <th className="py-1 px-2 font-thin">ap_update</th>
-        <th className="py-1 px-2 font-thin">fp_update</th>
-      </tr>
-      {Object.keys(memory).map((addr) => {
-        const isCurrent = pc.toString() === addr
-        const isFocus = isCurrent
-        const addrNum = Number(addr)
-        return (
-          <tr
-            key={addr}
-            id={isFocus ? 'focus_row' : undefined}
-            className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
-              isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
-            }`}
-          >
-            <td className="pl-4 pr-2">
-              {addrNum === pc && <span className="text-fuchsia-700">[pc]</span>}
-              {addrNum === ap && <span className="text-orange-700">[ap]</span>}
-              {addrNum === fp && <span className="text-green-700">[fp]</span>}
-            </td>
-            <td
-              className={`py-1 px-2 whitespace-nowrap ${
-                // isCurrent
-                // ? 'text-gray-400 dark:text-gray-600'
-                // : 'text-gray-300 dark:text-gray-700'
-                ''
+      <thead>
+        <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+          <th className="py-1"></th>
+          <th className="py-1"></th>
+          <th className="py-1 px-2 font-thin">memory</th>
+          <th className="py-1 px-2 font-thin">opcode</th>
+          <th className="py-1 px-2 font-thin">off0</th>
+          <th className="py-1 px-2 font-thin">off1</th>
+          <th className="py-1 px-2 font-thin">off2</th>
+          <th className="py-1 px-2 font-thin">dst</th>
+          <th className="py-1 px-2 font-thin">op0</th>
+          <th className="py-1 px-2 font-thin">op1</th>
+          <th className="py-1 px-2 font-thin">res</th>
+          <th className="py-1 px-2 font-thin">pc_update</th>
+          <th className="py-1 px-2 font-thin">ap_update</th>
+          <th className="py-1 px-2 font-thin">fp_update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.keys(memory).map((addr) => {
+          const isCurrent = pc.toString() === addr
+          const isFocus = isCurrent
+          const addrNum = Number(addr)
+          return (
+            <tr
+              key={addr}
+              id={isFocus ? 'focus_row' : undefined}
+              className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
+                isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
               }`}
             >
-              {addr}
-            </td>
-            <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
-            {pcInstMap[addr] && (
-              <>
-                <td className="py-1 px-2">{pcInstMap[addr].opcode}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].off0}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].off1}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].off2}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].dst_register}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].op0_register}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].op1_addr}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].res}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].pc_update}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].ap_update}</td>
-                <td className="py-1 px-2">{pcInstMap[addr].fp_update}</td>
-              </>
-            )}
-          </tr>
-        )
-      })}
+              <td className="pl-4 pr-2">
+                {addrNum === pc && (
+                  <span className="text-fuchsia-700">[pc]</span>
+                )}
+                {addrNum === ap && (
+                  <span className="text-orange-700">[ap]</span>
+                )}
+                {addrNum === fp && <span className="text-green-700">[fp]</span>}
+              </td>
+              <td
+                className={`py-1 px-2 whitespace-nowrap ${
+                  // isCurrent
+                  // ? 'text-gray-400 dark:text-gray-600'
+                  // : 'text-gray-300 dark:text-gray-700'
+                  ''
+                }`}
+              >
+                {addr}
+              </td>
+              <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
+              {pcInstMap[addr] && (
+                <>
+                  <td className="py-1 px-2">{pcInstMap[addr].opcode}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].off0}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].off1}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].off2}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].dst_register}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].op0_register}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].op1_addr}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].res}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].pc_update}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].ap_update}</td>
+                  <td className="py-1 px-2">{pcInstMap[addr].fp_update}</td>
+                </>
+              )}
+            </tr>
+          )
+        })}
+      </tbody>
     </table>
   )
 }

@@ -18,6 +18,8 @@ import { useRouter } from 'next/router'
 import { OnChangeValue } from 'react-select'
 import SCEditor from 'react-simple-code-editor'
 
+import { RiLinksLine } from '@remixicon/react'
+
 import { EthereumContext } from 'context/ethereumContext'
 import { SettingsContext, Setting } from 'context/settingsContext'
 
@@ -38,12 +40,9 @@ import {
 } from 'util/string'
 
 import examples from 'components/Editor/examples'
-import InstructionList from 'components/Editor/Instructions'
-import { Button, Icon } from 'components/ui'
+import { Button } from 'components/ui'
 
 import Console from './Console'
-import ExecutionState from './ExecutionState'
-import ExecutionStatus from '../Tracer/ExecutionStatus'
 import Header from './Header'
 import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
 import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
@@ -270,13 +269,12 @@ const Editor = ({ readOnly = false }: Props) => {
                       onClick={handleCopyPermalink}
                       transparent
                       padded={false}
+                      tooltip="Share permalink"
+                      tooltipId="share-permalink"
                     >
-                      <span
-                        className="inline-block mr-4 select-all"
-                        data-tip="Share permalink"
-                      >
-                        <Icon
-                          name="links-line"
+                      <span className="inline-block mr-4 select-all">
+                        <RiLinksLine
+                          size={16}
                           className="text-indigo-500 mr-1"
                         />
                       </span>

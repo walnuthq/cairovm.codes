@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react'
 
-const LOCAL_SETTINGS_KEY = 'evmcodes_settings'
+const LOCAL_SETTINGS_KEY = 'cairovmcodes_settings'
 
 type ContextProps = {
   getSetting: (key: string) => any

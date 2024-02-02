@@ -2,7 +2,7 @@ import { useContext } from 'react'
 
 import ReactTooltip from 'react-tooltip'
 
-import { EthereumContext } from 'context/ethereumContext'
+import { RiArrowGoForwardLine, RiArrowGoBackLine } from '@remixicon/react'
 
 import { Button, Icon } from 'components/ui'
 
@@ -55,10 +55,7 @@ const ExecutionStatus = ({
           tooltip="Step out"
           tooltipId="step1"
         >
-          <Icon
-            name="arrow-go-forward-line"
-            className="text-indigo-500 -scale-x-100"
-          />
+          <RiArrowGoBackLine size={16} className="text-indigo-500" />
         </Button>
         <Button
           transparent
@@ -68,7 +65,7 @@ const ExecutionStatus = ({
           tooltip="Step in"
           tooltipId="step2"
         >
-          <Icon name="arrow-go-forward-line" className="text-indigo-500" />
+          <RiArrowGoForwardLine size={16} className="text-indigo-500" />
         </Button>
 
         {/* <Button

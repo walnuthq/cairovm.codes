@@ -1,7 +1,5 @@
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
-import Remix from 'components/ui/vector/Remix'
-
 class MyDocument extends Document {
   render() {
     return (
@@ -13,10 +11,6 @@ class MyDocument extends Document {
           ></link>
         </Head>
         <body className="dark:bg-black-800 dark:text-gray-200">
-          <div id="remix">
-            <Remix />
-          </div>
-
           <Main />
 
           <NextScript />

@@ -15,6 +15,7 @@ import KBar from 'components/KBar'
 import '../styles/globals.css'
 import '../styles/highlight/atom-one-light.css'
 import '../styles/highlight/atom-one-dark.css'
+import { AppUiProvider } from 'context/appUiContext'
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -32,16 +33,18 @@ const Main = ({ Component, pageProps }: AppPropsWithLayout) => {
 
   return (
     <ThemeProvider attribute="class">
-      <SettingsProvider>
-        <EthereumProvider>
-          <CairoVMApiProvider>
-            <KBarProvider actions={actions}>
-              {getLayout(<Component {...pageProps} />)}
-              <KBar />
-            </KBarProvider>
-          </CairoVMApiProvider>
-        </EthereumProvider>
-      </SettingsProvider>
+      <AppUiProvider>
+        <SettingsProvider>
+          <EthereumProvider>
+            <CairoVMApiProvider>
+              <KBarProvider actions={actions}>
+                {getLayout(<Component {...pageProps} />)}
+                <KBar />
+              </KBarProvider>
+            </CairoVMApiProvider>
+          </EthereumProvider>
+        </SettingsProvider>
+      </AppUiProvider>
     </ThemeProvider>
   )
 }

@@ -97,7 +97,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
     <CairoVMApiContext.Provider
       value={{
         sierraCode,
-        casmCode: casmCode,
+        casmCode,
         isCompiling,
         cairoLangCompilerVersion,
         serializedOutput,

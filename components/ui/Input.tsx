@@ -2,8 +2,6 @@ import React, { useState, ForwardedRef, forwardRef } from 'react'
 
 import cn from 'classnames'
 
-import { Icon } from './Icon'
-
 type Props = {
   searchable?: boolean
   ref?: ForwardedRef<HTMLInputElement>
@@ -63,7 +61,7 @@ export const Input: React.FC<Props> = forwardRef(
             {isInputEmpty && (
               <span className="text-black-400 absolute right-8">Alt+K</span>
             )}
-            <Icon
+            {/* <Icon
               name="search-line"
               className={cn(
                 'ml-2',
@@ -71,7 +69,7 @@ export const Input: React.FC<Props> = forwardRef(
                   ? 'text-gray-400 dark:text-gray-300'
                   : 'text-gray-300 dark:text-gray-400',
               )}
-            />
+            /> */}
           </>
         )}
       </div>

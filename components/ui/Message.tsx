@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 
 import cn from 'classnames'
 
-import { Icon } from './Icon'
+// import { Icon } from './Icon'
 
 type Props = {
   type: 'success' | 'warning' | 'error'
@@ -33,7 +33,7 @@ export const Message: React.FC<Props> = ({ type, text }) => {
         bgColor,
       )}
     >
-      <Icon name={iconName} className="mr-1" />
+      {/* <Icon name={iconName} className="mr-1" /> */}
       {text}
     </div>
   )
