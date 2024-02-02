@@ -200,8 +200,8 @@ function InstructionsTable({
           >
             <td className="pl-4 pr-2">
               {addrNum === pc && <span className="text-fuchsia-700">[pc]</span>}
-              {addrNum === ap && <span className="text-green-700">[ap]</span>}
-              {addrNum === fp && <span className="text-orange-700">[fp]</span>}
+              {addrNum === ap && <span className="text-orange-700">[ap]</span>}
+              {addrNum === fp && <span className="text-green-700">[fp]</span>}
             </td>
             <td
               className={`py-1 px-2 whitespace-nowrap ${
