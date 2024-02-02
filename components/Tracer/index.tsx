@@ -105,28 +105,6 @@ function InfoBar({
 }) {
   return (
     <div className="h-full px-4 flex items-center justify-between text-sm">
-      <div>
-        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
-          Current step:
-        </span>
-        <span
-          className="inline-block mr-4 select-all cursor-help"
-          data-tip="Step number of the current instruction"
-        >
-          {currentStep + 1}
-        </span>
-        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
-          Total:
-        </span>
-        <span
-          className="inline-block mr-4 select-all cursor-help"
-          data-tip="Total number of steps of the entire execution"
-        >
-          {trace.length}
-        </span>
-
-        <ReactTooltip className="tooltip" effect="solid" />
-      </div>
       <div className="flex gap-2">
         <span
           className={`inline-flex items-center rounded-md bg-fuchsia-50 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
@@ -152,6 +130,28 @@ function InfoBar({
           </span>
           {currentTraceEntry.ap}
         </span>
+      </div>
+      <div>
+        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
+          Current step:
+        </span>
+        <span
+          className="inline-block mr-4 select-all cursor-help"
+          data-tip="Step number of the current instruction"
+        >
+          {currentStep + 1}
+        </span>
+        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
+          Total:
+        </span>
+        <span
+          className="inline-block mr-4 select-all cursor-help"
+          data-tip="Total number of steps of the entire execution"
+        >
+          {trace.length}
+        </span>
+
+        <ReactTooltip className="tooltip" effect="solid" />
       </div>
     </div>
   )
