@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip'
 
 import { RiArrowGoForwardLine, RiArrowGoBackLine } from '@remixicon/react'
 
-import { Button, Icon } from 'components/ui'
+import { Button } from 'components/ui'
 
 const ExecutionStatus = ({
   onStepIn,

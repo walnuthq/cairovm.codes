@@ -24,7 +24,7 @@ import {
 
 import { findMatchingForkName } from 'util/gas'
 
-import { Button, Icon } from 'components/ui'
+import { Button } from 'components/ui'
 
 import tableColumns from './columns'
 import DocRow from './DocRow'
@@ -131,10 +131,10 @@ const ReferenceTable = ({
           <span className="text-sm font-normal">
             {isAllRowsExpanded ? 'Collapse' : 'Expand'}
           </span>
-          <Icon
+          {/* <Icon
             className="text-indigo-500"
             name={isAllRowsExpanded ? 'arrow-up-s-line' : 'arrow-down-s-line'}
-          />
+          /> */}
         </Button>
       </div>
     )
@@ -254,10 +254,10 @@ const ReferenceTable = ({
                             legacyBehavior
                           >
                             <a className="underline font-mono">
-                              <Icon
+                              {/* <Icon
                                 name="links-line"
                                 className="text-indigo-500 mr-2"
-                              />
+                              /> */}
                             </a>
                           </Link>
                         )}
@@ -269,7 +269,7 @@ const ReferenceTable = ({
                               data-tip="Has additional dynamic gas cost, expand to estimate it"
                               data-for={`tip-${cell.row.id}`}
                             >
-                              <Icon name="question-line" />
+                              {/* <Icon name="question-line" /> */}
                               <ReactTooltip
                                 className="tooltip"
                                 effect="solid"

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import ExecutionStatus from './ExecutionStatus'
-import { Icon } from 'components/ui'
 import ReactTooltip from 'react-tooltip'
 
 export interface Instruction {

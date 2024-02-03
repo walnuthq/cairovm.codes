@@ -5,7 +5,7 @@ import ReactTooltip from 'react-tooltip'
 
 import { EthereumContext } from 'context/ethereumContext'
 
-import { Button, Icon } from 'components/ui'
+import { Button } from 'components/ui'
 
 const ExecutionStatus = () => {
   const { isExecuting, executionState, nextExecution, continueExecution } =
@@ -77,7 +77,7 @@ const ExecutionStatus = () => {
           tooltip="Coming soon: Step into"
           tooltipId="step"
         >
-          <Icon name="arrow-go-forward-line" className="text-indigo-500" />
+          {/* <Icon name="arrow-go-forward-line" className="text-indigo-500" /> */}
         </Button>
 
         <Button
@@ -88,7 +88,7 @@ const ExecutionStatus = () => {
           tooltip="Coming soon: Continue execution"
           tooltipId="continue"
         >
-          <Icon name="play-circle-line" className="text-indigo-500" />
+          {/* <Icon name="play-circle-line" className="text-indigo-500" /> */}
         </Button>
       </div>
     </div>

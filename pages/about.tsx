@@ -5,7 +5,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 import HomeLayout from 'components/layouts/Home'
-import { Container, H1, H2, H3, Icon, RelativeLink } from 'components/ui'
+import { Container, H1, H2, H3, RelativeLink } from 'components/ui'
 import { Pre } from 'components/ui/Doc'
 
 type SectionWrapperProps = {
@@ -39,7 +39,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
       >
         <Link href={`/about#${anchorKey}`} legacyBehavior>
           <a className="absolute -left-6">
-            <Icon name="links-line" className="text-indigo-500" />
+            {/* <Icon name="links-line" className="text-indigo-500" /> */}
           </a>
         </Link>
 

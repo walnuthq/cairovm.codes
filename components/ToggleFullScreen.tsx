@@ -16,7 +16,7 @@ const ToggleFullScreen = () => {
 
   const { resolvedTheme } = useTheme()
 
-  let handleToggleFullScreen = () => {
+  const handleToggleFullScreen = () => {
     toggleFullScreen()
   }
 

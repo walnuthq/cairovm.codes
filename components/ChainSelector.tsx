@@ -9,7 +9,7 @@ import { EthereumContext } from 'context/ethereumContext'
 import { CURRENT_FORK } from 'util/constants'
 import { toKeyIndex } from 'util/string'
 
-import { Icon, Label } from 'components/ui'
+import { Label } from 'components/ui'
 
 const ChainOption = (props: any) => {
   const { data, children } = props
@@ -99,7 +99,7 @@ const ChainSelector = () => {
     <div className="flex justify-end items-center rounded">
       {forks.length > 0 && (
         <div className="flex items-center mr-2">
-          <Icon name="git-branch-line" className="text-indigo-500 mr-2" />
+          {/* <Icon name="git-branch-line" className="text-indigo-500 mr-2" /> */}
 
           <Select
             onChange={handleForkChange}

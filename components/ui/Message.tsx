@@ -2,8 +2,6 @@ import React, { useMemo } from 'react'
 
 import cn from 'classnames'
 
-// import { Icon } from './Icon'
-
 type Props = {
   type: 'success' | 'warning' | 'error'
   text: string
