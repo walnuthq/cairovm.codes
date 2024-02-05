@@ -1,39 +1,18 @@
 import { useContext } from 'react'
 
-import { useRegisterActions } from 'kbar'
 import ReactTooltip from 'react-tooltip'
 
-import { EthereumContext } from 'context/ethereumContext'
+import { RiArrowGoForwardLine, RiArrowGoBackLine } from '@remixicon/react'
 
 import { Button } from 'components/ui'
 
-const ExecutionStatus = () => {
-  const { isExecuting, executionState, nextExecution, continueExecution } =
-    useContext(EthereumContext)
-
-  const actions = [
-    {
-      id: 'step',
-      name: 'Step',
-      shortcut: ['s'],
-      keywords: 'execution next',
-      section: 'Execution',
-      perform: nextExecution,
-      subtitle: 'Run next execution',
-    },
-    {
-      id: 'continue',
-      name: 'Continue',
-      shortcut: ['q'],
-      keywords: 'execution continue',
-      section: 'Execution',
-      perform: continueExecution,
-      subtitle: 'Continue execution',
-    },
-  ]
-
-  useRegisterActions(actions, [nextExecution, continueExecution])
-
+const ExecutionStatus = ({
+  onStepIn,
+  onStepOut,
+}: {
+  onStepIn: () => void
+  onStepOut: () => void
+}) => {
   return (
     <div className="flex flex-grow justify-between items-center text-sm">
       <div>
@@ -67,29 +46,38 @@ const ExecutionStatus = () => {
         <ReactTooltip className="tooltip" effect="solid" />
       </div> */}
 
-      <div>
+      <div className="flex flex-row items-center gap-4">
         <Button
           transparent
-          disabled={!isExecuting}
-          onClick={nextExecution}
+          // disabled={true}
+          onClick={onStepOut}
           padded={false}
-          className="mr-4"
-          tooltip="Coming soon: Step into"
-          tooltipId="step"
+          tooltip="Step out"
+          tooltipId="step1"
         >
-          {/* <Icon name="arrow-go-forward-line" className="text-indigo-500" /> */}
+          <RiArrowGoBackLine size={16} className="text-indigo-500" />
+        </Button>
+        <Button
+          transparent
+          // disabled={!isExecuting}
+          onClick={onStepIn}
+          padded={false}
+          tooltip="Step in"
+          tooltipId="step2"
+        >
+          <RiArrowGoForwardLine size={16} className="text-indigo-500" />
         </Button>
 
-        <Button
+        {/* <Button
           transparent
-          disabled={!isExecuting}
-          onClick={continueExecution}
+          // disabled={!isExecuting}
+          // onClick={continueExecution}
           padded={false}
-          tooltip="Coming soon: Continue execution"
+          tooltip="Continue execution"
           tooltipId="continue"
         >
-          {/* <Icon name="play-circle-line" className="text-indigo-500" /> */}
-        </Button>
+          <Icon name="play-circle-line" className="text-indigo-500" />
+        </Button> */}
       </div>
     </div>
   )

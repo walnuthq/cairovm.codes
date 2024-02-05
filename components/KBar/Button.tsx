@@ -2,7 +2,7 @@ import { useKBar } from 'kbar'
 
 import { isMac } from 'util/browser'
 
-import { Button, Icon } from 'components/ui'
+import { Button } from 'components/ui'
 
 const KBarButton = () => {
   const { query } = useKBar()
@@ -16,7 +16,7 @@ const KBarButton = () => {
       outline
       padded={false}
     >
-      {isMac && <Icon name="command-line" className="mr-1" />}
+      {/* {isMac && <Icon name="command-line" className="mr-1" />} */}
       {isMac ? <span>K</span> : <span>Ctrl + K</span>}
     </Button>
   )

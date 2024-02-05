@@ -2,8 +2,6 @@ import { useRouter } from 'next/router'
 
 import { GITHUB_REPO_URL } from 'util/constants'
 
-import { Icon } from 'components/ui'
-
 const useActions = () => {
   const router = useRouter()
 
@@ -16,7 +14,7 @@ const useActions = () => {
       section: 'Navigation',
       perform: () => router.push('/'),
       subtitle: 'Opcodes reference',
-      icon: <Icon name="home-2-line" />,
+      // icon: <Icon name="home-2-line" />,
     },
     {
       id: 'precompiled',
@@ -26,7 +24,7 @@ const useActions = () => {
       section: 'Navigation',
       subtitle: 'Precompiled contracts reference',
       perform: () => router.push('/precompiled'),
-      icon: <Icon name="information-line" />,
+      // icon: <Icon name="information-line" />,
     },
     {
       id: 'playground',
@@ -36,7 +34,7 @@ const useActions = () => {
       section: 'Navigation',
       perform: () => router.push('/playground'),
       subtitle: 'Play with EVM in real-time',
-      icon: <Icon name="play-circle-line" />,
+      // icon: <Icon name="play-circle-line" />,
     },
     {
       id: 'about',
@@ -46,7 +44,7 @@ const useActions = () => {
       section: 'Navigation',
       subtitle: 'About EVM and its internals',
       perform: () => router.push('/about'),
-      icon: <Icon name="information-line" />,
+      // icon: <Icon name="information-line" />,
     },
     {
       id: 'github',
@@ -56,7 +54,7 @@ const useActions = () => {
       section: 'Navigation',
       subtitle: 'Contribute on GitHub',
       perform: () => window.open(GITHUB_REPO_URL, '_blank'),
-      icon: <Icon name="github-fill" />,
+      // icon: <Icon name="github-fill" />,
     },
   ]
 }

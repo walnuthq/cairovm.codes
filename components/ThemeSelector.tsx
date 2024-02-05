@@ -1,7 +1,9 @@
 import { useRegisterActions, Action } from 'kbar'
 import { useTheme } from 'next-themes'
 
-import { Icon, Button } from 'components/ui'
+import { Button } from 'components/ui'
+
+import { RiContrast2Fill, RiContrast2Line } from '@remixicon/react'
 
 const ThemeSelector = () => {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -56,10 +58,17 @@ const ThemeSelector = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
+  let Contrast2Icon
+  if (resolvedTheme === 'dark') {
+    Contrast2Icon = RiContrast2Fill
+  } else {
+    Contrast2Icon = RiContrast2Line
+  }
+
   return (
     <Button transparent onClick={handleThemChange}>
-      <Icon
-        name={resolvedTheme === 'dark' ? 'contrast-2-fill' : 'contrast-2-line'}
+      <Contrast2Icon
+        size={16}
         className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
       />
     </Button>

@@ -4,8 +4,9 @@ export const isMac =
     : false
 
 export const getAbsoluteURL = (path = '') => {
-  const baseURL = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : 'http://localhost:3000'
+  const baseURL =
+    typeof window !== 'undefined'
+      ? window.location.origin
+      : 'http://localhost:3000'
   return baseURL + path
 }

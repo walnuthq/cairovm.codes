@@ -8,7 +8,7 @@ import { EthereumContext } from 'context/ethereumContext'
 
 import { calculateDynamicFee, calculateDynamicRefund } from 'util/gas'
 
-import { Input, Radio, Icon } from 'components/ui'
+import { Input, Radio } from 'components/ui'
 import { H2 } from 'components/ui/Doc'
 
 const debounceTimeout = 100 // ms
@@ -151,13 +151,13 @@ const DynamicFee = ({ referenceItem, fork }: Props) => {
         })}
 
         <div className="flex items-center pt-2">
-          <Icon name="gas-station-fill" className="text-indigo-500 mr-2" />
+          {/* <Icon name="gas-station-fill" className="text-indigo-500 mr-2" /> */}
           Static gas + dynamic gas = {gasCost}
         </div>
 
         {canRefund && (
           <div className="flex items-center pt-2">
-            <Icon name="reply-fill" className="text-indigo-500 mr-2" />
+            {/* <Icon name="reply-fill" className="text-indigo-500 mr-2" /> */}
             Gas refund = {gasRefund}
           </div>
         )}

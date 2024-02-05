@@ -2,19 +2,11 @@ import { ExampleCode } from './types'
 
 const examples: ExampleCode = {
   Cairo: [
-`use core::felt252;
+    `use core::felt252;
 
 fn main() -> felt252 {
-    let n = 10;
-    let result = fib(1, 1, n);
-    result
-}
-
-fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
-    match n {
-        0 => a,
-        _ => fib(b, a + b, n - 1),
-    }
+    let n = 2 + 3;
+    n
 }`,
   ],
   Sierra: [
@@ -149,7 +141,7 @@ fibonacci::fibonacci::main@0([0]: RangeCheck, [1]: GasBuiltin) -> (RangeCheck, G
 fibonacci::fibonacci::fib@25([0]: RangeCheck, [1]: GasBuiltin, [2]: felt252, [3]: felt252, [4]: felt252) -> (RangeCheck, GasBuiltin, core::panics::PanicResult::<(core::felt252,)>);
 `,
   ],
-  Casm: [
+  CASM: [
     `[ap + 0] = [fp + -4], ap++;
 [ap + 0] = [fp + -3], ap++;
 [ap + 0] = 1, ap++;
@@ -220,15 +212,15 @@ ap += 1;
 ret;
 `,
   ],
-  Bytecode: ['604260005260206000F3'],
-  Mnemonic: [
-    `PUSH1 0x42
-PUSH1 0
-MSTORE
-PUSH1 32
-PUSH1 0
-RETURN`,
-  ],
+  //   Bytecode: ['604260005260206000F3'],
+  //   Mnemonic: [
+  //     `PUSH1 0x42
+  // PUSH1 0
+  // MSTORE
+  // PUSH1 32
+  // PUSH1 0
+  // RETURN`,
+  //   ],
 }
 
 export default examples

@@ -8,6 +8,7 @@ import { GITHUB_REPO_URL } from 'util/constants'
 // import KBarButton from 'components/KBar/Button'
 import NavLink from 'components/NavLink'
 import ThemeSelector from 'components/ThemeSelector'
+import ToggleFullScreen from 'components/ToggleFullScreen'
 import { Container, Logo, Hamburger } from 'components/ui'
 
 // import ChainSelector from '../ChainSelector'
@@ -51,13 +52,14 @@ const Nav = () => {
             <NavLink href={GITHUB_REPO_URL} external>
               GitHub
             </NavLink>
+            <ToggleFullScreen />
             <ThemeSelector />
           </div>
 
-          <Hamburger
+          {/* <Hamburger
             isActive={isMenuVisible}
             onClick={() => setIsMenuVisible(!isMenuVisible)}
-          />
+          /> */}
         </div>
       </Container>
     </nav>

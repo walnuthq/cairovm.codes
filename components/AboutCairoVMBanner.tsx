@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+
+import { RiCloseLine } from '@remixicon/react'
 
 const AboutCairoVMBanner = () => {
   const [isShown, setIsShown] = useState(false)
@@ -28,20 +30,7 @@ const AboutCairoVMBanner = () => {
         onClick={handleCloseBanner}
         aria-label="Close banner"
       >
-        <svg
-          className="h-6 w-6"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <RiCloseLine size={24} />
       </button>
       <div className="container mx-auto px-4 md:px-6">
         <p className="font-medium md:text-xl mb-4 pt-6">About cairovm.codes</p>

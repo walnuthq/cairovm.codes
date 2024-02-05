@@ -16,7 +16,7 @@ import Select, { OnChangeValue } from 'react-select'
 import { isEmpty } from 'util/string'
 
 import { EthereumContext } from '../../context/ethereumContext'
-import { Button, Icon, Input } from '../ui'
+import { Button, Input } from '../ui'
 
 import { Contract, MethodAbi, ValueUnit } from './types'
 
@@ -349,7 +349,7 @@ const SolidityAdvanceModeTab: FC<Props> = ({
               className="inline-block mr-4 select-all"
               data-tip="Share permalink"
             >
-              <Icon name="links-line" className="text-indigo-500 mr-1" />
+              {/* <Icon name="links-line" className="text-indigo-500 mr-1" /> */}
             </span>
           </Button>
         </div>

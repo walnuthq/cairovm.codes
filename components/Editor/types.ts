@@ -1,9 +1,9 @@
 export enum CodeType {
   Cairo = 'Cairo',
   Sierra = 'Sierra',
-  Casm = 'Casm',
-  Bytecode = 'Bytecode',
-  Mnemonic = 'Mnemonic',
+  CASM = 'CASM',
+  // Bytecode = 'Bytecode',
+  // Mnemonic = 'Mnemonic',
 }
 
 export enum ValueUnit {
