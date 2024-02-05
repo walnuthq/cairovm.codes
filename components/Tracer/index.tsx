@@ -111,7 +111,7 @@ function InfoBar({
           <span className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
             pc
           </span>
-          {currentTraceEntry.pc}
+          <span className="font-mono">{currentTraceEntry.pc}</span>
         </span>
         <span
           className={`inline-flex items-center rounded-md bg-green-50 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
@@ -119,7 +119,7 @@ function InfoBar({
           <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
             fp
           </span>
-          {currentTraceEntry.fp}
+          <span className="font-mono">{currentTraceEntry.fp}</span>
         </span>
         <span
           className={`inline-flex items-center rounded-md bg-orange-50 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
@@ -127,7 +127,7 @@ function InfoBar({
           <span className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
             ap
           </span>
-          {currentTraceEntry.ap}
+          <span className="font-mono">{currentTraceEntry.ap}</span>
         </span>
       </div>
       <div>
@@ -135,7 +135,7 @@ function InfoBar({
           Current step:
         </span>
         <span
-          className="inline-block mr-4 select-all cursor-help"
+          className="inline-block mr-4 select-all cursor-help font-mono"
           data-tip="Step number of the current instruction"
         >
           {currentStep + 1}
@@ -144,7 +144,7 @@ function InfoBar({
           Total:
         </span>
         <span
-          className="inline-block mr-4 select-all cursor-help"
+          className="inline-block mr-4 select-all cursor-help font-mono"
           data-tip="Total number of steps of the entire execution"
         >
           {trace.length}
