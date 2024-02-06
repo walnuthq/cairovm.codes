@@ -47,6 +47,8 @@ import Header from './Header'
 import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
 import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
 import { Tracer } from 'components/Tracer'
+import { InstructionsTable } from './InstructionsTable'
+import Instructions from './Instructions'
 
 type Props = {
   readOnly?: boolean
@@ -83,6 +85,8 @@ const Editor = ({ readOnly = false }: Props) => {
     cairoLangCompilerVersion,
     serializedOutput,
     tracerData,
+    casmInstructions,
+    activeCasmInstructionIndex,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -239,26 +243,34 @@ const Editor = ({ readOnly = false }: Props) => {
               className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
               style={{ height: cairoEditorHeight }}
             >
-              <SCEditor
-                // @ts-ignore: SCEditor is not TS-friendly
-                ref={editorRef}
-                value={
-                  codeType === CodeType.Cairo
-                    ? cairoCode
-                    : codeType === CodeType.Sierra
-                    ? sierraCode
-                    : codeType === CodeType.CASM
-                    ? casmCode
-                    : ''
-                }
-                readOnly={readOnly}
-                onValueChange={handleCairoCodeChange}
-                highlight={highlightCode}
-                tabSize={4}
-                className={cn('code-editor', {
-                  'with-numbers': !isBytecode,
-                })}
-              />
+              {codeType === CodeType.CASM ? (
+                <InstructionsTable
+                  instructions={casmInstructions}
+                  activeIndex={activeCasmInstructionIndex}
+                  height={cairoEditorHeight}
+                />
+              ) : (
+                <SCEditor
+                  // @ts-ignore: SCEditor is not TS-friendly
+                  ref={editorRef}
+                  value={
+                    codeType === CodeType.Cairo
+                      ? cairoCode
+                      : codeType === CodeType.Sierra
+                      ? sierraCode
+                      : codeType === CodeType.CASM
+                      ? casmCode
+                      : ''
+                  }
+                  readOnly={readOnly}
+                  onValueChange={handleCairoCodeChange}
+                  highlight={highlightCode}
+                  tabSize={4}
+                  className={cn('code-editor', {
+                    'with-numbers': !isBytecode,
+                  })}
+                />
+              )}
             </div>
 
             <Fragment>
