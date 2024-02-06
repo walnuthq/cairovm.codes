@@ -42,15 +42,15 @@ export const InstructionsTable = ({
                   isActive ? 'text-gray-900 dark:text-gray-200' : ''
                 }`}
               >
-                <td className={`py-1 px-2 whitespace-nowrap w-[1%]`}>
+                <td className={`pl-6 pr-1 px-2 whitespace-nowrap w-[1%]`}>
                   {index + 1}
                 </td>
                 <td className="py-1 px-2 max-w-40 break-words">
                   {instruction.name.split('\n').map((line, i) => (
-                    <>
+                    <span key={i}>
                       {i !== 0 ? <br /> : <></>}
                       {line}
-                    </>
+                    </span>
                   ))}
                 </td>
               </tr>
