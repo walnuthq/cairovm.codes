@@ -46,7 +46,12 @@ export const InstructionsTable = ({
                   {index + 1}
                 </td>
                 <td className="py-1 px-2 max-w-40 break-words">
-                  {instruction.name}
+                  {instruction.name.split('\n').map((line, i) => (
+                    <>
+                      {i !== 0 ? <br /> : <></>}
+                      {line}
+                    </>
+                  ))}
                 </td>
               </tr>
             )
