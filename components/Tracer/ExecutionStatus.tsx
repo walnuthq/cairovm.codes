@@ -52,7 +52,7 @@ const ExecutionStatus = ({
           // disabled={true}
           onClick={onStepOut}
           padded={false}
-          tooltip="Step out"
+          tooltip="Step back"
           tooltipId="step1"
         >
           <RiArrowGoBackLine size={16} className="text-indigo-500" />
@@ -62,7 +62,7 @@ const ExecutionStatus = ({
           // disabled={!isExecuting}
           onClick={onStepIn}
           padded={false}
-          tooltip="Step in"
+          tooltip="Step next"
           tooltipId="step2"
         >
           <RiArrowGoForwardLine size={16} className="text-indigo-500" />
