@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import ExecutionStatus from './ExecutionStatus'
 import ReactTooltip from 'react-tooltip'
+import { CairoVMApiContext } from 'context/cairoVMApiContext'
 
 export interface Instruction {
   ap_update: string
@@ -26,6 +27,7 @@ export interface TracerData {
   pcInstMap: { [key: string]: Instruction }
   trace: TraceEntry[]
   memory: { [key: string]: string }
+  pcToInstIndexesMap: { [key: string]: number }
 }
 
 interface TracerProps {
@@ -35,12 +37,16 @@ interface TracerProps {
 }
 
 export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
-  const [currentStep, setCurrentStep] = useState(0)
+  const { onExecutionStepChange, executionTraceStepNumber } =
+    useContext(CairoVMApiContext)
+
   const trace = tracerData?.trace
-  const currentTraceEntry = tracerData?.trace[currentStep]
+  const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
 
   useEffect(() => {
-    const element = document.getElementById('focus_row')
+    const element = tableRef.current?.querySelector(
+      '#focus_row',
+    ) as HTMLElement | null
     if (tableRef.current && element?.offsetTop) {
       tableRef.current.scrollTop = element.offsetTop - 58
     }
@@ -49,17 +55,21 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
   const tableRef = useRef<HTMLDivElement>(null)
 
   function stepIn() {
-    if (!trace || trace.length === 0 || currentStep === trace.length - 1) {
+    if (
+      !trace ||
+      trace.length === 0 ||
+      executionTraceStepNumber === trace.length - 1
+    ) {
       return
     }
-    setCurrentStep(currentStep + 1)
+    onExecutionStepChange(executionTraceStepNumber + 1)
   }
 
   function stepOut() {
-    if (!trace || trace.length === 0 || currentStep === 0) {
+    if (!trace || trace.length === 0 || executionTraceStepNumber === 0) {
       return
     }
-    setCurrentStep(currentStep - 1)
+    onExecutionStepChange(executionTraceStepNumber - 1)
   }
 
   return (
@@ -83,7 +93,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
           <div style={{ height: barHeight }}>
             <InfoBar
               trace={trace}
-              currentStep={currentStep}
+              currentStep={executionTraceStepNumber}
               currentTraceEntry={currentTraceEntry}
             />
           </div>
