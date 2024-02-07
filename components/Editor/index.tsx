@@ -87,6 +87,8 @@ const Editor = ({ readOnly = false }: Props) => {
     tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
+    sierraStatements,
+    casmToSierraMap,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -246,22 +248,22 @@ const Editor = ({ readOnly = false }: Props) => {
               {codeType === CodeType.CASM ? (
                 <InstructionsTable
                   instructions={casmInstructions}
-                  activeIndex={activeCasmInstructionIndex}
+                  activeIndexes={[activeCasmInstructionIndex]}
+                  height={cairoEditorHeight}
+                />
+              ) : codeType === CodeType.Sierra ? (
+                <InstructionsTable
+                  instructions={sierraStatements}
+                  activeIndexes={
+                    casmToSierraMap[activeCasmInstructionIndex] ?? []
+                  }
                   height={cairoEditorHeight}
                 />
               ) : (
                 <SCEditor
                   // @ts-ignore: SCEditor is not TS-friendly
                   ref={editorRef}
-                  value={
-                    codeType === CodeType.Cairo
-                      ? cairoCode
-                      : codeType === CodeType.Sierra
-                      ? sierraCode
-                      : codeType === CodeType.CASM
-                      ? casmCode
-                      : ''
-                  }
+                  value={codeType === CodeType.Cairo ? cairoCode : ''}
                   readOnly={readOnly}
                   onValueChange={handleCairoCodeChange}
                   highlight={highlightCode}
