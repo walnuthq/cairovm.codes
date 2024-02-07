@@ -38,8 +38,10 @@ export const InstructionsTable = ({
               <tr
                 ref={activeIndexes[0] === index ? focusRowRef : undefined}
                 key={index}
-                className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
-                  isActive ? 'text-gray-900 dark:text-gray-200' : ''
+                className={`border-b border-gray-200 dark:border-black-500 ${
+                  isActive
+                    ? 'text-gray-900 dark:text-gray-200'
+                    : 'text-gray-400 dark:text-gray-600'
                 } `}
               >
                 <td className={`pl-6 pr-1 px-2 whitespace-nowrap w-[1%]`}>
