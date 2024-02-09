@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, RefObject, createRef, Ref } from 'react'
 
-import { CairoVMApiContext } from 'context/cairoVMApiContext'
 import { EthereumContext } from 'context/ethereumContext'
 
 import InstructionRow from './InstructionRow'

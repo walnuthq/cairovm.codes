@@ -12,7 +12,6 @@ import { getActivePrecompiles } from '@ethereumjs/evm/src/precompiles'
 import { TypedTransaction, TxData, Transaction } from '@ethereumjs/tx'
 import { Address, Account } from '@ethereumjs/util'
 import { VM } from '@ethereumjs/vm'
-//
 import OpcodesMeta from 'opcodes.json'
 import PrecompiledMeta from 'precompiled.json'
 import {
@@ -178,12 +177,19 @@ export const EthereumProvider: React.FC<{}> = ({ children }) => {
     _setupStateManager()
     _setupAccount()
 
-    vm.evm.events!.on(
-      'step',
-      (e: InterpreterStep, contFunc: ((result?: any) => void) | undefined) => {
-        _stepInto(e, contFunc)
-      },
-    )
+    if (vm.evm.events) {
+      vm.evm.events.on(
+        'step',
+        (
+          e: InterpreterStep,
+          contFunc: ((result?: any) => void) | undefined,
+        ) => {
+          _stepInto(e, contFunc)
+        },
+      )
+    } else {
+      console.log('[CRITICAL] vm.evm.events should not be undefined !!!')
+    }
   }
 
   /**
@@ -237,7 +243,12 @@ export const EthereumProvider: React.FC<{}> = ({ children }) => {
    * @param byteCode The contract bytecode.
    */
   const loadInstructions = (byteCode: string) => {
-    const opcodes = vm.evm.getActiveOpcodes!()
+    if (!vm.evm.getActiveOpcodes) {
+      setInstructions([])
+      return
+    }
+
+    const opcodes = vm.evm.getActiveOpcodes()
     const instructions: IInstruction[] = []
 
     for (let i = 0; i < byteCode.length; i += 2) {
@@ -488,14 +499,16 @@ export const EthereumProvider: React.FC<{}> = ({ children }) => {
   const _loadOpcodes = () => {
     const opcodes: IReferenceItem[] = []
 
-    vm.evm.getActiveOpcodes!().forEach((op: Opcode) => {
-      const opcode = extractDocFromOpcode(op)
+    if (vm.evm.getActiveOpcodes) {
+      vm.evm.getActiveOpcodes().forEach((op: Opcode) => {
+        const opcode = extractDocFromOpcode(op)
 
-      opcode.minimumFee = parseInt(
-        calculateOpcodeDynamicFee(opcode, common, {}),
-      )
-      opcodes.push(opcode)
-    })
+        opcode.minimumFee = parseInt(
+          calculateOpcodeDynamicFee(opcode, common, {}),
+        )
+        opcodes.push(opcode)
+      })
+    }
 
     setOpcodes(opcodes)
   }

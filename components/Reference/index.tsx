@@ -10,7 +10,6 @@ import {
 
 import cn from 'classnames'
 import useWindowSize from 'lib/useWindowResize'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTable, useExpanded, useFilters, HeaderGroup } from 'react-table'
 import ReactTooltip from 'react-tooltip'
@@ -131,10 +130,6 @@ const ReferenceTable = ({
           <span className="text-sm font-normal">
             {isAllRowsExpanded ? 'Collapse' : 'Expand'}
           </span>
-          {/* <Icon
-            className="text-indigo-500"
-            name={isAllRowsExpanded ? 'arrow-up-s-line' : 'arrow-down-s-line'}
-          /> */}
         </Button>
       </div>
     )
@@ -243,24 +238,6 @@ const ReferenceTable = ({
                       }}
                     >
                       <div className="flex items-center flex-wrap">
-                        {cell.column.id === 'opcodeOrAddress' && (
-                          <Link
-                            href={
-                              isPrecompiled
-                                ? `/precompiled#${opcodeOrAddress}?fork=${selectedFork?.name}`
-                                : `/#${opcodeOrAddress}?fork=${selectedFork?.name}`
-                            }
-                            passHref
-                            legacyBehavior
-                          >
-                            <a className="underline font-mono">
-                              {/* <Icon
-                                name="links-line"
-                                className="text-indigo-500 mr-2"
-                              /> */}
-                            </a>
-                          </Link>
-                        )}
                         {cell.render('Cell')}
                         {cell.column.id === 'minimumFee' &&
                           !!dynamicFeeForkName && (
@@ -269,7 +246,6 @@ const ReferenceTable = ({
                               data-tip="Has additional dynamic gas cost, expand to estimate it"
                               data-for={`tip-${cell.row.id}`}
                             >
-                              {/* <Icon name="question-line" /> */}
                               <ReactTooltip
                                 className="tooltip"
                                 effect="solid"
