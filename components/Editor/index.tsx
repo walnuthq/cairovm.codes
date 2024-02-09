@@ -149,19 +149,25 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
+  const logDiagnostics = (diagnostics: string[]) => {
+    for (let diagnostic of diagnostics) {
+      let type = diagnostic.startsWith('error') ? 'error' : 'info'
+      log(diagnostic, type)
+    }
+  }
+
+
   useEffect(() => {
     if (isCompiling === CompilationState.Compiling) {
       log('Compiling...')
     } else if (isCompiling === CompilationState.Compiled) {
       log('Compilation successful')
+      logDiagnostics(diagnostics)
       if (serializedOutput) {
         log(`Execution output: ${serializedOutput}`)
       }
     } else if (isCompiling === CompilationState.Error) {
-      for (let diagnostic of diagnostics) {
-        let type = diagnostic.startsWith('error') ? 'error' : 'info'
-        log(diagnostic, type)
-      }
+      logDiagnostics(diagnostics)
     }
   }, [isCompiling])
 
