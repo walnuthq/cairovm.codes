@@ -87,6 +87,7 @@ const Editor = ({ readOnly = false }: Props) => {
     tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
+    diagnostics
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -157,7 +158,10 @@ const Editor = ({ readOnly = false }: Props) => {
         log(`Execution output: ${serializedOutput}`)
       }
     } else if (isCompiling === CompilationState.Error) {
-      log('Compilation failed: ', 'error')
+      for (let diagnostic of diagnostics) {
+        let type = diagnostic.startsWith('error') ? 'error' : 'info'
+        log(diagnostic, type)
+      }
     }
   }, [isCompiling])
 
