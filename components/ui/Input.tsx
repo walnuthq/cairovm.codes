@@ -61,15 +61,6 @@ export const Input: React.FC<Props> = forwardRef(
             {isInputEmpty && (
               <span className="text-black-400 absolute right-8">Alt+K</span>
             )}
-            {/* <Icon
-              name="search-line"
-              className={cn(
-                'ml-2',
-                isFocused
-                  ? 'text-gray-400 dark:text-gray-300'
-                  : 'text-gray-300 dark:text-gray-400',
-              )}
-            /> */}
           </>
         )}
       </div>

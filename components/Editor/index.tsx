@@ -5,50 +5,31 @@ import React, {
   useContext,
   useMemo,
   useCallback,
-  MutableRefObject,
   RefObject,
   Fragment,
 } from 'react'
 
-import { bufferToHex } from '@ethereumjs/util'
 import { encode, decode } from '@kunigi/string-compression'
+import { RiLinksLine } from '@remixicon/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { useRouter } from 'next/router'
-import { OnChangeValue } from 'react-select'
 import SCEditor from 'react-simple-code-editor'
 
-import { RiLinksLine } from '@remixicon/react'
-
-import { EthereumContext } from 'context/ethereumContext'
+import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
 import { SettingsContext, Setting } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
-import {
-  getTargetEvmVersion,
-  compilerSemVer,
-  getBytecodeFromMnemonic,
-  getMnemonicFromBytecode,
-  getBytecodeLinesFromInstructions,
-} from 'util/compiler'
-import {
-  codeHighlight,
-  isEmpty,
-  isFullHex,
-  isHex,
-  objToQueryString,
-} from 'util/string'
+import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
+import { Tracer } from 'components/Tracer'
 import { Button } from 'components/ui'
 
 import Console from './Console'
 import Header from './Header'
-import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
-import { Tracer } from 'components/Tracer'
 import { InstructionsTable } from './InstructionsTable'
-import Instructions from './Instructions'
+import { IConsoleOutput, CodeType } from './types'
 
 type Props = {
   readOnly?: boolean
@@ -60,22 +41,11 @@ type SCEditorRef = {
 
 const cairoEditorHeight = 350
 const runBarHeight = 52
-const sierraEditorHeight = cairoEditorHeight + runBarHeight
-const casmInstructionsListHeight = cairoEditorHeight + runBarHeight
-const instructionsListWithExpandHeight = cairoEditorHeight + 156 // Advance Mode bar
 const consoleHeight = 150
 
 const Editor = ({ readOnly = false }: Props) => {
-  const { settingsLoaded, getSetting, setSetting } = useContext(SettingsContext)
+  const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
-
-  // const {
-  //   deployedContractAddress,
-  //   selectedFork,
-  //   opcodes,
-  //   instructions,
-  //   onForkChange,
-  // } = useContext(EthereumContext)
 
   const {
     sierraCode,
@@ -91,21 +61,13 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
-  const [cairoCodeModified, setCairoCodeModified] = useState(false)
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
       type: 'info',
       message: 'App initialised...',
     },
   ])
-  // const solcWorkerRef = useRef<null | Worker>(null)
-  const instructionsRef = useRef() as MutableRefObject<HTMLDivElement>
   const editorRef = useRef<SCEditorRef>()
-  const [callData, setCallData] = useState('')
-  const [callValue, setCallValue] = useState('')
-  const [unit, setUnit] = useState(ValueUnit.Wei as string)
-
-  const [isExpanded, setIsExpanded] = useState(false)
 
   const log = useCallback(
     (line: string, type = 'info') => {
@@ -122,15 +84,6 @@ const Editor = ({ readOnly = false }: Props) => {
   useEffect(() => {
     const query = router.query
 
-    if ('callValue' in query && 'unit' in query) {
-      setCallValue(query.callValue as string)
-      setUnit(query.unit as string)
-    }
-
-    if ('callData' in query) {
-      setCallData(query.callData as string)
-    }
-
     if ('codeType' in query && 'code' in query) {
       setCodeType(query.codeType as string)
       setCairoCode(JSON.parse('{"a":' + decode(query.code as string) + '}').a)
@@ -141,10 +94,6 @@ const Editor = ({ readOnly = false }: Props) => {
       setCodeType(initialCodeType)
       setCairoCode(examples[initialCodeType][0])
     }
-
-    // if ('fork' in query) {
-    //   onForkChange(query.fork as string)
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
@@ -159,18 +108,10 @@ const Editor = ({ readOnly = false }: Props) => {
     } else if (isCompiling === CompilationState.Error) {
       log('Compilation failed: ', 'error')
     }
-  }, [isCompiling])
-
-  // useEffect(() => {
-  //   if (deployedContractAddress) {
-  //     log(`Contract deployed at address: ${deployedContractAddress}`)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [deployedContractAddress])
+  }, [isCompiling, log, serializedOutput])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
-    setCairoCodeModified(true)
   }
 
   const highlightCode = (value: string) => {
@@ -178,9 +119,6 @@ const Editor = ({ readOnly = false }: Props) => {
       return value
     }
 
-    // if (codeType === CodeType.Bytecode) {
-    //   return codeHighlight(value, codeType).value
-    // }
     let _codeType = codeType
 
     if (_codeType === CodeType.Sierra) {
@@ -199,33 +137,23 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const handleCompileRun = useCallback(() => {
     compileCairoCode(cairoCode)
-  }, [cairoCode])
+  }, [cairoCode, compileCairoCode])
 
   const handleCopyPermalink = useCallback(() => {
-    // const fork = selectedFork?.name
     const params = {
-      // fork,
-      // callValue,
-      // unit,
-      // callData,
       codeType,
       code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
     }
 
     copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
     log('Link with current Cairo code copied to clipboard')
-  }, [cairoCode, log])
+  }, [cairoCode, codeType, log])
 
   const isCompileDisabled = useMemo(() => {
     return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
   }, [isCompiling, cairoCode])
 
-  // const isBytecode = useMemo(() => codeType === CodeType.Bytecode, [codeType])
   const isBytecode = false
-
-  const showAdvanceMode = useMemo(() => {
-    return codeType === CodeType.Cairo && isExpanded
-  }, [codeType, isExpanded])
 
   return (
     <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
@@ -274,66 +202,35 @@ const Editor = ({ readOnly = false }: Props) => {
             </div>
 
             <Fragment>
-              {!showAdvanceMode && (
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
-                  <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
-                    <Button
-                      onClick={handleCopyPermalink}
-                      transparent
-                      padded={false}
-                      tooltip="Share permalink"
-                      tooltipId="share-permalink"
-                    >
-                      <span className="inline-block mr-4 select-all">
-                        <RiLinksLine
-                          size={16}
-                          className="text-indigo-500 mr-1"
-                        />
-                      </span>
-                    </Button>
-                  </div>
-
-                  <div>
-                    <Button
-                      onClick={handleCompileRun}
-                      disabled={isCompileDisabled}
-                      size="sm"
-                      contentClassName="justify-center"
-                    >
-                      Compile and run
-                    </Button>
-                  </div>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
+                <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
+                  <Button
+                    onClick={handleCopyPermalink}
+                    transparent
+                    padded={false}
+                    tooltip="Share permalink"
+                    tooltipId="share-permalink"
+                  >
+                    <span className="inline-block mr-4 select-all">
+                      <RiLinksLine size={16} className="text-indigo-500 mr-1" />
+                    </span>
+                  </Button>
                 </div>
-              )}
+
+                <div>
+                  <Button
+                    onClick={handleCompileRun}
+                    disabled={isCompileDisabled}
+                    size="sm"
+                    contentClassName="justify-center"
+                  >
+                    Compile and run
+                  </Button>
+                </div>
+              </div>
             </Fragment>
           </div>
         </div>
-
-        {/* <div className="w-full md:w-1/3">
-          <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">
-              Sierra
-            </span>
-          </div>
-
-          <div
-            className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 h-full"
-            style={{ height: sierraEditorHeight }}
-          >
-            <SCEditor
-              // @ts-ignore: SCEditor is not TS-friendly
-              ref={editorRef}
-              value={sierraCode}
-              readOnly={readOnly}
-              onValueChange={handleCairoCodeChange}
-              highlight={highlightCode}
-              tabSize={4}
-              className={cn('code-editor', {
-                // 'with-numbers': !isBytecode,
-              })}
-            />
-          </div>
-        </div> */}
 
         <div className="w-full md:w-1/2">
           <Tracer
@@ -345,14 +242,6 @@ const Editor = ({ readOnly = false }: Props) => {
       </div>
 
       <div className="flex flex-col md:flex-row-reverse">
-        {/* <div className="w-full md:w-1/2">
-          <div
-            className="pane pane-dark overflow-auto border-t border-black-900/25 bg-gray-800 dark:bg-black-700 text-white px-4 py-3"
-            style={{ height: consoleHeight }}
-          >
-            <ExecutionState />
-          </div>
-        </div> */}
         <div className="w-full">
           <div
             className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"

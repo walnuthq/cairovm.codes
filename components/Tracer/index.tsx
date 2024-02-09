@@ -1,7 +1,10 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import ExecutionStatus from './ExecutionStatus'
+import { useContext, useEffect, useRef } from 'react'
+
 import ReactTooltip from 'react-tooltip'
+
 import { CairoVMApiContext } from 'context/cairoVMApiContext'
+
+import ExecutionStatus from './ExecutionStatus'
 
 export interface Instruction {
   ap_update: string
@@ -219,16 +222,7 @@ function InstructionsTable({
                 )}
                 {addrNum === fp && <span className="text-green-700">[fp]</span>}
               </td>
-              <td
-                className={`py-1 px-2 whitespace-nowrap ${
-                  // isCurrent
-                  // ? 'text-gray-400 dark:text-gray-600'
-                  // : 'text-gray-300 dark:text-gray-700'
-                  ''
-                }`}
-              >
-                {addr}
-              </td>
+              <td className="py-1 px-2 whitespace-nowrap">{addr}</td>
               <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
               {pcInstMap[addr] && (
                 <>

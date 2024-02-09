@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect } from 'react'
 
 import { RiCloseLine } from '@remixicon/react'
 
@@ -14,8 +14,6 @@ const AboutCairoVMBanner = () => {
   }, [])
 
   const handleCloseBanner = () => {
-    // Save the state in local storage to prevent the banner from showing again
-    // localStorage.setItem('isBannerClosed', 'true')
     setIsShown(false)
   }
 

@@ -1,6 +1,5 @@
 import { GoogleAnalytics } from '@next/third-parties/google'
 import type { NextPage } from 'next'
-// import { Html } from 'next/document'
 import Head from 'next/head'
 
 import { getAbsoluteURL } from 'util/browser'

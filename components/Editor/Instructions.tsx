@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, RefObject, createRef, Ref } from 'react'
 import { EthereumContext } from 'context/ethereumContext'
 
 import InstructionRow from './InstructionRow'
-import { CairoVMApiContext } from 'context/cairoVMApiContext'
 
 type TableProps = {
   containerRef: RefObject<HTMLDivElement>

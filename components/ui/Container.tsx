@@ -13,8 +13,6 @@ export const Container: React.FC<Props> = ({
   className,
   fullWidth,
 }) => {
-  // const renderAsFullWidth = fullWidth || false
-
   return (
     <div
       className={cn('mx-auto px-4 md:px-6', className, {

@@ -151,15 +151,11 @@ const DynamicFee = ({ referenceItem, fork }: Props) => {
         })}
 
         <div className="flex items-center pt-2">
-          {/* <Icon name="gas-station-fill" className="text-indigo-500 mr-2" /> */}
           Static gas + dynamic gas = {gasCost}
         </div>
 
         {canRefund && (
-          <div className="flex items-center pt-2">
-            {/* <Icon name="reply-fill" className="text-indigo-500 mr-2" /> */}
-            Gas refund = {gasRefund}
-          </div>
+          <div className="flex items-center pt-2">Gas refund = {gasRefund}</div>
         )}
       </div>
     </div>
