@@ -12,14 +12,14 @@ import React, {
 
 import { bufferToHex } from '@ethereumjs/util'
 import { encode, decode } from '@kunigi/string-compression'
+import { RiLinksLine } from '@remixicon/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { useRouter } from 'next/router'
 import { OnChangeValue } from 'react-select'
 import SCEditor from 'react-simple-code-editor'
 
-import { RiLinksLine } from '@remixicon/react'
-
+import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
 import { EthereumContext } from 'context/ethereumContext'
 import { SettingsContext, Setting } from 'context/settingsContext'
 
@@ -40,15 +40,14 @@ import {
 } from 'util/string'
 
 import examples from 'components/Editor/examples'
+import { Tracer } from 'components/Tracer'
 import { Button } from 'components/ui'
 
 import Console from './Console'
 import Header from './Header'
-import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
-import { Tracer } from 'components/Tracer'
-import { InstructionsTable } from './InstructionsTable'
 import Instructions from './Instructions'
+import { InstructionsTable } from './InstructionsTable'
+import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
 
 type Props = {
   readOnly?: boolean

@@ -1,9 +1,8 @@
+import { RiContrast2Fill, RiContrast2Line } from '@remixicon/react'
 import { useRegisterActions, Action } from 'kbar'
 import { useTheme } from 'next-themes'
 
 import { Button } from 'components/ui'
-
-import { RiContrast2Fill, RiContrast2Line } from '@remixicon/react'
 
 const ThemeSelector = () => {
   const { theme, setTheme, resolvedTheme } = useTheme()

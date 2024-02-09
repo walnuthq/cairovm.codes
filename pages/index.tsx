@@ -12,9 +12,9 @@ import { IItemDocs, IGasDocs, IDocMeta } from 'types'
 
 import { AppUiContext } from 'context/appUiContext'
 
+import AboutCairoVMBanner from 'components/AboutCairoVMBanner'
 import ContributeBox from 'components/ContributeBox'
 import Editor from 'components/Editor'
-import AboutCairoVMBanner from 'components/AboutCairoVMBanner'
 import HomeLayout from 'components/layouts/Home'
 import ReferenceTable from 'components/Reference'
 import { H1, Container } from 'components/ui'

@@ -1,8 +1,7 @@
 import { useContext } from 'react'
 
-import ReactTooltip from 'react-tooltip'
-
 import { RiArrowGoForwardLine, RiArrowGoBackLine } from '@remixicon/react'
+import ReactTooltip from 'react-tooltip'
 
 import { Button } from 'components/ui'
 
