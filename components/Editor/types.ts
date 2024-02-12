@@ -1,7 +1,7 @@
 export enum LogType {
   Error,
   Info,
-  Warn
+  Warn,
 }
 
 export enum CodeType {
@@ -18,7 +18,7 @@ export enum ValueUnit {
 }
 
 export interface IConsoleOutput {
-  type: LogType,
+  type: LogType
   message: string
 }
 

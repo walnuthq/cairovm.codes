@@ -1,6 +1,4 @@
 import React, {
-  Fragment,
-  MutableRefObject,
   RefObject,
   useCallback,
   useContext,
@@ -13,11 +11,11 @@ import React, {
 import { encode, decode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
-import {useRouter} from 'next/router'
+import { useRouter } from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
-import {RiLinksLine} from '@remixicon/react'
-import {Setting, SettingsContext} from 'context/settingsContext'
+import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
+import { Setting, SettingsContext } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
 import { isArgumentStringValid } from 'util/compiler'
@@ -25,16 +23,12 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
-import { Button } from 'components/ui'
 
 import Console from './Console'
 import EditorControls from './EditorControls'
 import Header from './Header'
-import {CodeType, IConsoleOutput, LogType, ValueUnit} from './types'
-import {CairoVMApiContext, CompilationState} from 'context/cairoVMApiContext'
-import {Tracer} from 'components/Tracer'
-import {InstructionsTable} from './InstructionsTable'
-
+import { InstructionsTable } from './InstructionsTable'
+import { CodeType, IConsoleOutput, LogType } from './types'
 
 type Props = {
   readOnly?: boolean
@@ -62,7 +56,7 @@ const Editor = ({ readOnly = false }: Props) => {
     tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
-    diagnostics
+    diagnostics,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -110,7 +104,6 @@ const Editor = ({ readOnly = false }: Props) => {
       log(diagnostic, type)
     }
   }
-
 
   useEffect(() => {
     if (isCompiling === CompilationState.Compiling) {

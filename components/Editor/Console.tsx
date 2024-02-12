@@ -1,8 +1,8 @@
-import {useEffect, useRef} from 'react'
+import { useEffect, useRef } from 'react'
 
-import {toKeyIndex} from 'util/string'
+import { toKeyIndex } from 'util/string'
 
-import {IConsoleOutput, LogType} from './types'
+import { IConsoleOutput, LogType } from './types'
 
 type Props = {
   output: IConsoleOutput[]
