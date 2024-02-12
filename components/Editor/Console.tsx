@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
+import {useEffect, useRef} from 'react'
 
-import { toKeyIndex } from 'util/string'
+import {toKeyIndex} from 'util/string'
 
-import { IConsoleOutput } from './types'
+import {IConsoleOutput, LogType} from './types'
 
 type Props = {
   output: IConsoleOutput[]
@@ -26,10 +26,10 @@ const Console = ({ output }: Props) => {
     >
       {output.map((log, index) => (
         <pre key={toKeyIndex('line', index)}>
-          {log.type === 'error' && (
+          {log.type === LogType.Error && (
             <span className="text-red-500">[Error] </span>
           )}
-          {log.type === 'warn' && (
+          {log.type === LogType.Warn && (
             <span className="text-yellow-500">[Warn] </span>
           )}
           {log.message}

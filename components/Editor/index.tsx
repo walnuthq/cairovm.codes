@@ -1,54 +1,35 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-  useMemo,
-  useCallback,
+  Fragment,
   MutableRefObject,
   RefObject,
-  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
-
-import { bufferToHex } from '@ethereumjs/util'
-import { encode, decode } from '@kunigi/string-compression'
+import {decode, encode} from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
-import { useRouter } from 'next/router'
-import { OnChangeValue } from 'react-select'
+import {useRouter} from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
-import { RiLinksLine } from '@remixicon/react'
+import {RiLinksLine} from '@remixicon/react'
+import {Setting, SettingsContext} from 'context/settingsContext'
 
-import { EthereumContext } from 'context/ethereumContext'
-import { SettingsContext, Setting } from 'context/settingsContext'
-
-import { getAbsoluteURL } from 'util/browser'
-import {
-  getTargetEvmVersion,
-  compilerSemVer,
-  getBytecodeFromMnemonic,
-  getMnemonicFromBytecode,
-  getBytecodeLinesFromInstructions,
-} from 'util/compiler'
-import {
-  codeHighlight,
-  isEmpty,
-  isFullHex,
-  isHex,
-  objToQueryString,
-} from 'util/string'
+import {getAbsoluteURL} from 'util/browser'
+import {codeHighlight, isEmpty, objToQueryString,} from 'util/string'
 
 import examples from 'components/Editor/examples'
-import { Button } from 'components/ui'
+import {Button} from 'components/ui'
 
 import Console from './Console'
 import Header from './Header'
-import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
-import { Tracer } from 'components/Tracer'
-import { InstructionsTable } from './InstructionsTable'
-import Instructions from './Instructions'
+import {CodeType, IConsoleOutput, LogType, ValueUnit} from './types'
+import {CairoVMApiContext, CompilationState} from 'context/cairoVMApiContext'
+import {Tracer} from 'components/Tracer'
+import {InstructionsTable} from './InstructionsTable'
 
 type Props = {
   readOnly?: boolean
@@ -95,7 +76,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const [cairoCodeModified, setCairoCodeModified] = useState(false)
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
-      type: 'info',
+      type: LogType.Info,
       message: 'App initialised...',
     },
   ])
@@ -109,7 +90,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const log = useCallback(
-    (line: string, type = 'info') => {
+    (line: string, type = LogType.Info) => {
       // See https://blog.logrocket.com/a-guide-to-usestate-in-react-ecb9952e406c/
       setOutput((previous) => {
         const cloned = previous.map((x) => ({ ...x }))
@@ -151,7 +132,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const logDiagnostics = (diagnostics: string[]) => {
     for (let diagnostic of diagnostics) {
-      let type = diagnostic.startsWith('error') ? 'error' : 'info'
+      let type = diagnostic.startsWith('error') ? LogType.Error : LogType.Warn
       log(diagnostic, type)
     }
   }
