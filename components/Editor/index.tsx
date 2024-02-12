@@ -6,11 +6,9 @@ import React, {
   useMemo,
   useCallback,
   RefObject,
-  Fragment,
 } from 'react'
 
 import { encode, decode } from '@kunigi/string-compression'
-import { RiLinksLine } from '@remixicon/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { useRouter } from 'next/router'
@@ -20,13 +18,14 @@ import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
 import { SettingsContext, Setting } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
+import { isArgumentStringValid } from 'util/compiler'
 import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
-import { Button } from 'components/ui'
 
 import Console from './Console'
+import EditorControls from './EditorControls'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
 import { IConsoleOutput, CodeType } from './types'
@@ -61,6 +60,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
+  const [programArguments, setProgramArguments] = useState<string>('')
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
       type: 'info',
@@ -135,9 +135,21 @@ const Editor = ({ readOnly = false }: Props) => {
       .join('\n')
   }
 
+  const removeExtraWhitespaces = (value: string) => {
+    const sanitizedValue = value.trim().replace(/\s+/g, ' ')
+    return sanitizedValue
+  }
+
+  const handleProgramArgumentsUpdate = useCallback(
+    (_programArguments: string) => {
+      setProgramArguments(_programArguments)
+    },
+    [setProgramArguments],
+  )
+
   const handleCompileRun = useCallback(() => {
-    compileCairoCode(cairoCode)
-  }, [cairoCode, compileCairoCode])
+    compileCairoCode(cairoCode, removeExtraWhitespaces(programArguments))
+  }, [cairoCode, programArguments, compileCairoCode])
 
   const handleCopyPermalink = useCallback(() => {
     const params = {
@@ -148,6 +160,11 @@ const Editor = ({ readOnly = false }: Props) => {
     copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
     log('Link with current Cairo code copied to clipboard')
   }, [cairoCode, codeType, log])
+
+  const areProgramArgumentsValid = useMemo(() => {
+    const sanitizedArguments = removeExtraWhitespaces(programArguments)
+    return isArgumentStringValid(sanitizedArguments)
+  }, [programArguments])
 
   const isCompileDisabled = useMemo(() => {
     return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
@@ -201,34 +218,14 @@ const Editor = ({ readOnly = false }: Props) => {
               )}
             </div>
 
-            <Fragment>
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
-                <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
-                  <Button
-                    onClick={handleCopyPermalink}
-                    transparent
-                    padded={false}
-                    tooltip="Share permalink"
-                    tooltipId="share-permalink"
-                  >
-                    <span className="inline-block mr-4 select-all">
-                      <RiLinksLine size={16} className="text-indigo-500 mr-1" />
-                    </span>
-                  </Button>
-                </div>
-
-                <div>
-                  <Button
-                    onClick={handleCompileRun}
-                    disabled={isCompileDisabled}
-                    size="sm"
-                    contentClassName="justify-center"
-                  >
-                    Compile and run
-                  </Button>
-                </div>
-              </div>
-            </Fragment>
+            <EditorControls
+              isCompileDisabled={isCompileDisabled}
+              programArguments={programArguments}
+              areProgramArgumentsValid={areProgramArgumentsValid}
+              onCopyPermalink={handleCopyPermalink}
+              onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
+              onCompileRun={handleCompileRun}
+            />
           </div>
         </div>
 

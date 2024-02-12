@@ -25,7 +25,7 @@ type ContextProps = {
   activeCasmInstructionIndex: number
   currentTraceEntry?: TraceEntry
 
-  compileCairoCode: (cairoCode: string) => void
+  compileCairoCode: (cairoCode: string, programArguments: string) => void
   onExecutionStepChange: (step: number) => void
 }
 
@@ -67,7 +67,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
     setExecutionTraceStepNumber(stepNumber)
   }
 
-  const compileCairoCode = (cairoCode: string) => {
+  const compileCairoCode = (cairoCode: string, programArguments = '') => {
     setIsCompiling(CompilationState.Compiling)
 
     fetch(CAIRO_VM_API_URL, {
@@ -75,7 +75,10 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ cairo_program_code: cairoCode }),
+      body: JSON.stringify({
+        cairo_program_code: cairoCode,
+        program_arguments: programArguments,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
