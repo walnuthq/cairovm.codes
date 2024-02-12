@@ -1,14 +1,13 @@
 import { useContext } from 'react'
 
 import { useRegisterActions } from 'kbar'
-import ReactTooltip from 'react-tooltip'
 
 import { EthereumContext } from 'context/ethereumContext'
 
 import { Button } from 'components/ui'
 
 const ExecutionStatus = () => {
-  const { isExecuting, executionState, nextExecution, continueExecution } =
+  const { isExecuting, nextExecution, continueExecution } =
     useContext(EthereumContext)
 
   const actions = [

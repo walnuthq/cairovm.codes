@@ -2,7 +2,6 @@ import React from 'react'
 
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 
 import HomeLayout from 'components/layouts/Home'
 import { Container, H1, H2, H3, RelativeLink } from 'components/ui'
@@ -37,12 +36,6 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
         id={anchorKey}
         className="font-mono mb-4 justify-start relative items-center scroll-mt-14"
       >
-        <Link href={`/about#${anchorKey}`} legacyBehavior>
-          <a className="absolute -left-6">
-            {/* <Icon name="links-line" className="text-indigo-500" /> */}
-          </a>
-        </Link>
-
         {header}
       </div>
       <div>{children}</div>

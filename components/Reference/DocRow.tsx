@@ -1,13 +1,8 @@
-import { useContext, useMemo, useEffect, useState } from 'react'
-
 import cn from 'classnames'
 import { MDXRemote } from 'next-mdx-remote'
 import { IReferenceItem, IItemDoc, IGasDoc } from 'types'
 
-import { EthereumContext } from 'context/ethereumContext'
-
 import { GITHUB_REPO_URL } from 'util/constants'
-import { parseGasPrices, findMatchingForkName } from 'util/gas'
 
 import * as Doc from 'components/ui/Doc'
 
@@ -35,51 +30,13 @@ const docComponents = {
   pre: Doc.Pre,
 }
 
-const API_DYNAMIC_FEE_DOC_URL = '/api/getDynamicDoc'
-
+// TODO: remove gasDocs in the whole component tree if not used
 const DocRow = ({
   itemDoc,
   referenceItem,
-  gasDocs,
+  gasDocs, // eslint-disable-line @typescript-eslint/no-unused-vars
   dynamicFeeForkName,
 }: Props) => {
-  const { common, forks, selectedFork } = useContext(EthereumContext)
-  const [dynamicFeeDocMdx, setDynamicFeeDocMdx] = useState()
-
-  const dynamicFeeDoc = useMemo(() => {
-    if (!gasDocs) {
-      return null
-    }
-    const fork = findMatchingForkName(forks, Object.keys(gasDocs), selectedFork)
-    return fork && common ? parseGasPrices(common, gasDocs[fork]) : null
-  }, [forks, selectedFork, gasDocs, common])
-
-  useEffect(() => {
-    let controller: AbortController | null = new AbortController()
-
-    const fetchDynamicFeeDoc = async () => {
-      try {
-        const response = await fetch(API_DYNAMIC_FEE_DOC_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: dynamicFeeDoc }),
-          signal: controller?.signal,
-        })
-        const data = await response.json()
-        setDynamicFeeDocMdx(data.mdx)
-        controller = null
-      } catch (error) {
-        setDynamicFeeDocMdx(undefined)
-      }
-    }
-
-    if (dynamicFeeDoc) {
-      fetchDynamicFeeDoc()
-    }
-
-    return () => controller?.abort()
-  }, [dynamicFeeDoc])
-
   return (
     <div className="text-sm px-4 md:px-8 py-8 bg-indigo-50 dark:bg-black-600">
       {itemDoc && (
@@ -108,15 +65,6 @@ const DocRow = ({
               })}
             >
               <MDXRemote {...itemDoc.mdxSource} components={docComponents} />
-
-              {/*
-              {dynamicFeeForkName && dynamicFeeDocMdx && (
-                <MDXRemote
-                  compiledSource=""
-                  {...(dynamicFeeDocMdx ? dynamicFeeDocMdx : {})}
-                  components={docComponents as any}
-                />
-              )} */}
             </div>
 
             {dynamicFeeForkName && (

@@ -20,10 +20,6 @@ export const Message: React.FC<Props> = ({ type, text }) => {
     }
   }, [type])
 
-  const iconName = useMemo(() => {
-    return type === 'success' ? 'checkbox-circle-line' : 'error-warning-line'
-  }, [type])
-
   return (
     <div
       className={cn(
@@ -31,7 +27,6 @@ export const Message: React.FC<Props> = ({ type, text }) => {
         bgColor,
       )}
     >
-      {/* <Icon name={iconName} className="mr-1" /> */}
       {text}
     </div>
   )

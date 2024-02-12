@@ -6,8 +6,9 @@ import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'next-themes'
 
-import { EthereumProvider } from 'context/ethereumContext'
+import { AppUiProvider } from 'context/appUiContext'
 import { CairoVMApiProvider } from 'context/cairoVMApiContext'
+import { EthereumProvider } from 'context/ethereumContext'
 import { SettingsProvider } from 'context/settingsContext'
 
 import KBar from 'components/KBar'
@@ -15,7 +16,6 @@ import KBar from 'components/KBar'
 import '../styles/globals.css'
 import '../styles/highlight/atom-one-light.css'
 import '../styles/highlight/atom-one-dark.css'
-import { AppUiProvider } from 'context/appUiContext'
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode
