@@ -1,3 +1,9 @@
+export enum LogType {
+  Error,
+  Info,
+  Warn
+}
+
 export enum CodeType {
   Cairo = 'Cairo',
   Sierra = 'Sierra',
@@ -12,7 +18,7 @@ export enum ValueUnit {
 }
 
 export interface IConsoleOutput {
-  type: 'info' | 'warn' | 'error'
+  type: LogType,
   message: string
 }
 

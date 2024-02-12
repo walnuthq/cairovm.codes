@@ -1,21 +1,23 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-  useMemo,
-  useCallback,
+  Fragment,
+  MutableRefObject,
   RefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
 
 import { encode, decode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
-import { SettingsContext, Setting } from 'context/settingsContext'
+import {RiLinksLine} from '@remixicon/react'
+import {Setting, SettingsContext} from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
 import { isArgumentStringValid } from 'util/compiler'
@@ -23,12 +25,16 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
+import { Button } from 'components/ui'
 
 import Console from './Console'
 import EditorControls from './EditorControls'
 import Header from './Header'
-import { InstructionsTable } from './InstructionsTable'
-import { IConsoleOutput, CodeType } from './types'
+import {CodeType, IConsoleOutput, LogType, ValueUnit} from './types'
+import {CairoVMApiContext, CompilationState} from 'context/cairoVMApiContext'
+import {Tracer} from 'components/Tracer'
+import {InstructionsTable} from './InstructionsTable'
+
 
 type Props = {
   readOnly?: boolean
@@ -56,6 +62,7 @@ const Editor = ({ readOnly = false }: Props) => {
     tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
+    diagnostics
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -63,14 +70,14 @@ const Editor = ({ readOnly = false }: Props) => {
   const [programArguments, setProgramArguments] = useState<string>('')
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
-      type: 'info',
+      type: LogType.Info,
       message: 'App initialised...',
     },
   ])
   const editorRef = useRef<SCEditorRef>()
 
   const log = useCallback(
-    (line: string, type = 'info') => {
+    (line: string, type = LogType.Info) => {
       // See https://blog.logrocket.com/a-guide-to-usestate-in-react-ecb9952e406c/
       setOutput((previous) => {
         const cloned = previous.map((x) => ({ ...x }))
@@ -97,16 +104,25 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
+  const logDiagnostics = (diagnostics: string[]) => {
+    for (const diagnostic of diagnostics) {
+      const type = diagnostic.startsWith('error') ? LogType.Error : LogType.Warn
+      log(diagnostic, type)
+    }
+  }
+
+
   useEffect(() => {
     if (isCompiling === CompilationState.Compiling) {
       log('Compiling...')
     } else if (isCompiling === CompilationState.Compiled) {
       log('Compilation successful')
+      logDiagnostics(diagnostics)
       if (serializedOutput) {
         log(`Execution output: ${serializedOutput}`)
       }
     } else if (isCompiling === CompilationState.Error) {
-      log('Compilation failed: ', 'error')
+      logDiagnostics(diagnostics)
     }
   }, [isCompiling, log, serializedOutput])
 
