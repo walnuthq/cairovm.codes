@@ -131,8 +131,8 @@ const Editor = ({ readOnly = false }: Props) => {
   }, [settingsLoaded && router.isReady])
 
   const logDiagnostics = (diagnostics: string[]) => {
-    for (let diagnostic of diagnostics) {
-      let type = diagnostic.startsWith('error') ? LogType.Error : LogType.Warn
+    for (const diagnostic of diagnostics) {
+      const type = diagnostic.startsWith('error') ? LogType.Error : LogType.Warn
       log(diagnostic, type)
     }
   }
