@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import ExecutionStatus from './ExecutionStatus'
 import ReactTooltip from 'react-tooltip'
 
@@ -38,13 +38,14 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
   const [currentStep, setCurrentStep] = useState(0)
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[currentStep]
+  const [currentFocus, setCurrentFocus] = useState(0)
 
   useEffect(() => {
     const element = document.getElementById('focus_row')
     if (tableRef.current && element?.offsetTop) {
       tableRef.current.scrollTop = element.offsetTop - 58
     }
-  }, [currentTraceEntry])
+  }, [currentTraceEntry, currentFocus])
 
   const tableRef = useRef<HTMLDivElement>(null)
 
@@ -53,6 +54,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     setCurrentStep(currentStep + 1)
+    setCurrentFocus(currentStep + 1)
   }
 
   function stepOut() {
@@ -60,6 +62,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     setCurrentStep(currentStep - 1)
+    setCurrentFocus(currentStep - 1)
   }
 
   return (
@@ -78,6 +81,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
               memory={tracerData.memory}
               pcInstMap={tracerData.pcInstMap}
               currentTraceEntry={currentTraceEntry}
+              currentFocus={currentFocus}
             />
           </div>
           <div style={{ height: barHeight }}>
@@ -85,6 +89,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
               trace={trace}
               currentStep={currentStep}
               currentTraceEntry={currentTraceEntry}
+              setCurrentFocus={setCurrentFocus}
             />
           </div>
         </>
@@ -97,36 +102,45 @@ function InfoBar({
   currentStep,
   currentTraceEntry,
   trace,
+  setCurrentFocus,
 }: {
   currentStep: number
   currentTraceEntry: TraceEntry
   trace: TraceEntry[]
+  setCurrentFocus: Dispatch<SetStateAction<number>>
 }) {
   return (
     <div className="h-full px-4 flex items-center justify-between text-sm">
       <div className="flex gap-2">
         <span
+          onClick={() => {
+            setCurrentFocus(currentTraceEntry.pc)
+          }}
           className={`inline-flex items-center rounded-md bg-fuchsia-50 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
         >
-          <span className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
+          <button className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
             pc
-          </span>
+          </button>
           <span className="font-mono">{currentTraceEntry.pc}</span>
         </span>
         <span
+          onClick={() => setCurrentFocus(currentTraceEntry.fp)}
           className={`inline-flex items-center rounded-md bg-green-50 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
         >
-          <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
+          <button className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
             fp
-          </span>
+          </button>
           <span className="font-mono">{currentTraceEntry.fp}</span>
         </span>
         <span
+          onClick={() => {
+            setCurrentFocus(currentTraceEntry.ap)
+          }}
           className={`inline-flex items-center rounded-md bg-orange-50 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
         >
-          <span className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
+          <button className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
             ap
-          </span>
+          </button>
           <span className="font-mono">{currentTraceEntry.ap}</span>
         </span>
       </div>
@@ -160,10 +174,12 @@ function InstructionsTable({
   memory,
   pcInstMap,
   currentTraceEntry,
+  currentFocus,
 }: {
   memory: TracerData['memory']
   pcInstMap: TracerData['pcInstMap']
   currentTraceEntry: TraceEntry
+  currentFocus: number
 }) {
   const { pc, ap, fp } = currentTraceEntry
 
@@ -190,8 +206,8 @@ function InstructionsTable({
       <tbody>
         {Object.keys(memory).map((addr) => {
           const isCurrent = pc.toString() === addr
-          const isFocus = isCurrent
           const addrNum = Number(addr)
+          const isFocus = currentFocus == addrNum
           return (
             <tr
               key={addr}
