@@ -174,7 +174,9 @@ export const isValidFelt252 = (value: string): boolean => {
 //  - a felt252 decimal value
 //  - an array of felt252 where every values are separated by a space.
 export const isArgumentStringValid = (value: string) => {
-  if (value.length === 0) return true
+  if (value.length === 0) {
+    return true
+  }
 
   const items = value.split(' ')
   let index = 0

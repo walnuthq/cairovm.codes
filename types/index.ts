@@ -84,4 +84,3 @@ export interface IGasDoc {
 export interface IGasDocs {
   [opcodeOrAddress: string]: IGasDoc
 }
-
