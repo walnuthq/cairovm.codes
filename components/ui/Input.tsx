@@ -5,6 +5,7 @@ import cn from 'classnames'
 type Props = {
   searchable?: boolean
   ref?: ForwardedRef<HTMLInputElement>
+  rightIcon?: JSX.Element
   className?: string
   inputClassName?: string
   readOnly?: boolean
@@ -14,6 +15,7 @@ export const Input: React.FC<Props> = forwardRef(
   (
     {
       searchable = false,
+      rightIcon = null,
       onFocus,
       onBlur,
       className,
@@ -68,6 +70,7 @@ export const Input: React.FC<Props> = forwardRef(
             )}
           </>
         )}
+        {rightIcon && rightIcon}
       </div>
     )
   },
