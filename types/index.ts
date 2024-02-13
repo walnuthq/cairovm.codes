@@ -1,5 +1,3 @@
-import { LogType } from '../components/Editor/types'
-
 declare global {
   interface Window {
     EvmCodes: any
