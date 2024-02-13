@@ -225,6 +225,7 @@ function InstructionsTable({
       </thead>
       <tbody>
         {Object.keys(memory).map((addr) => {
+          const isCurrent = pc.toString() == addr
           const addrNum = Number(addr)
           const isFocus = currentFocus == addrNum
           return (
@@ -232,7 +233,7 @@ function InstructionsTable({
               key={addr}
               id={isFocus ? 'focus_row' : undefined}
               className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
-                isFocus ? 'text-gray-900 dark:text-gray-200' : ''
+                isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
               }`}
             >
               <td className="pl-4 pr-2">
