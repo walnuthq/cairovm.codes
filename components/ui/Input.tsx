@@ -23,18 +23,15 @@ export const Input: React.FC<Props> = forwardRef(
     },
     ref: ForwardedRef<HTMLInputElement>,
   ) => {
-    const [isFocused, setIsFocused] = useState(false)
     const [isInputEmpty, setIsInputEmpty] = useState(true)
 
     const handleFocus = (e: any) => {
-      setIsFocused(true)
       if (onFocus) {
         onFocus(e)
       }
     }
 
     const handleBlur = (e: any) => {
-      setIsFocused(false)
       if (onBlur && e) {
         onBlur(e)
       }
@@ -52,9 +49,6 @@ export const Input: React.FC<Props> = forwardRef(
       <div
         className={cn(
           'flex items-center rounded px-3 py-2 text-sm relative',
-          {
-            shadow: isFocused,
-          },
           className,
         )}
       >
