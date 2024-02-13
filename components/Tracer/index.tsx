@@ -112,37 +112,37 @@ function InfoBar({
   return (
     <div className="h-full px-4 flex items-center justify-between text-sm">
       <div className="flex gap-2">
-        <span
+        <button
           onClick={() => {
             setCurrentFocus(currentTraceEntry.pc)
           }}
-          className={`inline-flex items-center rounded-md bg-fuchsia-50 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
+          className={`inline-flex items-center rounded-md bg-fuchsia-50 dark:bg-fuchsia-950/20 hover:border-fuchsia-700/30 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
         >
-          <button className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
+          <span className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
             pc
-          </button>
+          </span>
           <span className="font-mono">{currentTraceEntry.pc}</span>
-        </span>
-        <span
+        </button>
+        <button
           onClick={() => setCurrentFocus(currentTraceEntry.fp)}
-          className={`inline-flex items-center rounded-md bg-green-50 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
+          className={`inline-flex items-center rounded-md bg-green-50 dark:bg-green-950/20 hover:border-green-700/30 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
         >
-          <button className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
+          <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
             fp
-          </button>
+          </span>
           <span className="font-mono">{currentTraceEntry.fp}</span>
-        </span>
-        <span
+        </button>
+        <button
           onClick={() => {
             setCurrentFocus(currentTraceEntry.ap)
           }}
-          className={`inline-flex items-center rounded-md bg-orange-50 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
+          className={`inline-flex items-center rounded-md bg-orange-50 dark:bg-orange-950/20 hover:border-orange-700/30 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
         >
-          <button className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
+          <span className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
             ap
-          </button>
+          </span>
           <span className="font-mono">{currentTraceEntry.ap}</span>
-        </span>
+        </button>
       </div>
       <div>
         <span className="inline-block mr-1 text-gray-500 text-sm select-none">
