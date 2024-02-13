@@ -225,7 +225,6 @@ function InstructionsTable({
       </thead>
       <tbody>
         {Object.keys(memory).map((addr) => {
-          const isCurrent = pc.toString() === addr
           const addrNum = Number(addr)
           const isFocus = currentFocus == addrNum
           return (
