@@ -1,6 +1,17 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
-import ExecutionStatus from './ExecutionStatus'
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react'
+
 import ReactTooltip from 'react-tooltip'
+
+import { CairoVMApiContext } from 'context/cairoVMApiContext'
+
+import ExecutionStatus from './ExecutionStatus'
 
 export interface Instruction {
   ap_update: string
@@ -26,6 +37,7 @@ export interface TracerData {
   pcInstMap: { [key: string]: Instruction }
   trace: TraceEntry[]
   memory: { [key: string]: string }
+  pcToInstIndexesMap: { [key: string]: number }
 }
 
 interface TracerProps {
@@ -35,13 +47,17 @@ interface TracerProps {
 }
 
 export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
-  const [currentStep, setCurrentStep] = useState(0)
+  const { onExecutionStepChange, executionTraceStepNumber } =
+    useContext(CairoVMApiContext)
+
   const trace = tracerData?.trace
-  const currentTraceEntry = tracerData?.trace[currentStep]
+  const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const [currentFocus, setCurrentFocus] = useState(0)
 
   useEffect(() => {
-    const element = document.getElementById('focus_row')
+    const element = tableRef.current?.querySelector(
+      '#focus_row',
+    ) as HTMLElement | null
     if (tableRef.current && element?.offsetTop) {
       tableRef.current.scrollTop = element.offsetTop - 58
     }
@@ -50,19 +66,23 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
   const tableRef = useRef<HTMLDivElement>(null)
 
   function stepIn() {
-    if (!trace || trace.length === 0 || currentStep === trace.length - 1) {
+    if (
+      !trace ||
+      trace.length === 0 ||
+      executionTraceStepNumber === trace.length - 1
+    ) {
       return
     }
-    setCurrentStep(currentStep + 1)
-    setCurrentFocus(currentStep + 1)
+    onExecutionStepChange(executionTraceStepNumber + 1)
+    setCurrentFocus(tracerData?.trace[executionTraceStepNumber + 1].pc || 0)
   }
 
   function stepOut() {
-    if (!trace || trace.length === 0 || currentStep === 0) {
+    if (!trace || trace.length === 0 || executionTraceStepNumber === 0) {
       return
     }
-    setCurrentStep(currentStep - 1)
-    setCurrentFocus(currentStep - 1)
+    onExecutionStepChange(executionTraceStepNumber - 1)
+    setCurrentFocus(tracerData?.trace[executionTraceStepNumber - 1].pc || 0)
   }
 
   return (
@@ -87,7 +107,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
           <div style={{ height: barHeight }}>
             <InfoBar
               trace={trace}
-              currentStep={currentStep}
+              currentStep={executionTraceStepNumber}
               currentTraceEntry={currentTraceEntry}
               setCurrentFocus={setCurrentFocus}
             />
@@ -213,7 +233,7 @@ function InstructionsTable({
               key={addr}
               id={isFocus ? 'focus_row' : undefined}
               className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
-                isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
+                isFocus ? 'text-gray-900 dark:text-gray-200' : ''
               }`}
             >
               <td className="pl-4 pr-2">
@@ -225,16 +245,7 @@ function InstructionsTable({
                 )}
                 {addrNum === fp && <span className="text-green-700">[fp]</span>}
               </td>
-              <td
-                className={`py-1 px-2 whitespace-nowrap ${
-                  // isCurrent
-                  // ? 'text-gray-400 dark:text-gray-600'
-                  // : 'text-gray-300 dark:text-gray-700'
-                  ''
-                }`}
-              >
-                {addr}
-              </td>
+              <td className="py-1 px-2 whitespace-nowrap">{addr}</td>
               <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
               {pcInstMap[addr] && (
                 <>

@@ -6,11 +6,21 @@ type Props = {
   searchable?: boolean
   ref?: ForwardedRef<HTMLInputElement>
   className?: string
+  inputClassName?: string
+  readOnly?: boolean
 } & React.ComponentPropsWithoutRef<'input'>
 
 export const Input: React.FC<Props> = forwardRef(
   (
-    { searchable = false, onFocus, onBlur, className, ...rest },
+    {
+      searchable = false,
+      onFocus,
+      onBlur,
+      className,
+      inputClassName,
+      readOnly = false,
+      ...rest
+    },
     ref: ForwardedRef<HTMLInputElement>,
   ) => {
     const [isFocused, setIsFocused] = useState(false)
@@ -50,10 +60,11 @@ export const Input: React.FC<Props> = forwardRef(
       >
         <input
           ref={ref}
+          readOnly={readOnly}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onInput={handleInput}
-          className="w-full outline-none bg-transparent dark:placeholder-black-400"
+          className={`${inputClassName} w-full outline-none bg-transparent dark:placeholder-black-100`}
           {...rest}
         />
         {searchable && (
@@ -61,15 +72,6 @@ export const Input: React.FC<Props> = forwardRef(
             {isInputEmpty && (
               <span className="text-black-400 absolute right-8">Alt+K</span>
             )}
-            {/* <Icon
-              name="search-line"
-              className={cn(
-                'ml-2',
-                isFocused
-                  ? 'text-gray-400 dark:text-gray-300'
-                  : 'text-gray-300 dark:text-gray-400',
-              )}
-            /> */}
           </>
         )}
       </div>

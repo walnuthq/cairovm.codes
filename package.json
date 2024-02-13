@@ -8,6 +8,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint --ext js,jsx,ts,tsx .",
+    "lint:fix": "eslint --ext js,jsx,ts,tsx --fix .",
     "lint:package": "sort-package-json",
     "typecheck": "tsc --pretty"
   },
