@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 
-import {IInstruction, ILogEntry} from 'types'
+import { IInstruction, ILogEntry } from 'types'
 
 import { CAIRO_VM_API_URL } from 'util/constants'
 

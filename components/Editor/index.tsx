@@ -1,27 +1,36 @@
-import React, {RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState,} from 'react'
+import React, {
+  RefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
-import {decode, encode} from '@kunigi/string-compression'
+import { decode, encode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
-import {useRouter} from 'next/router'
+import { useRouter } from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
-import {CairoVMApiContext, CompilationState} from 'context/cairoVMApiContext'
-import {Setting, SettingsContext} from 'context/settingsContext'
+import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
+import { Setting, SettingsContext } from 'context/settingsContext'
 
-import {getAbsoluteURL} from 'util/browser'
-import {isArgumentStringValid} from 'util/compiler'
-import {codeHighlight, isEmpty, objToQueryString} from 'util/string'
+import { getAbsoluteURL } from 'util/browser'
+import { isArgumentStringValid } from 'util/compiler'
+import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
-import {Tracer} from 'components/Tracer'
+import { Tracer } from 'components/Tracer'
+
+import { ILogEntry } from '../../types'
 
 import Console from './Console'
 import EditorControls from './EditorControls'
 import Header from './Header'
-import {InstructionsTable} from './InstructionsTable'
-import {CodeType, IConsoleOutput, LogType} from './types'
-import {ILogEntry} from "../../types";
+import { InstructionsTable } from './InstructionsTable'
+import { CodeType, IConsoleOutput, LogType } from './types'
 
 type Props = {
   readOnly?: boolean

@@ -1,4 +1,4 @@
-import {LogType} from "../components/Editor/types";
+import { LogType } from '../components/Editor/types'
 
 declare global {
   interface Window {
@@ -44,8 +44,8 @@ export interface IInstruction {
   hasBreakpoint?: boolean
 }
 
-export interface  ILogEntry {
-  log_type: string,
+export interface ILogEntry {
+  log_type: string
   message: string
 }
 
