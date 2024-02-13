@@ -1,34 +1,27 @@
-import React, {
-  RefObject,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, {RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState,} from 'react'
 
-import { encode, decode } from '@kunigi/string-compression'
+import {decode, encode} from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
-import { Setting, SettingsContext } from 'context/settingsContext'
+import {CairoVMApiContext, CompilationState} from 'context/cairoVMApiContext'
+import {Setting, SettingsContext} from 'context/settingsContext'
 
-import { getAbsoluteURL } from 'util/browser'
-import { isArgumentStringValid } from 'util/compiler'
-import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
+import {getAbsoluteURL} from 'util/browser'
+import {isArgumentStringValid} from 'util/compiler'
+import {codeHighlight, isEmpty, objToQueryString} from 'util/string'
 
 import examples from 'components/Editor/examples'
-import { Tracer } from 'components/Tracer'
+import {Tracer} from 'components/Tracer'
 
 import Console from './Console'
 import EditorControls from './EditorControls'
 import Header from './Header'
-import { InstructionsTable } from './InstructionsTable'
-import { CodeType, IConsoleOutput, LogType } from './types'
+import {InstructionsTable} from './InstructionsTable'
+import {CodeType, IConsoleOutput, LogType} from './types'
+import {ILogEntry} from "../../types";
 
 type Props = {
   readOnly?: boolean
@@ -56,7 +49,7 @@ const Editor = ({ readOnly = false }: Props) => {
     tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
-    diagnostics,
+    logs,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
@@ -98,10 +91,19 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
-  const logDiagnostics = (diagnostics: string[]) => {
-    for (const diagnostic of diagnostics) {
-      const type = diagnostic.startsWith('error') ? LogType.Error : LogType.Warn
-      log(diagnostic, type)
+  const handleLogs = (logs: ILogEntry[]) => {
+    for (const logEntry of logs) {
+      // TODO: make this cleaner
+      let log_type
+      if (logEntry.log_type == 'Error') {
+        log_type = LogType.Error
+      } else if (logEntry.log_type == 'Warn') {
+        log_type = LogType.Warn
+      } else {
+        log_type = LogType.Info
+      }
+
+      log(logEntry.message, log_type)
     }
   }
 
@@ -110,12 +112,12 @@ const Editor = ({ readOnly = false }: Props) => {
       log('Compiling...')
     } else if (isCompiling === CompilationState.Compiled) {
       log('Compilation successful')
-      logDiagnostics(diagnostics)
+      handleLogs(logs)
       if (serializedOutput) {
         log(`Execution output: ${serializedOutput}`)
       }
     } else if (isCompiling === CompilationState.Error) {
-      logDiagnostics(diagnostics)
+      handleLogs(logs)
     }
   }, [isCompiling, log, serializedOutput])
 

@@ -1,3 +1,5 @@
+import {LogType} from "../components/Editor/types";
+
 declare global {
   interface Window {
     EvmCodes: any
@@ -40,6 +42,11 @@ export interface IInstruction {
   name: string
   value?: string | undefined
   hasBreakpoint?: boolean
+}
+
+export interface  ILogEntry {
+  log_type: string,
+  message: string
 }
 
 export interface IStorage {
