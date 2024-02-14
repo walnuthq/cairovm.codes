@@ -68,7 +68,7 @@ const EditorControls = ({
         <p className="mt-6">
           For example,{' '}
           <code className="px-1 bg-gray-200 text-orange-600">1 [3 4 5] 9</code>{' '}
-          contains 3 parameters and the corresponding main function should be{' '}
+          contains 3 arguments and the corresponding main function should be{' '}
           <code className="mx-1 text-orange-600">
             main(x: felt252, y: Array&lt;felt252&gt;, z: felt252)
           </code>
@@ -80,7 +80,7 @@ const EditorControls = ({
   const argumentHelperIcon = (
     <>
       <button onClick={() => setShowArgumentsHelper(true)}>
-        <RiQuestionLine size={24} className="text-indigo-500" />
+        <RiQuestionLine size={20} className="text-gray-400" />
       </button>
       {showArgumentsHelper && argumentHelperModal}
     </>
@@ -110,7 +110,7 @@ const EditorControls = ({
         }}
         readOnly={isCompileDisabled}
         value={programArguments}
-        placeholder={`Enter program parameters...`}
+        placeholder={`Enter program arguments...`}
         className={cn('grow border bg-gray-200 dark:bg-gray-800', {
           'dark:border-gray-800 border-gray-200': areProgramArgumentsValid,
           'border-red-500': !areProgramArgumentsValid,
