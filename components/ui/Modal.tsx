@@ -17,12 +17,16 @@ export const Modal = ({
 
   return visible ? (
     <div
-      className="flex fixed top-0 left-0 z-80 w-screen h-screen bg-gray-800/30 dark:bg-gray-800/50 justify-center items-center"
+      className="flex fixed top-0 left-0 z-80 w-screen h-screen bg-gray-800/30 dark:bg-gray-800/50 justify-center items-center cursor-auto"
+      role="button"
+      tabIndex={0}
       onClick={closeModal}
       onKeyDown={closeModal}
     >
       <div
-        className="md:max-w-3xl relative p-4 bg-white w-full m-auto flex-col flex rounded-lg"
+        className="md:max-w-3xl relative p-4 bg-white w-full m-auto flex-col flex rounded-lg cursor-auto"
+        role="button"
+        tabIndex={0}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >
