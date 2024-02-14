@@ -128,7 +128,8 @@ const Editor = ({ readOnly = false }: Props) => {
     } else if (isCompiling === CompilationState.Error) {
       handleLogs(logs)
     }
-  }, [isCompiling, log, serializedOutput])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCompiling, log, serializedOutput, logs])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
