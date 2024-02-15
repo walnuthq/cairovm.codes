@@ -49,6 +49,10 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
 
   const set_focus = (num: number) => {
     setCurrentFocus(num)
+    scroll_to_top()
+  }
+
+  const scroll_to_top = () => {
     const element = tableRef.current?.querySelector(
       '#focus_row',
     ) as HTMLElement | null
@@ -58,12 +62,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
   }
 
   useEffect(() => {
-    const element = tableRef.current?.querySelector(
-      '#focus_row',
-    ) as HTMLElement | null
-    if (tableRef.current && element?.offsetTop) {
-      tableRef.current.scrollTop = element.offsetTop - 58
-    }
+    scroll_to_top()
   }, [currentTraceEntry, currentFocus])
 
   const tableRef = useRef<HTMLDivElement>(null)
