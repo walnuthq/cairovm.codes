@@ -15,52 +15,51 @@ export const ArgumentsHelperModal = ({
       visible={showArgumentsHelper}
       setVisible={setShowArgumentsHelper}
     >
-      <div
-        className="text-sm md:text-md lg:text-lg"
-        role="button"
-        tabIndex={0}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
+      <div className="text-sm text-gray-900">
         <p className="my-2">
-          This input field accepts a list of program arguments separated by a{' '}
+          This input field accepts a list of program arguments for the{' '}
+          <CodeElement>main()</CodeElement> function, separated by a{' '}
           <span className="font-semibold">whitespace</span>.
         </p>
-        <p className="my-2">Each argument could be:</p>
+        <p className="my-2">Each argument can be:</p>
         <ul className="list-disc ml-4">
           <li>
-            a <span className="font-semibold">single</span>
-            <code className="mx-1 text-orange-600">felt252</code>,
+            a <span className="font-semibold">single</span>{' '}
+            <CodeElement>felt252</CodeElement>,
           </li>
           <li>
-            an <span className="font-semibold">array</span> of
-            <code className="mx-1 text-orange-600">felt252</code> where items
-            are also separated by a{' '}
+            an <span className="font-semibold">array</span> of{' '}
+            <CodeElement>felt252</CodeElement> items seperated by a{' '}
             <span className="font-semibold">whitespace</span>.
           </li>
         </ul>
         <p className="mt-2 italic">
           Note that only decimal values are supported for{' '}
-          <code className="mx-1 text-orange-600">felt252</code>. That means
-          neither hexadecimal value nor short string are supported yet.
+          <CodeElement>felt252</CodeElement>. That means neither hexadecimal
+          value nor short string are supported yet.
         </p>
         <p className="mt-4">
-          Of course, the signature of your{' '}
-          <code className="mx-1 text-orange-600">main()</code> function must be
+          The signature of <CodeElement>main()</CodeElement> function must be
           adapted accordingly.
         </p>
         <p className="mt-6">
-          For example,{' '}
-          <code className="px-1 bg-gray-200 dark:bg-gray-600 text-orange-600">
-            1 [3 4 5] 9
-          </code>{' '}
-          contains 3 arguments and the corresponding main function should be{' '}
-          <code className="mx-1 text-orange-600">
+          For example, <CodeElement>1 [3 4 5] 9</CodeElement> contains 3
+          arguments and the corresponding main function should be
+          <br />
+          <CodeElement>
             main(x: felt252, y: Array&lt;felt252&gt;, z: felt252)
-          </code>
+          </CodeElement>
           .
         </p>
       </div>
     </Modal>
+  )
+}
+
+const CodeElement = ({ children }: { children: string }) => {
+  return (
+    <code className="inline-block px-1.5 py-0.5 my-0.5 rounded bg-stone-200/70 text-red-500">
+      {children}
+    </code>
   )
 }

@@ -46,7 +46,10 @@ const EditorControls = ({
         ref={inputRef}
         rightIcon={
           <button onClick={onShowArgumentsHelper}>
-            <RiQuestionLine size={20} className="text-gray-400" />
+            <RiQuestionLine
+              size={20}
+              className="text-gray-400 hover:text-gray-500"
+            />
           </button>
         }
         onChange={(e) => {
