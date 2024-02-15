@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
-} from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 
 import ReactTooltip from 'react-tooltip'
 
@@ -54,6 +47,16 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const [currentFocus, setCurrentFocus] = useState(0)
 
+  const set_focus = (num: number) => {
+    setCurrentFocus(num)
+    const element = tableRef.current?.querySelector(
+      '#focus_row',
+    ) as HTMLElement | null
+    if (tableRef.current && element?.offsetTop) {
+      tableRef.current.scrollTop = element.offsetTop - 58
+    }
+  }
+
   useEffect(() => {
     const element = tableRef.current?.querySelector(
       '#focus_row',
@@ -74,7 +77,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     onExecutionStepChange(executionTraceStepNumber + 1)
-    setCurrentFocus(tracerData?.trace[executionTraceStepNumber + 1].pc || 0)
+    set_focus(tracerData?.trace[executionTraceStepNumber + 1].pc || 0)
   }
 
   function stepOut() {
@@ -82,7 +85,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     onExecutionStepChange(executionTraceStepNumber - 1)
-    setCurrentFocus(tracerData?.trace[executionTraceStepNumber - 1].pc || 0)
+    set_focus(tracerData?.trace[executionTraceStepNumber - 1].pc || 0)
   }
 
   return (
@@ -109,7 +112,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
               trace={trace}
               currentStep={executionTraceStepNumber}
               currentTraceEntry={currentTraceEntry}
-              setCurrentFocus={setCurrentFocus}
+              set_focus={set_focus}
             />
           </div>
         </>
@@ -122,19 +125,19 @@ function InfoBar({
   currentStep,
   currentTraceEntry,
   trace,
-  setCurrentFocus,
+  set_focus,
 }: {
   currentStep: number
   currentTraceEntry: TraceEntry
   trace: TraceEntry[]
-  setCurrentFocus: Dispatch<SetStateAction<number>>
+  set_focus: (num: number) => void
 }) {
   return (
     <div className="h-full px-4 flex items-center justify-between text-sm">
       <div className="flex gap-2">
         <button
           onClick={() => {
-            setCurrentFocus(currentTraceEntry.pc)
+            set_focus(currentTraceEntry.pc)
           }}
           className={`inline-flex items-center rounded-md bg-fuchsia-50 dark:bg-fuchsia-950/20 hover:border-fuchsia-700/30 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
         >
@@ -144,7 +147,7 @@ function InfoBar({
           <span className="font-mono">{currentTraceEntry.pc}</span>
         </button>
         <button
-          onClick={() => setCurrentFocus(currentTraceEntry.fp)}
+          onClick={() => set_focus(currentTraceEntry.fp)}
           className={`inline-flex items-center rounded-md bg-green-50 dark:bg-green-950/20 hover:border-green-700/30 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
         >
           <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
@@ -154,7 +157,7 @@ function InfoBar({
         </button>
         <button
           onClick={() => {
-            setCurrentFocus(currentTraceEntry.ap)
+            set_focus(currentTraceEntry.ap)
           }}
           className={`inline-flex items-center rounded-md bg-orange-50 dark:bg-orange-950/20 hover:border-orange-700/30 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
         >
