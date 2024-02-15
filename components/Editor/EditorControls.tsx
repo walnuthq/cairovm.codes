@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 
-import { Button, Input, Modal } from 'components/ui'
+import { Button, Input } from 'components/ui'
 
 type EditorControlsProps = {
   isCompileDisabled: boolean
@@ -12,6 +12,7 @@ type EditorControlsProps = {
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
+  onShowArgumentsHelper: () => void
 }
 
 const EditorControls = ({
@@ -21,66 +22,9 @@ const EditorControls = ({
   onCopyPermalink,
   onCompileRun,
   onProgramArgumentsUpdate,
+  onShowArgumentsHelper,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
-
-  const argumentHelperModal = (
-    <Modal
-      title="Program arguments helper"
-      visible={showArgumentsHelper}
-      setVisible={setShowArgumentsHelper}
-    >
-      <div className="text-md text-gray-900">
-        <p className="my-2">
-          This input field accepts a list of program arguments for the{' '}
-          <CodeElement>main()</CodeElement> function, separated by a{' '}
-          <span className="font-semibold">whitespace</span>.
-        </p>
-        <p className="my-2">Each argument can be:</p>
-        <ul className="list-disc ml-4">
-          <li>
-            a <span className="font-semibold">single</span>{' '}
-            <CodeElement>felt252</CodeElement>,
-          </li>
-          <li>
-            an <span className="font-semibold">array</span> of{' '}
-            <CodeElement>felt252</CodeElement> items seperated by a{' '}
-            <span className="font-semibold">whitespace</span>.
-          </li>
-        </ul>
-        <p className="mt-2 italic">
-          Note that only decimal values are supported for{' '}
-          <CodeElement>felt252</CodeElement>. That means neither hexadecimal
-          value nor short string are supported yet.
-        </p>
-        <p className="mt-4">
-          The signature of <CodeElement>main()</CodeElement> function must be
-          adapted accordingly.
-        </p>
-        <p className="mt-6">
-          For example, <CodeElement>1 [3 4 5] 9</CodeElement> contains 3
-          arguments and the corresponding main function should be
-          <br />
-          <CodeElement>
-            main(x: felt252, y: Array&lt;felt252&gt;, z: felt252)
-          </CodeElement>
-          .
-        </p>
-      </div>
-    </Modal>
-  )
-  const argumentHelperIcon = (
-    <>
-      <button onClick={() => setShowArgumentsHelper(true)}>
-        <RiQuestionLine
-          size={20}
-          className="text-gray-400 hover:text-gray-500"
-        />
-      </button>
-      {showArgumentsHelper && argumentHelperModal}
-    </>
-  )
 
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
@@ -100,7 +44,14 @@ const EditorControls = ({
 
       <Input
         ref={inputRef}
-        rightIcon={argumentHelperIcon}
+        rightIcon={
+          <button onClick={onShowArgumentsHelper}>
+            <RiQuestionLine
+              size={20}
+              className="text-gray-400 hover:text-gray-500"
+            />
+          </button>
+        }
         onChange={(e) => {
           onProgramArgumentsUpdate(e.target.value)
         }}
@@ -126,14 +77,6 @@ const EditorControls = ({
         </Button>
       </div>
     </div>
-  )
-}
-
-const CodeElement = ({ children }: { children: string }) => {
-  return (
-    <code className="inline-block px-1.5 py-0.5 my-0.5 rounded bg-stone-200/70 text-red-500">
-      {children}
-    </code>
   )
 }
 
