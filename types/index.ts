@@ -42,6 +42,11 @@ export interface IInstruction {
   hasBreakpoint?: boolean
 }
 
+export interface ILogEntry {
+  log_type: string
+  message: string
+}
+
 export interface IStorage {
   address: string
   slot: string

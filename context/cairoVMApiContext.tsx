@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 
-import { IInstruction } from 'types'
+import { IInstruction, ILogEntry } from 'types'
 
 import { CAIRO_VM_API_URL } from 'util/constants'
 
@@ -20,7 +20,7 @@ type ContextProps = {
   cairoLangCompilerVersion: string
   casmInstructions: IInstruction[]
   serializedOutput?: string
-  diagnostics: string[]
+  logs: ILogEntry[]
   tracerData?: TracerData
   executionTraceStepNumber: number
   activeCasmInstructionIndex: number
@@ -36,7 +36,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   casmInstructions: [],
   cairoLangCompilerVersion: '',
   serializedOutput: undefined,
-  diagnostics: [],
+  logs: [],
   isCompiling: CompilationState.Idle,
   executionTraceStepNumber: 0,
   activeCasmInstructionIndex: 0,
@@ -56,7 +56,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
   const [serializedOutput, setSerializedOutput] = useState<string | undefined>(
     undefined,
   )
-  const [diagnostics, setDiagnostics] = useState<string[]>([])
+  const [logs, setLogs] = useState<ILogEntry[]>([])
   const [tracerData, setTracerData] = useState<TracerData | undefined>(
     undefined,
   )
@@ -91,7 +91,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
         setSerializedOutput(data.serialized_output)
-        setDiagnostics(data.diagnostics)
+        setLogs(data.logs)
         setTracerData({
           memory: data.tracer_data.memory,
           pcInstMap: data.tracer_data.pc_inst_map,
@@ -116,7 +116,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         isCompiling,
         cairoLangCompilerVersion,
         serializedOutput,
-        diagnostics,
+        logs,
         tracerData,
         casmInstructions,
         executionTraceStepNumber,
