@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 
-import { Button, Input, Modal } from 'components/ui'
+import { Button, Input } from 'components/ui'
 
 type EditorControlsProps = {
   isCompileDisabled: boolean
@@ -12,6 +12,7 @@ type EditorControlsProps = {
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
+  onShowArgumentsHelper: () => void
 }
 
 const EditorControls = ({
@@ -21,70 +22,9 @@ const EditorControls = ({
   onCopyPermalink,
   onCompileRun,
   onProgramArgumentsUpdate,
+  onShowArgumentsHelper,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
-
-  const argumentHelperModal = (
-    <Modal
-      title="Program arguments helper"
-      visible={showArgumentsHelper}
-      setVisible={setShowArgumentsHelper}
-    >
-      <div
-        className="text-sm md:text-md lg:text-lg text-gray-900 dark:text-gray-900"
-        role="button"
-        tabIndex={0}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <p className="my-2">
-          This input field accepts a list of program arguments separated by a{' '}
-          <span className="font-semibold">whitespace</span>.
-        </p>
-        <p className="my-2">Each argument could be:</p>
-        <ul className="list-disc ml-4">
-          <li>
-            a <span className="font-semibold">single</span>
-            <code className="mx-1 text-orange-600">felt252</code>,
-          </li>
-          <li>
-            an <span className="font-semibold">array</span> of
-            <code className="mx-1 text-orange-600">felt252</code> where items
-            are also separated by a{' '}
-            <span className="font-semibold">whitespace</span>.
-          </li>
-        </ul>
-        <p className="mt-2 italic">
-          Note that only decimal values are supported for{' '}
-          <code className="mx-1 text-orange-600">felt252</code>. That means
-          neither hexadecimal value nor short string are supported yet.
-        </p>
-        <p className="mt-4">
-          Of course, the signature of your{' '}
-          <code className="mx-1 text-orange-600">main()</code> function must be
-          adapted accordingly.
-        </p>
-        <p className="mt-6">
-          For example,{' '}
-          <code className="px-1 bg-gray-200 text-orange-600">1 [3 4 5] 9</code>{' '}
-          contains 3 arguments and the corresponding main function should be{' '}
-          <code className="mx-1 text-orange-600">
-            main(x: felt252, y: Array&lt;felt252&gt;, z: felt252)
-          </code>
-          .
-        </p>
-      </div>
-    </Modal>
-  )
-  const argumentHelperIcon = (
-    <>
-      <button onClick={() => setShowArgumentsHelper(true)}>
-        <RiQuestionLine size={20} className="text-gray-400" />
-      </button>
-      {showArgumentsHelper && argumentHelperModal}
-    </>
-  )
 
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
@@ -104,7 +44,14 @@ const EditorControls = ({
 
       <Input
         ref={inputRef}
-        rightIcon={argumentHelperIcon}
+        rightIcon={
+          <button onClick={onShowArgumentsHelper}>
+            <RiQuestionLine
+              size={20}
+              className="text-gray-400 hover:text-gray-500"
+            />
+          </button>
+        }
         onChange={(e) => {
           onProgramArgumentsUpdate(e.target.value)
         }}
