@@ -26,6 +26,7 @@ import { Tracer } from 'components/Tracer'
 
 import { ILogEntry } from '../../types'
 
+import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import Console from './Console'
 import EditorControls from './EditorControls'
 import Header from './Header'
@@ -71,6 +72,7 @@ const Editor = ({ readOnly = false }: Props) => {
     },
   ])
   const editorRef = useRef<SCEditorRef>()
+  const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
 
   const log = useCallback(
     (line: string, type = LogType.Info) => {
@@ -194,88 +196,95 @@ const Editor = ({ readOnly = false }: Props) => {
   const isBytecode = false
 
   return (
-    <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
-      <div className="flex flex-col md:flex-row">
-        <div className="w-full md:w-1/2">
-          <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
-            <Header
-              codeType={codeType}
-              onCodeTypeChange={({ value }) => setCodeType(value)}
-            />
-          </div>
-
-          <div>
-            <div
-              className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: cairoEditorHeight }}
-            >
-              {codeType === CodeType.CASM ? (
-                <InstructionsTable
-                  instructions={casmInstructions}
-                  activeIndex={activeCasmInstructionIndex}
-                  height={cairoEditorHeight}
-                />
-              ) : (
-                <SCEditor
-                  // @ts-ignore: SCEditor is not TS-friendly
-                  ref={editorRef}
-                  value={
-                    codeType === CodeType.Cairo
-                      ? cairoCode
-                      : codeType === CodeType.Sierra
-                      ? sierraCode
-                      : codeType === CodeType.CASM
-                      ? casmCode
-                      : ''
-                  }
-                  readOnly={readOnly}
-                  onValueChange={handleCairoCodeChange}
-                  highlight={highlightCode}
-                  tabSize={4}
-                  className={cn('code-editor', {
-                    'with-numbers': !isBytecode,
-                  })}
-                />
-              )}
+    <>
+      <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/2">
+            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
+              <Header
+                codeType={codeType}
+                onCodeTypeChange={({ value }) => setCodeType(value)}
+              />
             </div>
 
-            <EditorControls
-              isCompileDisabled={isCompileDisabled}
-              programArguments={programArguments}
-              areProgramArgumentsValid={areProgramArgumentsValid}
-              onCopyPermalink={handleCopyPermalink}
-              onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
-              onCompileRun={handleCompileRun}
+            <div>
+              <div
+                className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+                style={{ height: cairoEditorHeight }}
+              >
+                {codeType === CodeType.CASM ? (
+                  <InstructionsTable
+                    instructions={casmInstructions}
+                    activeIndex={activeCasmInstructionIndex}
+                    height={cairoEditorHeight}
+                  />
+                ) : (
+                  <SCEditor
+                    // @ts-ignore: SCEditor is not TS-friendly
+                    ref={editorRef}
+                    value={
+                      codeType === CodeType.Cairo
+                        ? cairoCode
+                        : codeType === CodeType.Sierra
+                        ? sierraCode
+                        : codeType === CodeType.CASM
+                        ? casmCode
+                        : ''
+                    }
+                    readOnly={readOnly}
+                    onValueChange={handleCairoCodeChange}
+                    highlight={highlightCode}
+                    tabSize={4}
+                    className={cn('code-editor', {
+                      'with-numbers': !isBytecode,
+                    })}
+                  />
+                )}
+              </div>
+
+              <EditorControls
+                isCompileDisabled={isCompileDisabled}
+                programArguments={programArguments}
+                areProgramArgumentsValid={areProgramArgumentsValid}
+                onCopyPermalink={handleCopyPermalink}
+                onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
+                onCompileRun={handleCompileRun}
+                onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+              />
+            </div>
+          </div>
+
+          <div className="w-full md:w-1/2">
+            <Tracer
+              tracerData={tracerData}
+              mainHeight={cairoEditorHeight}
+              barHeight={runBarHeight}
             />
           </div>
         </div>
 
-        <div className="w-full md:w-1/2">
-          <Tracer
-            tracerData={tracerData}
-            mainHeight={cairoEditorHeight}
-            barHeight={runBarHeight}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row-reverse">
-        <div className="w-full">
-          <div
-            className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"
-            style={{ height: consoleHeight }}
-          >
-            <Console output={output} />
+        <div className="flex flex-col md:flex-row-reverse">
+          <div className="w-full">
+            <div
+              className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"
+              style={{ height: consoleHeight }}
+            >
+              <Console output={output} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
-        {cairoLangCompilerVersion !== ''
-          ? `Cairo Compiler v${cairoLangCompilerVersion}`
-          : ' '}
+        <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
+          {cairoLangCompilerVersion !== ''
+            ? `Cairo Compiler v${cairoLangCompilerVersion}`
+            : ' '}
+        </div>
       </div>
-    </div>
+      <ArgumentsHelperModal
+        showArgumentsHelper={showArgumentsHelper}
+        setShowArgumentsHelper={setShowArgumentsHelper}
+      />
+    </>
   )
 }
 
