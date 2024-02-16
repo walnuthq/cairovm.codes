@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef, useReducer } from 'react'
 
 import ReactTooltip from 'react-tooltip'
 
@@ -45,6 +45,21 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+  const [currentFocus, setCurrentFocus] = useReducer(
+    (state: any, newIdx: number) => {
+      state = {
+        idx: newIdx,
+        incrementCounter: state.incrementCounter + 1,
+      }
+
+      return state
+    },
+    { idx: 0, incrementCounter: 0 },
+  )
+
+  const handleRegisterPointerClick = (num: number) => {
+    setCurrentFocus(num)
+  }
 
   useEffect(() => {
     const element = tableRef.current?.querySelector(
@@ -53,7 +68,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
     if (tableRef.current && element?.offsetTop) {
       tableRef.current.scrollTop = element.offsetTop - 58
     }
-  }, [currentTraceEntry])
+  }, [currentTraceEntry, currentFocus])
 
   const tableRef = useRef<HTMLDivElement>(null)
 
@@ -66,6 +81,9 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     onExecutionStepChange(executionTraceStepNumber + 1)
+    handleRegisterPointerClick(
+      tracerData?.trace[executionTraceStepNumber + 1].pc || 0,
+    )
   }
 
   function stepOut() {
@@ -73,6 +91,9 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     onExecutionStepChange(executionTraceStepNumber - 1)
+    handleRegisterPointerClick(
+      tracerData?.trace[executionTraceStepNumber - 1].pc || 0,
+    )
   }
 
   return (
@@ -91,6 +112,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
               memory={tracerData.memory}
               pcInstMap={tracerData.pcInstMap}
               currentTraceEntry={currentTraceEntry}
+              currentFocus={currentFocus.idx}
             />
           </div>
           <div style={{ height: barHeight }}>
@@ -98,6 +120,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
               trace={trace}
               currentStep={executionTraceStepNumber}
               currentTraceEntry={currentTraceEntry}
+              handleRegisterPointClick={handleRegisterPointerClick}
             />
           </div>
         </>
@@ -110,38 +133,47 @@ function InfoBar({
   currentStep,
   currentTraceEntry,
   trace,
+  handleRegisterPointClick,
 }: {
   currentStep: number
   currentTraceEntry: TraceEntry
   trace: TraceEntry[]
+  handleRegisterPointClick: (num: number) => void
 }) {
   return (
     <div className="h-full px-4 flex items-center justify-between text-sm">
       <div className="flex gap-2">
-        <span
-          className={`inline-flex items-center rounded-md bg-fuchsia-50 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
+        <button
+          onClick={() => {
+            handleRegisterPointClick(currentTraceEntry.pc)
+          }}
+          className={`inline-flex items-center rounded-md bg-fuchsia-50 dark:bg-fuchsia-950/20 hover:border-fuchsia-700/30 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
         >
           <span className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
             pc
           </span>
           <span className="font-mono">{currentTraceEntry.pc}</span>
-        </span>
-        <span
-          className={`inline-flex items-center rounded-md bg-green-50 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
+        </button>
+        <button
+          onClick={() => handleRegisterPointClick(currentTraceEntry.fp)}
+          className={`inline-flex items-center rounded-md bg-green-50 dark:bg-green-950/20 hover:border-green-700/30 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
         >
           <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
             fp
           </span>
           <span className="font-mono">{currentTraceEntry.fp}</span>
-        </span>
-        <span
-          className={`inline-flex items-center rounded-md bg-orange-50 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
+        </button>
+        <button
+          onClick={() => {
+            handleRegisterPointClick(currentTraceEntry.ap)
+          }}
+          className={`inline-flex items-center rounded-md bg-orange-50 dark:bg-orange-950/20 hover:border-orange-700/30 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
         >
           <span className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
             ap
           </span>
           <span className="font-mono">{currentTraceEntry.ap}</span>
-        </span>
+        </button>
       </div>
       <div>
         <span className="inline-block mr-1 text-gray-500 text-sm select-none">
@@ -173,10 +205,12 @@ function InstructionsTable({
   memory,
   pcInstMap,
   currentTraceEntry,
+  currentFocus,
 }: {
   memory: TracerData['memory']
   pcInstMap: TracerData['pcInstMap']
   currentTraceEntry: TraceEntry
+  currentFocus: number
 }) {
   const { pc, ap, fp } = currentTraceEntry
 
@@ -202,9 +236,9 @@ function InstructionsTable({
       </thead>
       <tbody>
         {Object.keys(memory).map((addr) => {
-          const isCurrent = pc.toString() === addr
-          const isFocus = isCurrent
+          const isCurrent = pc.toString() == addr
           const addrNum = Number(addr)
+          const isFocus = currentFocus == addrNum
           return (
             <tr
               key={addr}
