@@ -1,4 +1,4 @@
-import {BN} from "bn.js";
+import { BN } from 'bn.js'
 import { IInstruction, IReferenceItem } from 'types'
 
 // Version here: https://github.com/ethereum/solc-bin/blob/gh-pages/bin/list.txt
