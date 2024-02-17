@@ -1,13 +1,19 @@
-import { RiArrowGoForwardLine, RiArrowGoBackLine } from '@remixicon/react'
+import {
+  RiArrowGoForwardLine,
+  RiArrowGoBackLine,
+  RiPlayCircleLine,
+} from '@remixicon/react'
 
 import { Button } from 'components/ui'
 
 const ExecutionStatus = ({
   onStepIn,
   onStepOut,
+  onContinueExecution,
 }: {
   onStepIn: () => void
   onStepOut: () => void
+  onContinueExecution: () => void
 }) => {
   return (
     <div className="flex flex-grow justify-between items-center text-sm">
@@ -35,6 +41,15 @@ const ExecutionStatus = ({
           tooltipId="step2"
         >
           <RiArrowGoForwardLine size={16} className="text-indigo-500" />
+        </Button>
+        <Button
+          transparent
+          onClick={onContinueExecution}
+          padded={false}
+          tooltip="Continue execution"
+          tooltipId="continue-execution"
+        >
+          <RiPlayCircleLine size={16} className="text-indigo-500" />
         </Button>
       </div>
     </div>
