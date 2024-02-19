@@ -3,11 +3,11 @@ import Link from 'next/link'
 
 import { GITHUB_REPO_URL } from 'util/constants'
 
+import KBarButton from 'components/KBar/Button'
 import NavLink from 'components/NavLink'
 import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
 import { Container, Logo } from 'components/ui'
-import KBarButton from 'components/KBar/Button'
 
 const Nav = () => {
   return (

@@ -1,11 +1,8 @@
-import { AppUiContext } from 'context/appUiContext'
-import { useRouter } from 'next/router'
 import { useContext } from 'react'
 
-import { GITHUB_REPO_URL } from 'util/constants'
+import { AppUiContext } from 'context/appUiContext'
 
 const useActions = () => {
-  const router = useRouter()
   const { toggleFullScreen } = useContext(AppUiContext)
 
   return [
