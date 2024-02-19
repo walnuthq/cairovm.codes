@@ -11,8 +11,7 @@ const Results = () => {
   const flattened = useMemo(
     () =>
       groups.reduce((acc: any, curr: any) => {
-        acc.push(curr.name)
-        acc.push(...curr.actions)
+        acc.push(curr)
         return acc
       }, []),
     [groups],

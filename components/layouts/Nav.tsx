@@ -7,6 +7,7 @@ import NavLink from 'components/NavLink'
 import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
 import { Container, Logo } from 'components/ui'
+import KBarButton from 'components/KBar/Button'
 
 const Nav = () => {
   return (
@@ -28,6 +29,7 @@ const Nav = () => {
           ></ul>
 
           <div className="items-center ml-auto flex">
+            <KBarButton />
             <NavLink href={GITHUB_REPO_URL} external>
               GitHub
             </NavLink>

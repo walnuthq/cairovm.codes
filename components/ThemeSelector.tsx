@@ -8,10 +8,17 @@ const ThemeSelector = () => {
   const { theme, setTheme, resolvedTheme } = useTheme()
 
   const actions: Action[] = [
+    // {
+    //   id: 'theme',
+    //   name: 'Change theme…',
+    //   keywords: 'interface color dark light',
+    //   section: 'Preferences',
+    // },
     {
       id: 'theme',
-      name: 'Change theme…',
-      keywords: 'interface color dark light',
+      name: 'Select theme…',
+      shortcut: ['t'],
+      keywords: 'theme appearance',
       section: 'Preferences',
     },
     {
@@ -40,13 +47,6 @@ const ThemeSelector = () => {
       section: '',
       perform: () => setTheme('system'),
       parent: 'theme',
-    },
-    {
-      id: 'theme',
-      name: 'Select theme…',
-      shortcut: ['t'],
-      keywords: 'theme appearance',
-      section: 'Preferences',
     },
   ]
 
