@@ -56,7 +56,6 @@ const Editor = ({ readOnly = false }: Props) => {
     compileCairoCode,
     cairoLangCompilerVersion,
     serializedOutput,
-    tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
     logs,
@@ -255,11 +254,7 @@ const Editor = ({ readOnly = false }: Props) => {
           </div>
 
           <div className="w-full md:w-1/2">
-            <Tracer
-              tracerData={tracerData}
-              mainHeight={cairoEditorHeight}
-              barHeight={runBarHeight}
-            />
+            <Tracer mainHeight={cairoEditorHeight} barHeight={runBarHeight} />
           </div>
         </div>
 
