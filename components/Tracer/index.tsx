@@ -1,8 +1,9 @@
-import { useContext, useEffect, useRef, useReducer } from 'react'
+import { useContext, useEffect, useRef, useState, useReducer } from 'react'
 
+import cn from 'classnames'
 import ReactTooltip from 'react-tooltip'
 
-import { CairoVMApiContext } from 'context/cairoVMApiContext'
+import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
 
 import ExecutionStatus from './ExecutionStatus'
 
@@ -36,12 +37,18 @@ export interface TracerData {
 interface TracerProps {
   mainHeight: number
   barHeight: number
-  tracerData?: TracerData
 }
 
-export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
-  const { onExecutionStepChange, executionTraceStepNumber } =
-    useContext(CairoVMApiContext)
+export const Tracer = ({ mainHeight, barHeight }: TracerProps) => {
+  const {
+    tracerData,
+    breakPoints,
+    onExecutionStepChange,
+    onContinueExecution,
+    executionTraceStepNumber,
+    addBreakPoint,
+    removeBreakPoint,
+  } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
@@ -81,9 +88,7 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     onExecutionStepChange(executionTraceStepNumber + 1)
-    handleRegisterPointerClick(
-      tracerData?.trace[executionTraceStepNumber + 1].pc || 0,
-    )
+    setCurrentFocus(tracerData?.trace[executionTraceStepNumber + 1].pc || 0)
   }
 
   function stepOut() {
@@ -91,17 +96,35 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
       return
     }
     onExecutionStepChange(executionTraceStepNumber - 1)
-    handleRegisterPointerClick(
-      tracerData?.trace[executionTraceStepNumber - 1].pc || 0,
-    )
+    setCurrentFocus(tracerData?.trace[executionTraceStepNumber - 1].pc || 0)
+  }
+
+  function continueExecution() {
+    onContinueExecution()
+  }
+
+  function toogleBreakPoint(addr: string) {
+    if (!breakPoints) {
+      return
+    }
+
+    if (breakPoints[addr]) {
+      removeBreakPoint(addr)
+    } else {
+      addBreakPoint(addr)
+    }
   }
 
   return (
     <>
       <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
-        <ExecutionStatus onStepIn={stepIn} onStepOut={stepOut} />
+        <ExecutionStatus
+          onStepIn={stepIn}
+          onStepOut={stepOut}
+          onContinueExecution={continueExecution}
+        />
       </div>
-      {tracerData && currentTraceEntry && trace && (
+      {tracerData && currentTraceEntry && trace && breakPoints && (
         <>
           <div
             ref={tableRef}
@@ -113,6 +136,8 @@ export const Tracer = ({ tracerData, mainHeight, barHeight }: TracerProps) => {
               pcInstMap={tracerData.pcInstMap}
               currentTraceEntry={currentTraceEntry}
               currentFocus={currentFocus.idx}
+              breakpoints={breakPoints}
+              toogleBreakPoint={toogleBreakPoint}
             />
           </div>
           <div style={{ height: barHeight }}>
@@ -206,18 +231,25 @@ function InstructionsTable({
   pcInstMap,
   currentTraceEntry,
   currentFocus,
+  breakpoints,
+  toogleBreakPoint,
 }: {
   memory: TracerData['memory']
   pcInstMap: TracerData['pcInstMap']
   currentTraceEntry: TraceEntry
   currentFocus: number
+  breakpoints: BreakPoints
+  toogleBreakPoint: (addr: string) => void
 }) {
   const { pc, ap, fp } = currentTraceEntry
+
+  const [hoveredAddr, setHoveredAddr] = useState<string>('')
 
   return (
     <table className="w-full font-mono text-tiny">
       <thead>
         <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+          <th className="py-1"></th>
           <th className="py-1"></th>
           <th className="py-1"></th>
           <th className="py-1 px-2 font-thin">memory</th>
@@ -239,15 +271,31 @@ function InstructionsTable({
           const isCurrent = pc.toString() == addr
           const addrNum = Number(addr)
           const isFocus = currentFocus == addrNum
+          const hasBreakpoint = breakpoints[addr]
           return (
             <tr
               key={addr}
               id={isFocus ? 'focus_row' : undefined}
-              className={`border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
+              className={`relative border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
                 isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
               }`}
+              onMouseEnter={() => setHoveredAddr(addr)}
+              onMouseLeave={() => setHoveredAddr('')}
             >
               <td className="pl-4 pr-2">
+                <button
+                  onClick={() => toogleBreakPoint(addr)}
+                  className={cn(
+                    'absolute block top-2 left-2 w-2 h-2 z-10 rounded-full',
+                    {
+                      'bg-red-300': hoveredAddr === addr,
+                      'hover:bg-red-300': !hasBreakpoint,
+                      'bg-red-500': hasBreakpoint,
+                    },
+                  )}
+                />
+              </td>
+              <td className="pr-2">
                 {addrNum === pc && (
                   <span className="text-fuchsia-700">[pc]</span>
                 )}
