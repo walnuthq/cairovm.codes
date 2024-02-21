@@ -6,7 +6,7 @@
   <img width="1392" alt="cairovm.codes app screenshot" src="https://github.com/walnuthq/cairovm.codes/assets/2983746/e5207329-9a93-4388-980c-5a02f9a4f2af">
 </p>
 
-This is the frontend source code that runs [cairovm.codes](http://cairovm.codes) web application. Repository with the backend code can be found [here](https://github.com/walnuthq/cairovm.codes-server). Below you will find the docs on how to contribute to the project and get it up and running locally for further development.
+This is the source code that runs [cairovm.codes](http://cairovm.codes) web application. Below you will find the docs on how to contribute to the project and get it up and running locally for further development.
 
 cairovm.codes is brought to you by [Walnut](https://www.walnut.dev).
 
