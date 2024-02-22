@@ -1,9 +1,16 @@
 {
-  "printWidth": 80,
-  "singleQuote": true,
-  "semi": false,
-  "trailingComma": "all",
-  "bracketSpacing": true,
-  "endOfLine": "auto",
-  "tabWidth": 2
-}
+    "printWidth": 80,
+    "singleQuote": true,
+    "semi": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "endOfLine": "auto",
+    "tabWidth": 2,
+    "overrides": [{
+        "files": "*.css ",
+        "options": {
+
+        },
+    }, ],
+    // Other global Prettier options
+} // .prettierrc or prettier.config.js

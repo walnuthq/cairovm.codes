@@ -21,14 +21,13 @@ const ToggleFullScreen = () => {
     toggleFullScreen()
   }
 
-  let FullScreenIcon
-  if (isFullScreen) {
-    FullScreenIcon =
-      resolvedTheme === 'dark' ? RiFullscreenExitFill : RiFullscreenExitLine
-  } else {
-    FullScreenIcon =
-      resolvedTheme === 'dark' ? RiFullscreenFill : RiFullscreenLine
-  }
+  const FullScreenIcon = isFullScreen
+  ? resolvedTheme === 'dark'
+    ? RiFullscreenExitFill
+    : RiFullscreenExitLine
+  : resolvedTheme === 'dark'
+  ? RiFullscreenFill
+  : RiFullscreenLine;
 
   return (
     <Button

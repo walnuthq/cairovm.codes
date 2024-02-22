@@ -62,11 +62,7 @@ export const Button: React.FC<Props> = ({
         {children}
       </div>
       {tooltip && tooltipId && (
-        <ReactTooltip
-          className="tooltip"
-          id={tooltipIdPrefixed}
-          effect="solid"
-        />
+        <ReactTooltip class="tooltip" id={tooltipIdPrefixed} effect="solid" />
       )}
     </button>
   )
