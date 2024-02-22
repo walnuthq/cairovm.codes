@@ -59,7 +59,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
-    IConsoleTab.DebugInfo,
+    IConsoleTab.Console,
   )
 
   const consoleHeight = 150
@@ -129,8 +129,8 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   return (
     <>
-      <div className="flex-grow bg-gray-50">
-        <div className="bg-gray-100 border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
+      <div className="flex-grow">
+        <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
           <ExecutionStatus
             onStepIn={stepIn}
             onStepOut={stepOut}
@@ -194,43 +194,85 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (
-            <div className="px-4 pb-4">
-              <dl className="text-2xs">
-                <div className="flex flex-col lg:flex-row justify-between">
-                  <div>
-                    <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
-                      Registers
-                    </dt>
-                    <dd className="font-mono mb-2 flex gap-1">
-                      <div className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700">
-                        PC: {currentTraceEntry?.pc}
-                      </div>
-                      <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-green-700 hover:border-green-700">
-                        FP: {currentTraceEntry?.fp}
-                      </div>
-                      <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-orange-700 hover:border-orange-700">
-                        AP: {currentTraceEntry?.ap}
-                      </div>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
-                      Execution steps
-                    </dt>
-                    <dd className="font-mono mb-2">
-                      <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
-                        Current: {executionTraceStepNumber + 1}, Total:{' '}
-                        {trace?.length}
-                      </div>
-                    </dd>
-                  </div>
-                </div>
-              </dl>
-            </div>
+            <DebugInfoTab
+              trace={trace}
+              currentTraceEntry={currentTraceEntry}
+              executionTraceStepNumber={executionTraceStepNumber}
+              handleRegisterPointerClick={handleRegisterPointerClick}
+            />
           )}
         </div>
       </div>
     </>
+  )
+}
+
+function DebugInfoTab({
+  trace,
+  currentTraceEntry,
+  executionTraceStepNumber,
+  handleRegisterPointerClick,
+}: {
+  trace: TraceEntry[] | undefined
+  currentTraceEntry: TraceEntry | undefined
+  executionTraceStepNumber: number
+  handleRegisterPointerClick: (num: number) => void
+}) {
+  return (
+    <div className="px-4 pb-4">
+      {trace === undefined ? (
+        <p className="text-mono text-tiny text-gray-400 dark:text-gray-500">
+          Run the app to get debug info
+        </p>
+      ) : (
+        <dl className="text-2xs">
+          <div className="flex flex-col lg:flex-row justify-between">
+            <div>
+              <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                Registers
+              </dt>
+              <dd className="font-mono mb-2 flex gap-1">
+                <button
+                  onClick={() => {
+                    handleRegisterPointerClick(currentTraceEntry?.pc as number)
+                  }}
+                  className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
+                >
+                  PC: {currentTraceEntry?.pc}
+                </button>
+                <button
+                  onClick={() => {
+                    handleRegisterPointerClick(currentTraceEntry?.fp as number)
+                  }}
+                  className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-green-700 hover:border-green-700"
+                >
+                  FP: {currentTraceEntry?.fp}
+                </button>
+                <button
+                  onClick={() => {
+                    handleRegisterPointerClick(currentTraceEntry?.ap as number)
+                  }}
+                  className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-orange-700 hover:border-orange-700"
+                >
+                  AP: {currentTraceEntry?.ap}
+                </button>
+              </dd>
+            </div>
+            <div>
+              <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                Execution steps
+              </dt>
+              <dd className="font-mono mb-2">
+                <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                  Current: {executionTraceStepNumber + 1}, Total:{' '}
+                  {trace?.length}
+                </div>
+              </dd>
+            </div>
+          </div>
+        </dl>
+      )}
+    </div>
   )
 }
 
