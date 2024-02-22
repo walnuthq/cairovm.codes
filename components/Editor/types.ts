@@ -1,25 +1,10 @@
-export enum LogType {
-  Error,
-  Info,
-  Warn,
-}
-
-export enum CodeType {
-  Cairo = 'Cairo',
-  Sierra = 'Sierra',
-  CASM = 'CASM',
-}
+import { CodeType } from 'context/appUiContext'
 
 export enum ValueUnit {
   Wei = 'Wei',
   Gwei = 'Gwei',
   Finney = 'Finney',
   Ether = 'Ether',
-}
-
-export interface IConsoleOutput {
-  type: LogType
-  message: string
 }
 
 export type ExampleCode = {

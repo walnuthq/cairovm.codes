@@ -27,11 +27,16 @@ import { Tracer } from 'components/Tracer'
 import { ILogEntry } from '../../types'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
-import Console from './Console'
+
 import EditorControls from './EditorControls'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
-import { CodeType, IConsoleOutput, LogType } from './types'
+import {
+  AppUiContext,
+  CodeType,
+  IConsoleOutput,
+  LogType,
+} from '../../context/appUiContext'
 
 type Props = {
   readOnly?: boolean
@@ -60,6 +65,8 @@ const Editor = ({ readOnly = false }: Props) => {
     casmToSierraMap,
     logs,
   } = useContext(CairoVMApiContext)
+
+  const { addToConsoleLog } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
@@ -113,18 +120,18 @@ const Editor = ({ readOnly = false }: Props) => {
         log_type = LogType.Info
       }
 
-      log(logEntry.message, log_type)
+      addToConsoleLog(logEntry.message, log_type)
     }
   }
 
   useEffect(() => {
     if (isCompiling === CompilationState.Compiling) {
-      log('Compiling...')
+      addToConsoleLog('Compiling...')
     } else if (isCompiling === CompilationState.Compiled) {
-      log('Compilation successful')
+      addToConsoleLog('Compilation successful')
       handleLogs(logs)
       if (serializedOutput) {
-        log(`Execution output: ${serializedOutput}`)
+        addToConsoleLog(`Execution output: ${serializedOutput}`)
       }
     } else if (isCompiling === CompilationState.Error) {
       handleLogs(logs)
@@ -153,7 +160,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
     return codeHighlight(value, _codeType)
       .value.split('\n')
-      .map((line, i) => `<span class='line-number'>${i + 1}</span>${line}`)
+      .map((line, i) => `<span className='line-number'>${i + 1}</span>${line}`)
       .join('\n')
   }
 
@@ -180,7 +187,7 @@ const Editor = ({ readOnly = false }: Props) => {
     }
 
     copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
-    log('Link with current Cairo code copied to clipboard')
+    addToConsoleLog('Link with current Cairo code copied to clipboard')
   }, [cairoCode, codeType, log])
 
   const areProgramArgumentsValid = useMemo(() => {
@@ -198,7 +205,7 @@ const Editor = ({ readOnly = false }: Props) => {
     <>
       <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
         <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-1/2 flex flex-col">
             <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
               <Header
                 codeType={codeType}
@@ -206,66 +213,53 @@ const Editor = ({ readOnly = false }: Props) => {
               />
             </div>
 
-            <div>
-              <div
-                className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-                style={{ height: cairoEditorHeight }}
-              >
-                {codeType === CodeType.CASM ? (
-                  <InstructionsTable
-                    instructions={casmInstructions}
-                    activeIndexes={[activeCasmInstructionIndex]}
-                    height={cairoEditorHeight}
-                  />
-                ) : codeType === CodeType.Sierra ? (
-                  <InstructionsTable
-                    instructions={sierraStatements}
-                    activeIndexes={
-                      casmToSierraMap[activeCasmInstructionIndex] ?? []
-                    }
-                    height={cairoEditorHeight}
-                  />
-                ) : (
-                  <SCEditor
-                    // @ts-ignore: SCEditor is not TS-friendly
-                    ref={editorRef}
-                    value={codeType === CodeType.Cairo ? cairoCode : ''}
-                    readOnly={readOnly}
-                    onValueChange={handleCairoCodeChange}
-                    highlight={highlightCode}
-                    tabSize={4}
-                    className={cn('code-editor', {
-                      'with-numbers': !isBytecode,
-                    })}
-                  />
-                )}
-              </div>
-
-              <EditorControls
-                isCompileDisabled={isCompileDisabled}
-                programArguments={programArguments}
-                areProgramArgumentsValid={areProgramArgumentsValid}
-                onCopyPermalink={handleCopyPermalink}
-                onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
-                onCompileRun={handleCompileRun}
-                onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
-              />
-            </div>
-          </div>
-
-          <div className="w-full md:w-1/2">
-            <Tracer mainHeight={cairoEditorHeight} barHeight={runBarHeight} />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row-reverse">
-          <div className="w-full">
             <div
-              className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"
-              style={{ height: consoleHeight }}
+              className="relative pane pane-light flex-grow overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+              style={{ height: cairoEditorHeight }}
             >
-              <Console output={output} />
+              {codeType === CodeType.CASM ? (
+                <InstructionsTable
+                  instructions={casmInstructions}
+                  activeIndexes={[activeCasmInstructionIndex]}
+                  height={cairoEditorHeight}
+                />
+              ) : codeType === CodeType.Sierra ? (
+                <InstructionsTable
+                  instructions={sierraStatements}
+                  activeIndexes={
+                    casmToSierraMap[activeCasmInstructionIndex] ?? []
+                  }
+                  height={cairoEditorHeight}
+                />
+              ) : (
+                <SCEditor
+                  // @ts-ignore: SCEditor is not TS-friendly
+                  ref={editorRef}
+                  value={codeType === CodeType.Cairo ? cairoCode : ''}
+                  readOnly={readOnly}
+                  onValueChange={handleCairoCodeChange}
+                  highlight={highlightCode}
+                  tabSize={4}
+                  className={cn('code-editor', {
+                    'with-numbers': !isBytecode,
+                  })}
+                />
+              )}
             </div>
+
+            <EditorControls
+              isCompileDisabled={isCompileDisabled}
+              programArguments={programArguments}
+              areProgramArgumentsValid={areProgramArgumentsValid}
+              onCopyPermalink={handleCopyPermalink}
+              onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
+              onCompileRun={handleCompileRun}
+              onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+            />
+          </div>
+
+          <div className="w-full md:w-1/2 flex flex-col">
+            <Tracer mainHeight={cairoEditorHeight} />
           </div>
         </div>
 
