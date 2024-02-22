@@ -160,7 +160,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
     return codeHighlight(value, _codeType)
       .value.split('\n')
-      .map((line, i) => `<span className='line-number'>${i + 1}</span>${line}`)
+      .map((line, i) => `<span class='line-number'>${i + 1}</span>${line}`)
       .join('\n')
   }
 
