@@ -276,8 +276,10 @@ function InstructionsTable({
             <tr
               key={addr}
               id={isFocus ? 'focus_row' : undefined}
-              className={`relative border-b text-gray-400 dark:text-gray-600 border-gray-200 dark:border-black-500 ${
-                isCurrent ? 'text-gray-900 dark:text-gray-200' : ''
+              className={`relative border-b border-gray-200 dark:border-black-500 ${
+                isCurrent
+                  ? 'text-gray-900 dark:text-gray-200'
+                  : 'text-gray-400 dark:text-gray-600'
               }`}
               onMouseEnter={() => setHoveredAddr(addr)}
               onMouseLeave={() => setHoveredAddr('')}

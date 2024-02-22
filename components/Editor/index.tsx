@@ -195,49 +195,6 @@ const Editor = ({ readOnly = false }: Props) => {
   const isBytecode = false
 
   return (
-    // <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
-    //   <div className="flex flex-col md:flex-row">
-    //     <div className="w-full md:w-1/2">
-    //       <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
-    //         <Header
-    //           codeType={codeType}
-    //           onCodeTypeChange={({ value }) => setCodeType(value)}
-    //         />
-    //       </div>
-
-    //       <div>
-    //         <div
-    //           className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-    //           style={{ height: cairoEditorHeight }}
-    //         >
-    //           {codeType === CodeType.CASM ? (
-    //             <InstructionsTable
-    //               instructions={casmInstructions}
-    //               activeIndexes={[activeCasmInstructionIndex]}
-    //               height={cairoEditorHeight}
-    //             />
-    //           ) : codeType === CodeType.Sierra ? (
-    //             <InstructionsTable
-    //               instructions={sierraStatements}
-    //               activeIndexes={
-    //                 casmToSierraMap[activeCasmInstructionIndex] ?? []
-    //               }
-    //               height={cairoEditorHeight}
-    //             />
-    //           ) : (
-    //             <SCEditor
-    //               // @ts-ignore: SCEditor is not TS-friendly
-    //               ref={editorRef}
-    //               value={codeType === CodeType.Cairo ? cairoCode : ''}
-    //               readOnly={readOnly}
-    //               onValueChange={handleCairoCodeChange}
-    //               highlight={highlightCode}
-    //               tabSize={4}
-    //               className={cn('code-editor', {
-    //                 'with-numbers': !isBytecode,
-    //               })}
-    //             />
-    //           )}
     <>
       <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
         <div className="flex flex-col md:flex-row">
