@@ -1,6 +1,4 @@
-import { useTheme } from 'next-themes'
 import { useContext } from 'react'
-import { AppUiContext } from 'context/appUiContext'
 
 import {
   RiFullscreenExitFill,
@@ -8,6 +6,9 @@ import {
   RiFullscreenFill,
   RiFullscreenLine,
 } from '@remixicon/react'
+import { useTheme } from 'next-themes'
+
+import { AppUiContext } from 'context/appUiContext'
 
 import { Button } from 'components/ui'
 

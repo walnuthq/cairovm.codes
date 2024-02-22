@@ -5,26 +5,35 @@ import cn from 'classnames'
 type Props = {
   searchable?: boolean
   ref?: ForwardedRef<HTMLInputElement>
+  rightIcon?: JSX.Element
   className?: string
+  inputClassName?: string
+  readOnly?: boolean
 } & React.ComponentPropsWithoutRef<'input'>
 
 export const Input: React.FC<Props> = forwardRef(
   (
-    { searchable = false, onFocus, onBlur, className, ...rest },
+    {
+      searchable = false,
+      rightIcon = null,
+      onFocus,
+      onBlur,
+      className,
+      inputClassName,
+      readOnly = false,
+      ...rest
+    },
     ref: ForwardedRef<HTMLInputElement>,
   ) => {
-    const [isFocused, setIsFocused] = useState(false)
     const [isInputEmpty, setIsInputEmpty] = useState(true)
 
     const handleFocus = (e: any) => {
-      setIsFocused(true)
       if (onFocus) {
         onFocus(e)
       }
     }
 
     const handleBlur = (e: any) => {
-      setIsFocused(false)
       if (onBlur && e) {
         onBlur(e)
       }
@@ -42,18 +51,16 @@ export const Input: React.FC<Props> = forwardRef(
       <div
         className={cn(
           'flex items-center rounded px-3 py-2 text-sm relative',
-          {
-            shadow: isFocused,
-          },
           className,
         )}
       >
         <input
           ref={ref}
+          readOnly={readOnly}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onInput={handleInput}
-          className="w-full outline-none bg-transparent dark:placeholder-black-400"
+          className={`${inputClassName} w-full outline-none bg-transparent dark:placeholder-black-100`}
           {...rest}
         />
         {searchable && (
@@ -61,17 +68,9 @@ export const Input: React.FC<Props> = forwardRef(
             {isInputEmpty && (
               <span className="text-black-400 absolute right-8">Alt+K</span>
             )}
-            {/* <Icon
-              name="search-line"
-              className={cn(
-                'ml-2',
-                isFocused
-                  ? 'text-gray-400 dark:text-gray-300'
-                  : 'text-gray-300 dark:text-gray-400',
-              )}
-            /> */}
           </>
         )}
+        {rightIcon && rightIcon}
       </div>
     )
   },

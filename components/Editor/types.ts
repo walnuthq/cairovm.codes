@@ -1,9 +1,13 @@
+export enum LogType {
+  Error,
+  Info,
+  Warn,
+}
+
 export enum CodeType {
   Cairo = 'Cairo',
   Sierra = 'Sierra',
   CASM = 'CASM',
-  // Bytecode = 'Bytecode',
-  // Mnemonic = 'Mnemonic',
 }
 
 export enum ValueUnit {
@@ -14,7 +18,7 @@ export enum ValueUnit {
 }
 
 export interface IConsoleOutput {
-  type: 'info' | 'warn' | 'error'
+  type: LogType
   message: string
 }
 

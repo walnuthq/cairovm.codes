@@ -1,10 +1,6 @@
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import Select, { OnChangeValue } from 'react-select'
-
-import { EthereumContext } from 'context/ethereumContext'
-
-import { Label } from 'components/ui'
 
 import { CodeType } from './types'
 
@@ -19,8 +15,6 @@ const codeLangOptions = Object.keys(CodeType).map((lang) => ({
 }))
 
 const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
-  const { selectedFork } = useContext(EthereumContext)
-
   const codeTypeValue = useMemo(
     () => ({
       value: codeType,

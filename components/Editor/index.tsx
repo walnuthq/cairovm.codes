@@ -1,54 +1,37 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-  useMemo,
-  useCallback,
-  MutableRefObject,
   RefObject,
-  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
 
-import { bufferToHex } from '@ethereumjs/util'
-import { encode, decode } from '@kunigi/string-compression'
+import { decode, encode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { useRouter } from 'next/router'
-import { OnChangeValue } from 'react-select'
 import SCEditor from 'react-simple-code-editor'
 
-import { RiLinksLine } from '@remixicon/react'
-
-import { EthereumContext } from 'context/ethereumContext'
-import { SettingsContext, Setting } from 'context/settingsContext'
+import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
+import { Setting, SettingsContext } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
-import {
-  getTargetEvmVersion,
-  compilerSemVer,
-  getBytecodeFromMnemonic,
-  getMnemonicFromBytecode,
-  getBytecodeLinesFromInstructions,
-} from 'util/compiler'
-import {
-  codeHighlight,
-  isEmpty,
-  isFullHex,
-  isHex,
-  objToQueryString,
-} from 'util/string'
+import { isArgumentStringValid } from 'util/compiler'
+import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
-import { Button } from 'components/ui'
-
-import Console from './Console'
-import Header from './Header'
-import { IConsoleOutput, CodeType, ValueUnit, Contract } from './types'
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
 import { Tracer } from 'components/Tracer'
+
+import { ILogEntry } from '../../types'
+
+import { ArgumentsHelperModal } from './ArgumentsHelperModal'
+import Console from './Console'
+import EditorControls from './EditorControls'
+import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
-import Instructions from './Instructions'
+import { CodeType, IConsoleOutput, LogType } from './types'
 
 type Props = {
   readOnly?: boolean
@@ -60,57 +43,38 @@ type SCEditorRef = {
 
 const cairoEditorHeight = 350
 const runBarHeight = 52
-const sierraEditorHeight = cairoEditorHeight + runBarHeight
-const casmInstructionsListHeight = cairoEditorHeight + runBarHeight
-const instructionsListWithExpandHeight = cairoEditorHeight + 156 // Advance Mode bar
 const consoleHeight = 150
 
 const Editor = ({ readOnly = false }: Props) => {
-  const { settingsLoaded, getSetting, setSetting } = useContext(SettingsContext)
+  const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
 
-  // const {
-  //   deployedContractAddress,
-  //   selectedFork,
-  //   opcodes,
-  //   instructions,
-  //   onForkChange,
-  // } = useContext(EthereumContext)
-
   const {
-    sierraCode,
-    casmCode,
     isCompiling,
     compileCairoCode,
     cairoLangCompilerVersion,
     serializedOutput,
-    tracerData,
     casmInstructions,
     activeCasmInstructionIndex,
     sierraStatements,
     casmToSierraMap,
+    logs,
   } = useContext(CairoVMApiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
-  const [cairoCodeModified, setCairoCodeModified] = useState(false)
+  const [programArguments, setProgramArguments] = useState<string>('')
   const [output, setOutput] = useState<IConsoleOutput[]>([
     {
-      type: 'info',
+      type: LogType.Info,
       message: 'App initialised...',
     },
   ])
-  // const solcWorkerRef = useRef<null | Worker>(null)
-  const instructionsRef = useRef() as MutableRefObject<HTMLDivElement>
   const editorRef = useRef<SCEditorRef>()
-  const [callData, setCallData] = useState('')
-  const [callValue, setCallValue] = useState('')
-  const [unit, setUnit] = useState(ValueUnit.Wei as string)
-
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
 
   const log = useCallback(
-    (line: string, type = 'info') => {
+    (line: string, type = LogType.Info) => {
       // See https://blog.logrocket.com/a-guide-to-usestate-in-react-ecb9952e406c/
       setOutput((previous) => {
         const cloned = previous.map((x) => ({ ...x }))
@@ -124,15 +88,6 @@ const Editor = ({ readOnly = false }: Props) => {
   useEffect(() => {
     const query = router.query
 
-    if ('callValue' in query && 'unit' in query) {
-      setCallValue(query.callValue as string)
-      setUnit(query.unit as string)
-    }
-
-    if ('callData' in query) {
-      setCallData(query.callData as string)
-    }
-
     if ('codeType' in query && 'code' in query) {
       setCodeType(query.codeType as string)
       setCairoCode(JSON.parse('{"a":' + decode(query.code as string) + '}').a)
@@ -143,36 +98,42 @@ const Editor = ({ readOnly = false }: Props) => {
       setCodeType(initialCodeType)
       setCairoCode(examples[initialCodeType][0])
     }
-
-    // if ('fork' in query) {
-    //   onForkChange(query.fork as string)
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
+
+  const handleLogs = (logs: ILogEntry[]) => {
+    for (const logEntry of logs) {
+      // TODO: make this cleaner
+      let log_type
+      if (logEntry.log_type == 'Error') {
+        log_type = LogType.Error
+      } else if (logEntry.log_type == 'Warn') {
+        log_type = LogType.Warn
+      } else {
+        log_type = LogType.Info
+      }
+
+      log(logEntry.message, log_type)
+    }
+  }
 
   useEffect(() => {
     if (isCompiling === CompilationState.Compiling) {
       log('Compiling...')
     } else if (isCompiling === CompilationState.Compiled) {
       log('Compilation successful')
+      handleLogs(logs)
       if (serializedOutput) {
         log(`Execution output: ${serializedOutput}`)
       }
     } else if (isCompiling === CompilationState.Error) {
-      log('Compilation failed: ', 'error')
+      handleLogs(logs)
     }
-  }, [isCompiling])
-
-  // useEffect(() => {
-  //   if (deployedContractAddress) {
-  //     log(`Contract deployed at address: ${deployedContractAddress}`)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [deployedContractAddress])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCompiling, log, serializedOutput, logs])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
-    setCairoCodeModified(true)
   }
 
   const highlightCode = (value: string) => {
@@ -180,9 +141,6 @@ const Editor = ({ readOnly = false }: Props) => {
       return value
     }
 
-    // if (codeType === CodeType.Bytecode) {
-    //   return codeHighlight(value, codeType).value
-    // }
     let _codeType = codeType
 
     if (_codeType === CodeType.Sierra) {
@@ -199,178 +157,172 @@ const Editor = ({ readOnly = false }: Props) => {
       .join('\n')
   }
 
+  const removeExtraWhitespaces = (value: string) => {
+    const sanitizedValue = value.trim().replace(/\s+/g, ' ')
+    return sanitizedValue
+  }
+
+  const handleProgramArgumentsUpdate = useCallback(
+    (_programArguments: string) => {
+      setProgramArguments(_programArguments)
+    },
+    [setProgramArguments],
+  )
+
   const handleCompileRun = useCallback(() => {
-    compileCairoCode(cairoCode)
-  }, [cairoCode])
+    compileCairoCode(cairoCode, removeExtraWhitespaces(programArguments))
+  }, [cairoCode, programArguments, compileCairoCode])
 
   const handleCopyPermalink = useCallback(() => {
-    // const fork = selectedFork?.name
     const params = {
-      // fork,
-      // callValue,
-      // unit,
-      // callData,
       codeType,
       code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
     }
 
     copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
     log('Link with current Cairo code copied to clipboard')
-  }, [cairoCode, log])
+  }, [cairoCode, codeType, log])
+
+  const areProgramArgumentsValid = useMemo(() => {
+    const sanitizedArguments = removeExtraWhitespaces(programArguments)
+    return isArgumentStringValid(sanitizedArguments)
+  }, [programArguments])
 
   const isCompileDisabled = useMemo(() => {
     return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
   }, [isCompiling, cairoCode])
 
-  // const isBytecode = useMemo(() => codeType === CodeType.Bytecode, [codeType])
   const isBytecode = false
 
-  const showAdvanceMode = useMemo(() => {
-    return codeType === CodeType.Cairo && isExpanded
-  }, [codeType, isExpanded])
-
   return (
-    <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
-      <div className="flex flex-col md:flex-row">
-        <div className="w-full md:w-1/2">
-          <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
-            <Header
-              codeType={codeType}
-              onCodeTypeChange={({ value }) => setCodeType(value)}
-            />
-          </div>
+    // <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
+    //   <div className="flex flex-col md:flex-row">
+    //     <div className="w-full md:w-1/2">
+    //       <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
+    //         <Header
+    //           codeType={codeType}
+    //           onCodeTypeChange={({ value }) => setCodeType(value)}
+    //         />
+    //       </div>
 
-          <div>
-            <div
-              className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: cairoEditorHeight }}
-            >
-              {codeType === CodeType.CASM ? (
-                <InstructionsTable
-                  instructions={casmInstructions}
-                  activeIndexes={[activeCasmInstructionIndex]}
-                  height={cairoEditorHeight}
-                />
-              ) : codeType === CodeType.Sierra ? (
-                <InstructionsTable
-                  instructions={sierraStatements}
-                  activeIndexes={
-                    casmToSierraMap[activeCasmInstructionIndex] ?? []
-                  }
-                  height={cairoEditorHeight}
-                />
-              ) : (
-                <SCEditor
-                  // @ts-ignore: SCEditor is not TS-friendly
-                  ref={editorRef}
-                  value={codeType === CodeType.Cairo ? cairoCode : ''}
-                  readOnly={readOnly}
-                  onValueChange={handleCairoCodeChange}
-                  highlight={highlightCode}
-                  tabSize={4}
-                  className={cn('code-editor', {
-                    'with-numbers': !isBytecode,
-                  })}
-                />
-              )}
+    //       <div>
+    //         <div
+    //           className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+    //           style={{ height: cairoEditorHeight }}
+    //         >
+    //           {codeType === CodeType.CASM ? (
+    //             <InstructionsTable
+    //               instructions={casmInstructions}
+    //               activeIndexes={[activeCasmInstructionIndex]}
+    //               height={cairoEditorHeight}
+    //             />
+    //           ) : codeType === CodeType.Sierra ? (
+    //             <InstructionsTable
+    //               instructions={sierraStatements}
+    //               activeIndexes={
+    //                 casmToSierraMap[activeCasmInstructionIndex] ?? []
+    //               }
+    //               height={cairoEditorHeight}
+    //             />
+    //           ) : (
+    //             <SCEditor
+    //               // @ts-ignore: SCEditor is not TS-friendly
+    //               ref={editorRef}
+    //               value={codeType === CodeType.Cairo ? cairoCode : ''}
+    //               readOnly={readOnly}
+    //               onValueChange={handleCairoCodeChange}
+    //               highlight={highlightCode}
+    //               tabSize={4}
+    //               className={cn('code-editor', {
+    //                 'with-numbers': !isBytecode,
+    //               })}
+    //             />
+    //           )}
+    <>
+      <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/2">
+            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
+              <Header
+                codeType={codeType}
+                onCodeTypeChange={({ value }) => setCodeType(value)}
+              />
             </div>
 
-            <Fragment>
-              {!showAdvanceMode && (
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
-                  <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
-                    <Button
-                      onClick={handleCopyPermalink}
-                      transparent
-                      padded={false}
-                      tooltip="Share permalink"
-                      tooltipId="share-permalink"
-                    >
-                      <span className="inline-block mr-4 select-all">
-                        <RiLinksLine
-                          size={16}
-                          className="text-indigo-500 mr-1"
-                        />
-                      </span>
-                    </Button>
-                  </div>
+            <div>
+              <div
+                className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+                style={{ height: cairoEditorHeight }}
+              >
+                {codeType === CodeType.CASM ? (
+                  <InstructionsTable
+                    instructions={casmInstructions}
+                    activeIndexes={[activeCasmInstructionIndex]}
+                    height={cairoEditorHeight}
+                  />
+                ) : codeType === CodeType.Sierra ? (
+                  <InstructionsTable
+                    instructions={sierraStatements}
+                    activeIndexes={
+                      casmToSierraMap[activeCasmInstructionIndex] ?? []
+                    }
+                    height={cairoEditorHeight}
+                  />
+                ) : (
+                  <SCEditor
+                    // @ts-ignore: SCEditor is not TS-friendly
+                    ref={editorRef}
+                    value={codeType === CodeType.Cairo ? cairoCode : ''}
+                    readOnly={readOnly}
+                    onValueChange={handleCairoCodeChange}
+                    highlight={highlightCode}
+                    tabSize={4}
+                    className={cn('code-editor', {
+                      'with-numbers': !isBytecode,
+                    })}
+                  />
+                )}
+              </div>
 
-                  <div>
-                    <Button
-                      onClick={handleCompileRun}
-                      disabled={isCompileDisabled}
-                      size="sm"
-                      contentClassName="justify-center"
-                    >
-                      Compile and run
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </Fragment>
+              <EditorControls
+                isCompileDisabled={isCompileDisabled}
+                programArguments={programArguments}
+                areProgramArgumentsValid={areProgramArgumentsValid}
+                onCopyPermalink={handleCopyPermalink}
+                onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
+                onCompileRun={handleCompileRun}
+                onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+              />
+            </div>
+          </div>
+
+          <div className="w-full md:w-1/2">
+            <Tracer mainHeight={cairoEditorHeight} barHeight={runBarHeight} />
           </div>
         </div>
 
-        {/* <div className="w-full md:w-1/3">
-          <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 md:border-r">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">
-              Sierra
-            </span>
-          </div>
-
-          <div
-            className="pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 h-full"
-            style={{ height: sierraEditorHeight }}
-          >
-            <SCEditor
-              // @ts-ignore: SCEditor is not TS-friendly
-              ref={editorRef}
-              value={sierraCode}
-              readOnly={readOnly}
-              onValueChange={handleCairoCodeChange}
-              highlight={highlightCode}
-              tabSize={4}
-              className={cn('code-editor', {
-                // 'with-numbers': !isBytecode,
-              })}
-            />
-          </div>
-        </div> */}
-
-        <div className="w-full md:w-1/2">
-          <Tracer
-            tracerData={tracerData}
-            mainHeight={cairoEditorHeight}
-            barHeight={runBarHeight}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row-reverse">
-        {/* <div className="w-full md:w-1/2">
-          <div
-            className="pane pane-dark overflow-auto border-t border-black-900/25 bg-gray-800 dark:bg-black-700 text-white px-4 py-3"
-            style={{ height: consoleHeight }}
-          >
-            <ExecutionState />
-          </div>
-        </div> */}
-        <div className="w-full">
-          <div
-            className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"
-            style={{ height: consoleHeight }}
-          >
-            <Console output={output} />
+        <div className="flex flex-col md:flex-row-reverse">
+          <div className="w-full">
+            <div
+              className="pane pane-dark overflow-auto bg-gray-800 dark:bg-black-700 text-white border-t border-black-900/25 md:border-r"
+              style={{ height: consoleHeight }}
+            >
+              <Console output={output} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
-        {cairoLangCompilerVersion !== ''
-          ? `Cairo Compiler v${cairoLangCompilerVersion}`
-          : ' '}
+        <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
+          {cairoLangCompilerVersion !== ''
+            ? `Cairo Compiler v${cairoLangCompilerVersion}`
+            : ' '}
+        </div>
       </div>
-    </div>
+      <ArgumentsHelperModal
+        showArgumentsHelper={showArgumentsHelper}
+        setShowArgumentsHelper={setShowArgumentsHelper}
+      />
+    </>
   )
 }
 

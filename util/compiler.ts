@@ -1,4 +1,4 @@
-import { BN } from 'ethereumjs-util'
+import { BN } from 'bn.js'
 import { IInstruction, IReferenceItem } from 'types'
 
 // Version here: https://github.com/ethereum/solc-bin/blob/gh-pages/bin/list.txt
@@ -147,4 +147,76 @@ export const getBytecodeLinesFromInstructions = (
   return instructions
     .map((i) => `${i.name}${i.value ? ' 0x' + i.value : ''}`)
     .join('\n')
+}
+
+export const isPositiveInteger = (value: string): boolean =>
+  /^[0-9]+$/.test(value)
+
+// on the back-end side, a felt252 is decoded from a decimal value stored in the string.
+// That means, short string or hexadecimal value are not supported.
+export const isValidFelt252 = (value: string): boolean => {
+  if (!isPositiveInteger(value)) {
+    return false
+  }
+
+  const bnValue = new BN(value)
+  const minFeltValue = new BN('0')
+  const maxFeltValue = new BN(
+    '3618502788666131213697322783095070105623107215331596699973092056135872020480',
+  )
+
+  return bnValue.gte(minFeltValue) && bnValue.lte(maxFeltValue)
+}
+
+// check if a program arguments string is valid.
+// this string should contain a list of arguments separated by a space.
+// an argument could be:
+//  - a felt252 decimal value
+//  - an array of felt252 where every values are separated by a space.
+export const isArgumentStringValid = (value: string) => {
+  if (value.length === 0) {
+    return true
+  }
+
+  const items = value.split(' ')
+  let index = 0
+
+  while (index < items.length) {
+    if (items[index].startsWith('[')) {
+      // special case of empty or one-element array
+      if (items[index].endsWith(']')) {
+        const x = items[index].slice(1, -1)
+        if (x.length > 0 && !isValidFelt252(x)) {
+          return false
+        }
+      } else {
+        // multi-element array
+        let endOfArray = index + 1
+        while (endOfArray < items.length && !items[endOfArray].endsWith(']')) {
+          endOfArray += 1
+        }
+        if (endOfArray >= items.length) {
+          return false
+        }
+
+        const arrayValues = [
+          items[index].slice(1), // the first value without the [
+          ...items.slice(index + 1, endOfArray),
+          items[endOfArray].slice(0, -1), // the last value without the ]
+        ]
+        if (!arrayValues.every((x) => isValidFelt252(x))) {
+          return false
+        }
+
+        index = endOfArray + 1
+        continue
+      }
+    } else if (!isValidFelt252(items[index])) {
+      return false
+    }
+
+    index += 1
+  }
+
+  return true
 }

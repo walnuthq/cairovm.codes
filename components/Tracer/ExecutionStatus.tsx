@@ -1,17 +1,19 @@
-import { useContext } from 'react'
-
-import ReactTooltip from 'react-tooltip'
-
-import { RiArrowGoForwardLine, RiArrowGoBackLine } from '@remixicon/react'
+import {
+  RiArrowGoForwardLine,
+  RiArrowGoBackLine,
+  RiPlayCircleLine,
+} from '@remixicon/react'
 
 import { Button } from 'components/ui'
 
 const ExecutionStatus = ({
   onStepIn,
   onStepOut,
+  onContinueExecution,
 }: {
   onStepIn: () => void
   onStepOut: () => void
+  onContinueExecution: () => void
 }) => {
   return (
     <div className="flex flex-grow justify-between items-center text-sm">
@@ -20,36 +22,10 @@ const ExecutionStatus = ({
           Execution Trace
         </span>
       </div>
-      {/* <div>
-        <span className="inline-block ml-1 mr-2 text-gray-400">
-          <Icon name="gas-station-fill" className="text-indigo-500" />
-        </span>
-        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
-          Current:
-        </span>
-        <span
-          className="inline-block mr-4 select-all cursor-help"
-          data-tip="Gas consumed for the current instruction"
-        >
-          {executionState.currentGas || 0}
-        </span>
-        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
-          Total:
-        </span>
-        <span
-          className="inline-block mr-4 select-all cursor-help"
-          data-tip="Total gas consumed"
-        >
-          {executionState.totalGas || 0}
-        </span>
-
-        <ReactTooltip className="tooltip" effect="solid" />
-      </div> */}
 
       <div className="flex flex-row items-center gap-4">
         <Button
           transparent
-          // disabled={true}
           onClick={onStepOut}
           padded={false}
           tooltip="Step back"
@@ -59,7 +35,6 @@ const ExecutionStatus = ({
         </Button>
         <Button
           transparent
-          // disabled={!isExecuting}
           onClick={onStepIn}
           padded={false}
           tooltip="Step next"
@@ -67,17 +42,15 @@ const ExecutionStatus = ({
         >
           <RiArrowGoForwardLine size={16} className="text-indigo-500" />
         </Button>
-
-        {/* <Button
+        <Button
           transparent
-          // disabled={!isExecuting}
-          // onClick={continueExecution}
+          onClick={onContinueExecution}
           padded={false}
           tooltip="Continue execution"
-          tooltipId="continue"
+          tooltipId="continue-execution"
         >
-          <Icon name="play-circle-line" className="text-indigo-500" />
-        </Button> */}
+          <RiPlayCircleLine size={16} className="text-indigo-500" />
+        </Button>
       </div>
     </div>
   )
