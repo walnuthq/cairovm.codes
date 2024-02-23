@@ -24,12 +24,7 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 import examples from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
 
-import {
-  AppUiContext,
-  CodeType,
-  IConsoleOutput,
-  LogType,
-} from '../../context/appUiContext'
+import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
@@ -62,7 +57,7 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
-  const { addToConsoleLog, consoleLog } = useContext(AppUiContext)
+  const { addToConsoleLog } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
