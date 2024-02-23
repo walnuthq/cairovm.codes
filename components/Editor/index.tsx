@@ -30,7 +30,6 @@ import {
   IConsoleOutput,
   LogType,
 } from '../../context/appUiContext'
-import { ILogEntry } from '../../types'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
@@ -60,7 +59,7 @@ const Editor = ({ readOnly = false }: Props) => {
     activeCasmInstructionIndex,
     sierraStatements,
     casmToSierraMap,
-    logs,
+    logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog } = useContext(AppUiContext)
@@ -105,36 +104,38 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady])
 
-  const handleLogs = (logs: ILogEntry[]) => {
-    for (const logEntry of logs) {
-      // TODO: make this cleaner
+  useEffect(() => {
+    if (isCompiling === CompilationState.Compiling) {
+      addToConsoleLog('Compiling...')
+      return
+    }
+
+    if (isCompiling === CompilationState.Compiled) {
+      addToConsoleLog('Compilation successful')
+
+      if (serializedOutput) {
+        addToConsoleLog(`Execution output: ${serializedOutput}`)
+      }
+    } else if (isCompiling === CompilationState.Error) {
+      addToConsoleLog('Compilation failed', LogType.Error)
+    }
+
+    // Compilation finished, log the API logs, if any
+    for (const apiLogEntry of apiLogs) {
       let log_type
-      if (logEntry.log_type == 'Error') {
+      if (apiLogEntry.log_type == 'Error') {
         log_type = LogType.Error
-      } else if (logEntry.log_type == 'Warn') {
+      } else if (apiLogEntry.log_type == 'Warn') {
         log_type = LogType.Warn
       } else {
         log_type = LogType.Info
       }
 
-      addToConsoleLog(logEntry.message, log_type)
+      log(apiLogEntry.message, log_type)
     }
-  }
 
-  useEffect(() => {
-    if (isCompiling === CompilationState.Compiling) {
-      addToConsoleLog('Compiling...')
-    } else if (isCompiling === CompilationState.Compiled) {
-      addToConsoleLog('Compilation successful')
-      handleLogs(logs)
-      if (serializedOutput) {
-        addToConsoleLog(`Execution output: ${serializedOutput}`)
-      }
-    } else if (isCompiling === CompilationState.Error) {
-      handleLogs(logs)
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCompiling, log, serializedOutput, logs])
+  }, [isCompiling, log, serializedOutput, apiLogs])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
