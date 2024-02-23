@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import Select, { OnChangeValue } from 'react-select'
 
-import { CodeType } from './types'
+import { CodeType } from '../../context/appUiContext'
 
 type Props = {
   codeType: string | undefined

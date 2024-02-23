@@ -1,9 +1,10 @@
-import { useContext, useEffect, useRef, useState, useReducer } from 'react'
+import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 
 import cn from 'classnames'
-import ReactTooltip from 'react-tooltip'
 
 import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
+
+import Console from '../Editor/Console'
 
 import ExecutionStatus from './ExecutionStatus'
 
@@ -34,12 +35,16 @@ export interface TracerData {
   pcToInstIndexesMap: { [key: string]: number }
 }
 
-interface TracerProps {
-  mainHeight: number
-  barHeight: number
+enum IConsoleTab {
+  Console = 'debug-console',
+  DebugInfo = 'output',
 }
 
-export const Tracer = ({ mainHeight, barHeight }: TracerProps) => {
+interface TracerProps {
+  mainHeight: number
+}
+
+export const Tracer = ({ mainHeight }: TracerProps) => {
   const {
     tracerData,
     breakPoints,
@@ -52,6 +57,13 @@ export const Tracer = ({ mainHeight, barHeight }: TracerProps) => {
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+
+  const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
+    IConsoleTab.Console,
+  )
+
+  const consoleHeight = 150
+
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
       state = {
@@ -117,111 +129,149 @@ export const Tracer = ({ mainHeight, barHeight }: TracerProps) => {
 
   return (
     <>
-      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
-        <ExecutionStatus
-          onStepIn={stepIn}
-          onStepOut={stepOut}
-          onContinueExecution={continueExecution}
-        />
+      <div className="flex-grow">
+        <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
+          <ExecutionStatus
+            onStepIn={stepIn}
+            onStepOut={stepOut}
+            onContinueExecution={continueExecution}
+          />
+        </div>
+        {tracerData && currentTraceEntry && trace && breakPoints && (
+          <>
+            <div
+              ref={tableRef}
+              className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+              style={{ height: mainHeight }}
+            >
+              <InstructionsTable
+                memory={tracerData.memory}
+                pcInstMap={tracerData.pcInstMap}
+                currentTraceEntry={currentTraceEntry}
+                currentFocus={currentFocus.idx}
+                breakpoints={breakPoints}
+                toogleBreakPoint={toogleBreakPoint}
+              />
+            </div>
+          </>
+        )}
       </div>
-      {tracerData && currentTraceEntry && trace && breakPoints && (
-        <>
-          <div
-            ref={tableRef}
-            className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-            style={{ height: mainHeight }}
-          >
-            <InstructionsTable
-              memory={tracerData.memory}
-              pcInstMap={tracerData.pcInstMap}
-              currentTraceEntry={currentTraceEntry}
-              currentFocus={currentFocus.idx}
-              breakpoints={breakPoints}
-              toogleBreakPoint={toogleBreakPoint}
-            />
-          </div>
-          <div style={{ height: barHeight }}>
-            <InfoBar
+      <div className="border-gray-200 border-t">
+        <div className="px-4">
+          <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
+            <button
+              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
+                {
+                  'border-indigo-600 text-gray-700':
+                    selectedConsoleTab === IConsoleTab.DebugInfo,
+                  'border-transparent text-gray-500':
+                    selectedConsoleTab !== IConsoleTab.DebugInfo,
+                },
+              )}`}
+              onClick={() => setSelectedConsoleTab(IConsoleTab.DebugInfo)}
+            >
+              Debug Info
+            </button>
+            <button
+              onClick={() => setSelectedConsoleTab(IConsoleTab.Console)}
+              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
+                {
+                  'border-indigo-600 text-gray-700':
+                    selectedConsoleTab === IConsoleTab.Console,
+                  'border-transparent text-gray-500':
+                    selectedConsoleTab !== IConsoleTab.Console,
+                },
+              )}`}
+            >
+              Console
+            </button>
+          </nav>
+        </div>
+        <div
+          className="pane pane-light overflow-auto"
+          style={{ height: consoleHeight }}
+        >
+          {selectedConsoleTab === IConsoleTab.Console && <Console />}
+
+          {selectedConsoleTab === IConsoleTab.DebugInfo && (
+            <DebugInfoTab
               trace={trace}
-              currentStep={executionTraceStepNumber}
               currentTraceEntry={currentTraceEntry}
-              handleRegisterPointClick={handleRegisterPointerClick}
+              executionTraceStepNumber={executionTraceStepNumber}
+              handleRegisterPointerClick={handleRegisterPointerClick}
             />
-          </div>
-        </>
-      )}
+          )}
+        </div>
+      </div>
     </>
   )
 }
 
-function InfoBar({
-  currentStep,
-  currentTraceEntry,
+function DebugInfoTab({
   trace,
-  handleRegisterPointClick,
+  currentTraceEntry,
+  executionTraceStepNumber,
+  handleRegisterPointerClick,
 }: {
-  currentStep: number
-  currentTraceEntry: TraceEntry
-  trace: TraceEntry[]
-  handleRegisterPointClick: (num: number) => void
+  trace: TraceEntry[] | undefined
+  currentTraceEntry: TraceEntry | undefined
+  executionTraceStepNumber: number
+  handleRegisterPointerClick: (num: number) => void
 }) {
   return (
-    <div className="h-full px-4 flex items-center justify-between text-sm">
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            handleRegisterPointClick(currentTraceEntry.pc)
-          }}
-          className={`inline-flex items-center rounded-md bg-fuchsia-50 dark:bg-fuchsia-950/20 hover:border-fuchsia-700/30 px-2 text-xs font-medium text-fuchsia-700 border border-fuchsia-700/10`}
-        >
-          <span className={`border-r border-fuchsia-700/10 pr-2 mr-2 py-1`}>
-            pc
-          </span>
-          <span className="font-mono">{currentTraceEntry.pc}</span>
-        </button>
-        <button
-          onClick={() => handleRegisterPointClick(currentTraceEntry.fp)}
-          className={`inline-flex items-center rounded-md bg-green-50 dark:bg-green-950/20 hover:border-green-700/30 px-2 text-xs font-medium text-green-700 border border-green-700/10`}
-        >
-          <span className={`border-r border-green-700/10 pr-2 mr-2 py-1`}>
-            fp
-          </span>
-          <span className="font-mono">{currentTraceEntry.fp}</span>
-        </button>
-        <button
-          onClick={() => {
-            handleRegisterPointClick(currentTraceEntry.ap)
-          }}
-          className={`inline-flex items-center rounded-md bg-orange-50 dark:bg-orange-950/20 hover:border-orange-700/30 px-2 text-xs font-medium text-orange-700 border border-orange-700/10`}
-        >
-          <span className={`border-r border-orange-700/10 pr-2 mr-2 py-1`}>
-            ap
-          </span>
-          <span className="font-mono">{currentTraceEntry.ap}</span>
-        </button>
-      </div>
-      <div>
-        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
-          Current step:
-        </span>
-        <span
-          className="inline-block mr-4 select-all cursor-help font-mono"
-          data-tip="Step number of the current instruction"
-        >
-          {currentStep + 1}
-        </span>
-        <span className="inline-block mr-1 text-gray-500 text-sm select-none">
-          Total:
-        </span>
-        <span
-          className="inline-block mr-4 select-all cursor-help font-mono"
-          data-tip="Total number of steps of the entire execution"
-        >
-          {trace.length}
-        </span>
-
-        <ReactTooltip className="tooltip" effect="solid" />
-      </div>
+    <div className="px-4 pb-4">
+      {trace === undefined ? (
+        <p className="text-mono text-tiny text-gray-400 dark:text-gray-500">
+          Run the app to get debug info
+        </p>
+      ) : (
+        <dl className="text-2xs">
+          <div className="flex flex-col lg:flex-row justify-between">
+            <div>
+              <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                Registers
+              </dt>
+              <dd className="font-mono mb-2 flex gap-1">
+                <button
+                  onClick={() => {
+                    handleRegisterPointerClick(currentTraceEntry?.pc as number)
+                  }}
+                  className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
+                >
+                  PC: {currentTraceEntry?.pc}
+                </button>
+                <button
+                  onClick={() => {
+                    handleRegisterPointerClick(currentTraceEntry?.fp as number)
+                  }}
+                  className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-green-700 hover:border-green-700"
+                >
+                  FP: {currentTraceEntry?.fp}
+                </button>
+                <button
+                  onClick={() => {
+                    handleRegisterPointerClick(currentTraceEntry?.ap as number)
+                  }}
+                  className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-orange-700 hover:border-orange-700"
+                >
+                  AP: {currentTraceEntry?.ap}
+                </button>
+              </dd>
+            </div>
+            <div>
+              <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                Execution steps
+              </dt>
+              <dd className="font-mono mb-2">
+                <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                  Current: {executionTraceStepNumber + 1}, Total:{' '}
+                  {trace?.length}
+                </div>
+              </dd>
+            </div>
+          </div>
+        </dl>
+      )}
     </div>
   )
 }
