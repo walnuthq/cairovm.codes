@@ -24,19 +24,18 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 import examples from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
 
-import { ILogEntry } from '../../types'
-
-import { ArgumentsHelperModal } from './ArgumentsHelperModal'
-
-import EditorControls from './EditorControls'
-import Header from './Header'
-import { InstructionsTable } from './InstructionsTable'
 import {
   AppUiContext,
   CodeType,
   IConsoleOutput,
   LogType,
 } from '../../context/appUiContext'
+import { ILogEntry } from '../../types'
+
+import { ArgumentsHelperModal } from './ArgumentsHelperModal'
+import EditorControls from './EditorControls'
+import Header from './Header'
+import { InstructionsTable } from './InstructionsTable'
 
 type Props = {
   readOnly?: boolean
@@ -47,8 +46,6 @@ type SCEditorRef = {
 } & RefObject<React.FC>
 
 const cairoEditorHeight = 350
-const runBarHeight = 52
-const consoleHeight = 150
 
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
@@ -71,7 +68,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
-  const [output, setOutput] = useState<IConsoleOutput[]>([
+  const [, setOutput] = useState<IConsoleOutput[]>([
     {
       type: LogType.Info,
       message: 'App initialised...',
@@ -188,7 +185,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
     copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
     addToConsoleLog('Link with current Cairo code copied to clipboard')
-  }, [cairoCode, codeType, log])
+  }, [cairoCode, codeType, addToConsoleLog])
 
   const areProgramArgumentsValid = useMemo(() => {
     const sanitizedArguments = removeExtraWhitespaces(programArguments)

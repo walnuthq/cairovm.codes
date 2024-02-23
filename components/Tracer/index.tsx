@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 
 import cn from 'classnames'
-import ReactTooltip from 'react-tooltip'
 
 import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
 
-import ExecutionStatus from './ExecutionStatus'
 import Console from '../Editor/Console'
+
+import ExecutionStatus from './ExecutionStatus'
 
 export interface Instruction {
   ap_update: string
