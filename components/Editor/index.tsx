@@ -62,31 +62,14 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
-  const { addToConsoleLog } = useContext(AppUiContext)
+  const { addToConsoleLog, consoleLog } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
-  const [, setOutput] = useState<IConsoleOutput[]>([
-    {
-      type: LogType.Info,
-      message: 'App initialised...',
-    },
-  ])
+
   const editorRef = useRef<SCEditorRef>()
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
-
-  const log = useCallback(
-    (line: string, type = LogType.Info) => {
-      // See https://blog.logrocket.com/a-guide-to-usestate-in-react-ecb9952e406c/
-      setOutput((previous) => {
-        const cloned = previous.map((x) => ({ ...x }))
-        cloned.push({ type, message: line })
-        return cloned
-      })
-    },
-    [setOutput],
-  )
 
   useEffect(() => {
     const query = router.query
@@ -131,11 +114,11 @@ const Editor = ({ readOnly = false }: Props) => {
         log_type = LogType.Info
       }
 
-      log(apiLogEntry.message, log_type)
+      addToConsoleLog(apiLogEntry.message, log_type)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCompiling, log, serializedOutput, apiLogs])
+  }, [isCompiling, serializedOutput, apiLogs])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
