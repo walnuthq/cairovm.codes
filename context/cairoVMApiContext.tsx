@@ -4,7 +4,7 @@ import { IInstruction, ILogEntry } from 'types'
 
 import { CAIRO_VM_API_URL } from 'util/constants'
 
-import { TraceEntry, TracerData } from 'components/Tracer'
+import { TraceEntry, TracerData, SierraVariables } from 'components/Tracer'
 
 export enum CompilationState {
   Idle,
@@ -32,6 +32,7 @@ type ContextProps = {
   sierraStatements: IInstruction[]
   casmToSierraMap: CasmToSierraMap
   currentTraceEntry?: TraceEntry
+  currentSierraVariables?: SierraVariables
   breakPoints?: BreakPoints
 
   compileCairoCode: (cairoCode: string, programArguments: string) => void
@@ -84,6 +85,8 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
   const [casmToSierraMap, setCasmToSierraMap] = useState<CasmToSierraMap>({})
 
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+  const currentSierraVariables =
+    tracerData?.entryToSierraVarsMap[executionTraceStepNumber]
   const activeCasmInstructionIndex =
     tracerData?.pcToInstIndexesMap[(currentTraceEntry?.pc ?? 0).toString()] ?? 0
 
@@ -148,6 +151,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
           pcInstMap: data.tracer_data.pc_inst_map,
           trace: data.tracer_data.trace,
           pcToInstIndexesMap: data.tracer_data.pc_to_inst_indexes_map,
+          entryToSierraVarsMap: data.tracer_data.trace_entries_to_sierra_vars,
         })
         setBreakPoints(
           Object.keys(data.tracer_data.memory).reduce(
@@ -185,6 +189,7 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         casmInstructions,
         executionTraceStepNumber,
         currentTraceEntry,
+        currentSierraVariables,
         activeCasmInstructionIndex,
         sierraStatements,
         casmToSierraMap,
