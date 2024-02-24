@@ -14,6 +14,7 @@ const AboutCairoVMBanner = () => {
   }, [])
 
   const handleCloseBanner = () => {
+    localStorage.setItem('isBannerClosed', 'closed')
     setIsShown(false)
   }
 
