@@ -6,10 +6,17 @@ import { CAIRO_VM_API_URL } from 'util/constants'
 
 import { TraceEntry, TracerData } from 'components/Tracer'
 
-export enum CompilationState {
+export enum ProgramCompilationState {
   Idle,
   Compiling,
-  Compiled,
+  CompilationSuccess,
+  CompilationErr,
+}
+
+export enum ProgramExecutionState {
+  Idle,
+  Executing,
+  Success,
   Error,
 }
 
@@ -21,7 +28,9 @@ const noOp = () => undefined
 type ContextProps = {
   sierraCode: string
   casmCode: string
-  isCompiling: CompilationState
+  compilationState: ProgramCompilationState
+  executionState: ProgramExecutionState
+  executionPanicMessage: string
   cairoLangCompilerVersion: string
   casmInstructions: IInstruction[]
   serializedOutput?: string
@@ -48,7 +57,9 @@ export const CairoVMApiContext = createContext<ContextProps>({
   cairoLangCompilerVersion: '',
   serializedOutput: undefined,
   logs: [],
-  isCompiling: CompilationState.Idle,
+  compilationState: ProgramCompilationState.Idle,
+  executionState: ProgramExecutionState.Idle,
+  executionPanicMessage: '',
   executionTraceStepNumber: 0,
   activeCasmInstructionIndex: 0,
   sierraStatements: [],
@@ -67,12 +78,15 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
   const [casmCode, setCasmCode] = useState<string>('')
   const [casmInstructions, setCasmInstructions] = useState<IInstruction[]>([])
   const [cairoLangCompilerVersion, setCairoLangCompilerVersion] = useState('')
-  const [isCompiling, setIsCompiling] = useState<CompilationState>(
-    CompilationState.Idle,
+  const [compilationState, setCompilationState] =
+    useState<ProgramCompilationState>(ProgramCompilationState.Idle)
+  const [executionState, setExecutionState] = useState<ProgramExecutionState>(
+    ProgramExecutionState.Idle,
   )
   const [serializedOutput, setSerializedOutput] = useState<string | undefined>(
     undefined,
   )
+  const [executionPanicMessage, setExecutionPanicMessage] = useState<string>('')
   const [logs, setLogs] = useState<ILogEntry[]>([])
   const [tracerData, setTracerData] = useState<TracerData | undefined>(
     undefined,
@@ -122,7 +136,8 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
   }
 
   const compileCairoCode = (cairoCode: string, programArguments = '') => {
-    setIsCompiling(CompilationState.Compiling)
+    setCompilationState(ProgramCompilationState.Compiling)
+    setExecutionState(ProgramExecutionState.Executing)
 
     fetch(CAIRO_VM_API_URL, {
       method: 'POST',
@@ -136,13 +151,26 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log('success')
+
+        setCompilationState(
+          data.is_compilation_successful === true
+            ? ProgramCompilationState.CompilationSuccess
+            : ProgramCompilationState.CompilationErr,
+        )
+        setExecutionState(
+          data.is_execution_successful === true
+            ? ProgramExecutionState.Success
+            : ProgramExecutionState.Error,
+        )
+
         setExecutionTraceStepNumber(0)
-        setIsCompiling(CompilationState.Compiled)
         setCasmCode(data.casm_program_code)
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
         setSerializedOutput(data.serialized_output)
         setLogs(data.logs)
+        setExecutionPanicMessage(data.execution_panic_message)
         setTracerData({
           memory: data.tracer_data.memory,
           pcInstMap: data.tracer_data.pc_inst_map,
@@ -167,7 +195,8 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
         setCasmToSierraMap(casmToSierraMap)
       })
       .catch((error) => {
-        setIsCompiling(CompilationState.Error)
+        console.log('error')
+        setCompilationState(ProgramCompilationState.CompilationErr)
         console.error('Error:', error)
       })
   }
@@ -177,7 +206,9 @@ export const CairoVMApiProvider: React.FC = ({ children }) => {
       value={{
         sierraCode,
         casmCode,
-        isCompiling,
+        compilationState,
+        executionState,
+        executionPanicMessage,
         cairoLangCompilerVersion,
         serializedOutput,
         logs,

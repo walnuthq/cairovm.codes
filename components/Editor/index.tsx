@@ -14,7 +14,11 @@ import copy from 'copy-to-clipboard'
 import { useRouter } from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
-import { CairoVMApiContext, CompilationState } from 'context/cairoVMApiContext'
+import {
+  CairoVMApiContext,
+  ProgramCompilationState,
+  ProgramExecutionState,
+} from 'context/cairoVMApiContext'
 import { Setting, SettingsContext } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
@@ -46,7 +50,9 @@ const Editor = ({ readOnly = false }: Props) => {
   const router = useRouter()
 
   const {
-    isCompiling,
+    compilationState,
+    executionState,
+    executionPanicMessage,
     compileCairoCode,
     cairoLangCompilerVersion,
     serializedOutput,
@@ -83,19 +89,23 @@ const Editor = ({ readOnly = false }: Props) => {
   }, [settingsLoaded && router.isReady])
 
   useEffect(() => {
-    if (isCompiling === CompilationState.Compiling) {
+    if (compilationState === ProgramCompilationState.Compiling) {
       addToConsoleLog('Compiling...')
       return
     }
 
-    if (isCompiling === CompilationState.Compiled) {
+    if (compilationState === ProgramCompilationState.CompilationSuccess) {
       addToConsoleLog('Compilation successful')
 
       if (serializedOutput) {
         addToConsoleLog(`Execution output: ${serializedOutput}`)
       }
-    } else if (isCompiling === CompilationState.Error) {
+    } else if (compilationState === ProgramCompilationState.CompilationErr) {
       addToConsoleLog('Compilation failed', LogType.Error)
+    }
+
+    if (executionState === ProgramExecutionState.Error) {
+      addToConsoleLog('Runtime error: ' + executionPanicMessage, LogType.Error)
     }
 
     // Compilation finished, log the API logs, if any
@@ -113,7 +123,13 @@ const Editor = ({ readOnly = false }: Props) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCompiling, serializedOutput, apiLogs])
+  }, [
+    compilationState,
+    executionState,
+    serializedOutput,
+    apiLogs,
+    executionPanicMessage,
+  ])
 
   const handleCairoCodeChange = (value: string) => {
     setCairoCode(value)
@@ -172,8 +188,11 @@ const Editor = ({ readOnly = false }: Props) => {
   }, [programArguments])
 
   const isCompileDisabled = useMemo(() => {
-    return isCompiling === CompilationState.Compiling || isEmpty(cairoCode)
-  }, [isCompiling, cairoCode])
+    return (
+      compilationState === ProgramCompilationState.Compiling ||
+      isEmpty(cairoCode)
+    )
+  }, [compilationState, cairoCode])
 
   const isBytecode = false
 
@@ -190,7 +209,7 @@ const Editor = ({ readOnly = false }: Props) => {
             </div>
 
             <div
-              className="relative pane pane-light flex-grow overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+              className="relative pane pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
               style={{ height: cairoEditorHeight }}
             >
               {codeType === CodeType.CASM ? (
