@@ -34,7 +34,6 @@ import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
-import { P } from 'components/ui/Doc'
 
 type Props = {
   readOnly?: boolean
