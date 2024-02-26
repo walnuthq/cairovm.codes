@@ -1,0 +1,30 @@
+---
+shortDescription: Appends an element to the end of an array.
+invokeRefs: '[0] | [1]'
+outputRefs: '[2]'
+---
+
+## Description
+
+Appends an element to the end of an array.
+
+## Syntax
+
+`array_append<T>([0]: Array<T>, [1]: T) -> ([2]: Array<T>)`
+
+## Invoke Refs
+
+| Name  | Description           |    Type    |
+| :---: | :-------------------- | :--------: |
+| `[0]` | The array to update   | `Array<T>` |
+| `[1]` | The element to append |    `T`     |
+
+## Output Refs
+
+| Name  | Description       |    Type    |
+| :---: | :---------------- | :--------: |
+| `[2]` | The updated array | `Array<T>` |
+
+## Example
+
+`array_append<u8>([1], [2]) -> ([3]);`

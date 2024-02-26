@@ -33,7 +33,7 @@ export const StackBox: React.FC<Props> = ({
           )}
           style={{ minHeight: 26 }}
         >
-          {p.replace(/\\\|/g, '|')}
+          {p.trim().replace(/\\\|/g, '|')}
         </div>
       ))}
     </>
