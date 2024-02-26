@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@kunigi/string-compression": "1.0.2",
-    "@mdx-js/loader": "^2.3.0",
-    "@mdx-js/react": "^2.3.0",
+    "@mdx-js/loader": "^3.0.1",
+    "@mdx-js/react": "^3.0.1",
     "@next/third-parties": "^14.1.0",
     "@remixicon/react": "^4.1.1",
     "@types/bn.js": "^5.1.5",
@@ -44,6 +44,7 @@
     "react-simple-code-editor": "^0.11.2",
     "react-table": "^7.8.0",
     "react-tooltip": "^4.2.21",
+    "remark-gfm": "^3.0.1",
     "vercel": "^33.2.0",
     "wrangler": "^3.24.0"
   },

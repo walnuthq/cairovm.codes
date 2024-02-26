@@ -25,7 +25,9 @@ const Nav = () => {
               '-left-full',
             )}
             style={{ top: 56 }}
-          ></ul>
+          >
+            <NavLink href="/libfuncs">Sierra LibFuncs</NavLink>
+          </ul>
 
           <div className="items-center ml-auto flex">
             <NavLink href={GITHUB_REPO_URL} external>

@@ -1,0 +1,33 @@
+---
+shortDescription: Gets an array element at a given index.
+invokeRefs: '[0] | [1] | [2]'
+outputRefs: '{ fallthrough([3], [4]) ([5]) }'
+---
+
+## Description
+
+Gets an array element at a given index or panic with a "index out of bounds" error.
+
+## Syntax
+
+`array_get<T>([0]: RangeCheck, [1]: Array<T>, [2]: usize) -> { fallthrough([3]: RangeCheck, [4]: T), ([5]: RangeCheck) }`
+
+## Invoke Refs
+
+| Name  | Description                      |    Type    |
+| :---: | :------------------------------- | :--------: |
+| `[0]` | internal RangeCheck              |    `?`     |
+| `[1]` | The array to read                | `Array<T>` |
+| `[2]` | The index of the element to read |  `usize`   |
+
+## Output Refs
+
+| Name  | Description                                 | Type |
+| :---: | :------------------------------------------ | :--: |
+| `[3]` | The updated RangeCheck                      | `?`  |
+| `[4]` | The element as given index                  | `T`  |
+| `[5]` | The updated RangeCheck (in case of failure) | `?`  |
+
+## Example
+
+`array_get<u8>([0], [1], [2]) -> { fallthrough([3], [4]), ([5]) }`

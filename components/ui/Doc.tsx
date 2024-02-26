@@ -14,6 +14,10 @@ type LinkProps = {
   href?: string
 } & Props
 
+type TdProps = {
+  align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined
+} & Props
+
 export const H1: React.FC<Props> = ({ children }) => (
   <h1 className="text-lg font-semibold my-4">{children}</h1>
 )
@@ -46,6 +50,10 @@ export const Table: React.FC<Props> = ({ children }) => (
   <table className="table-auto mb-4">{children}</table>
 )
 
+export const THead: React.FC<Props> = ({ children }) => (
+  <thead className="uppercase">{children}</thead>
+)
+
 export const TH: React.FC<Props> = ({ children }) => {
   return (
     <th
@@ -61,18 +69,21 @@ export const TH: React.FC<Props> = ({ children }) => {
   )
 }
 
-export const TD: React.FC<Props> = ({ children }) => (
-  <td
-    className={cn(
-      'py-1 px-2 border-indigo-200 dark:border-black-400 text-tiny font-normal break-all',
-      {
-        border: children !== EMPTY_MARK,
-      },
-    )}
-  >
-    {children !== EMPTY_MARK && children}
-  </td>
-)
+export const TD: React.FC<TdProps> = ({ align, children }) => {
+  return (
+    <td
+      align={align}
+      className={cn(
+        'py-1 px-2 border-indigo-200 dark:border-black-400 text-tiny font-normal break-all',
+        {
+          border: children !== EMPTY_MARK,
+        },
+      )}
+    >
+      {children !== EMPTY_MARK && children}
+    </td>
+  )
+}
 
 export const A: React.FC<LinkProps> = ({ children, href }) => (
   <Link href={href as string} scroll={false} legacyBehavior>

@@ -10,10 +10,9 @@ const debounceTimeout = 100 // ms
 
 type Props = {
   onSetFilter: (columnId: string, value: string) => void
-  isPrecompiled?: boolean
 }
 
-const Filters = ({ onSetFilter, isPrecompiled = false }: Props) => {
+const Filters = ({ onSetFilter }: Props) => {
   const router = useRouter()
   const [searchKeyword, setSearchKeyword] = useState('')
   const [searchFilter, setSearchFilter] = useState({
@@ -23,14 +22,10 @@ const Filters = ({ onSetFilter, isPrecompiled = false }: Props) => {
 
   const filterByOptions = useMemo(
     () => [
-      {
-        label: !isPrecompiled ? 'Opcode' : 'Address',
-        value: 'opcodeOrAddress',
-      },
       { label: 'Name', value: 'name' },
-      { label: 'Description', value: 'description' },
+      { label: 'Description', value: 'shortDescription' },
     ],
-    [isPrecompiled],
+    [],
   )
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -47,13 +42,6 @@ const Filters = ({ onSetFilter, isPrecompiled = false }: Props) => {
     setSearchFilter(option)
   }
 
-  const handleAltK = (event: KeyboardEvent) => {
-    if (event.altKey && event.key.toLowerCase() === 'k') {
-      inputRef.current?.focus()
-      inputRef.current?.value && inputRef.current.select()
-    }
-  }
-
   // Change filter and search opcode according to query param
   useEffect(() => {
     const query = router.query
@@ -65,10 +53,6 @@ const Filters = ({ onSetFilter, isPrecompiled = false }: Props) => {
       handleKeywordChange(query.name as string)
       router.push(router)
     }
-
-    // Register and clean up Alt+K event listener
-    window.addEventListener('keydown', handleAltK)
-    return () => window.removeEventListener('keydown', handleAltK)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
@@ -93,7 +77,6 @@ const Filters = ({ onSetFilter, isPrecompiled = false }: Props) => {
 
       <Input
         ref={inputRef}
-        searchable
         value={searchKeyword}
         onChange={(e) => {
           setSearchKeyword(e.target.value)

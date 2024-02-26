@@ -68,6 +68,16 @@ export interface IChain {
   name: string
 }
 
+export interface ILibFuncDoc {
+  name: string
+  shortDescription: string
+  invokeRefs: string
+  outputRefs: string
+  mdxDescription: any
+}
+
+export type ILibFuncDocs = Array<ILibFuncDoc>
+
 export interface IDocMeta {
   fork: string
   group: string
