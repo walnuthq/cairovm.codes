@@ -1,33 +1,44 @@
 ---
 shortDescription: Gets an array element at a given index.
 invokeRefs: '[0] | [1] | [2]'
-outputRefs: '{ fallthrough([3], [4]) ([5]) }'
+outputRefs: '{ fallthrough([3], [4]) <StatementIdx>([5]) }'
 ---
 
 ## Description
 
-Gets an array element at a given index or panic with a "index out of bounds" error.
+Gets an array element at a given index.
 
 ## Syntax
 
-`array_get<T>([0]: RangeCheck, [1]: Array<T>, [2]: usize) -> { fallthrough([3]: RangeCheck, [4]: T), ([5]: RangeCheck) }`
+`array_get<T>([0]: RangeCheck, [1]: Array<T>, [2]: usize) -> { fallthrough([3]: RangeCheck, [4]: Box<T>), <StatementIdx>([5]: RangeCheck) }`
 
 ## Invoke Refs
 
-| Name  | Description                      |    Type    |
-| :---: | :------------------------------- | :--------: |
-| `[0]` | internal RangeCheck              |    `?`     |
-| `[1]` | The array to read                | `Array<T>` |
-| `[2]` | The index of the element to read |  `usize`   |
+| Name  | Description                      |     Type     |
+| :---: | :------------------------------- | :----------: |
+| `[0]` | internal RangeCheck              | `RangeCheck` |
+| `[1]` | The array to read                |  `Array<T>`  |
+| `[2]` | The index of the element to read |   `usize`    |
 
-## Output Refs
+## Result branches
 
-| Name  | Description                                 | Type |
-| :---: | :------------------------------------------ | :--: |
-| `[3]` | The updated RangeCheck                      | `?`  |
-| `[4]` | The element as given index                  | `T`  |
-| `[5]` | The updated RangeCheck (in case of failure) | `?`  |
+## Success: Fallthrough Branch
+
+### Output Refs
+
+| Name  | Description                              |     Type     |
+| :---: | :--------------------------------------- | :----------: |
+| `[3]` | The updated RangeCheck                   | `RangeCheck` |
+| `[4]` | A pointer to an element at a given index |   `Box<T>`   |
+
+## Failure: Target Statement
+
+### Output Refs
+
+| Name  | Description            |     Type     |
+| :---: | :--------------------- | :----------: |
+| `[5]` | The updated RangeCheck | `RangeCheck` |
 
 ## Example
 
-`array_get<u8>([0], [1], [2]) -> { fallthrough([3], [4]), ([5]) }`
+`array_get<u8>([0], [1], [2]) -> { fallthrough([3], [4]), 30([5]) }`
