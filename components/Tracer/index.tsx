@@ -28,11 +28,14 @@ export interface TraceEntry {
   fp: number
 }
 
+export type SierraVariables = { [key: string]: Array<string> }
+
 export interface TracerData {
   pcInstMap: { [key: string]: Instruction }
   trace: TraceEntry[]
   memory: { [key: string]: string }
   pcToInstIndexesMap: { [key: string]: number }
+  entryToSierraVarsMap: { [key: string]: SierraVariables }
 }
 
 enum IConsoleTab {

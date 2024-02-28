@@ -1,14 +1,25 @@
 import { useEffect, useRef } from 'react'
 
+import ReactTooltip from 'react-tooltip'
 import { IInstruction } from 'types'
+
+import { CodeType } from 'context/appUiContext'
+
+import { SierraVariables } from 'components/Tracer'
+
+const sierraVariableRe = /\[(\d+)\]/
 
 export const InstructionsTable = ({
   instructions,
   activeIndexes,
+  variables,
+  codeType,
   height,
 }: {
   instructions: IInstruction[]
   activeIndexes: number[]
+  variables: SierraVariables
+  codeType: CodeType
   height: number
 }) => {
   useEffect(() => {
@@ -23,6 +34,88 @@ export const InstructionsTable = ({
 
   const tableRef = useRef<HTMLDivElement>(null)
   const focusRowRef = useRef<HTMLTableRowElement>(null)
+
+  const splitInLines = (instructionName: string) =>
+    instructionName.split('\n').map((line, i) => (
+      <span key={i}>
+        {i !== 0 && <br />}
+        {line}
+      </span>
+    ))
+
+  const getRandomToolTipId = () =>
+    `tooltip-sierra-${Math.floor(Math.random() * 100000000)}`
+
+  const isSierraVariable = (s: string) => sierraVariableRe.test(s)
+  const getSierraVariableNameFromTag = (tag: string) => {
+    const match = sierraVariableRe.exec(tag)
+    if (!match) {
+      return null
+    }
+
+    return match[1]
+  }
+
+  const formatSierraVariableValue = (values: Array<string>): string => {
+    // TODO if type info is provided by the back-end
+    // => convert the array of felt252 to a more human-readable
+    // value, according to the variable type.
+    if (values.length > 1) {
+      return `[${values.join(', ')}]`
+    }
+    return values[0]
+  }
+
+  const renderSierraVariableWithToolTip = (
+    sierraVariableTag: string,
+    key: number,
+  ) => {
+    const variableName = getSierraVariableNameFromTag(sierraVariableTag)
+    if (!variableName) {
+      return sierraVariableTag
+    }
+
+    if (!(variableName in variables) || variables[variableName].length === 0) {
+      return sierraVariableTag
+    }
+
+    const variableValues = variables[variableName]
+    const tooltipId = getRandomToolTipId()
+
+    return (
+      <>
+        <span
+          key={key}
+          data-tip
+          data-for={tooltipId}
+          className="hover:text-orange-500 cursor-pointer"
+        >
+          {sierraVariableTag}
+        </span>
+        <ReactTooltip id={tooltipId} effect="solid">
+          <span>{formatSierraVariableValue(variableValues)}</span>
+        </ReactTooltip>
+      </>
+    )
+  }
+
+  const addVariableToolTipToSierraInstruction = (instructionName: string) => {
+    // regex to split on [*] and \n
+    const re = /(?=\[\d+\]|\n)|(?<=\[\d+\]|\n)/g
+    const parts = instructionName.split(re)
+
+    return parts.map((part, index) => {
+      if (part === '\n') {
+        return <br key={index} />
+      }
+
+      if (isSierraVariable(part)) {
+        return renderSierraVariableWithToolTip(part, index)
+      }
+
+      return part
+    })
+  }
 
   return (
     <div
@@ -48,12 +141,9 @@ export const InstructionsTable = ({
                   {index + 1}
                 </td>
                 <td className="py-1 px-2 max-w-40 break-words">
-                  {instruction.name.split('\n').map((line, i) => (
-                    <span key={i}>
-                      {i !== 0 ? <br /> : <></>}
-                      {line}
-                    </span>
-                  ))}
+                  {isActive && codeType === CodeType.Sierra
+                    ? addVariableToolTipToSierraInstruction(instruction.name)
+                    : splitInLines(instruction.name)}
                 </td>
               </tr>
             )

@@ -60,6 +60,7 @@ const Editor = ({ readOnly = false }: Props) => {
     activeCasmInstructionIndex,
     sierraStatements,
     casmToSierraMap,
+    currentSierraVariables,
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
@@ -215,15 +216,19 @@ const Editor = ({ readOnly = false }: Props) => {
               {codeType === CodeType.CASM ? (
                 <InstructionsTable
                   instructions={casmInstructions}
+                  codeType={codeType}
                   activeIndexes={[activeCasmInstructionIndex]}
+                  variables={{}}
                   height={cairoEditorHeight}
                 />
               ) : codeType === CodeType.Sierra ? (
                 <InstructionsTable
                   instructions={sierraStatements}
+                  codeType={codeType}
                   activeIndexes={
                     casmToSierraMap[activeCasmInstructionIndex] ?? []
                   }
+                  variables={currentSierraVariables || {}}
                   height={cairoEditorHeight}
                 />
               ) : (
