@@ -66,6 +66,7 @@ export const Button: React.FC<Props> = ({
           className="tooltip"
           id={tooltipIdPrefixed}
           effect="solid"
+          uuid="buttonTooltip" // see https://github.com/ReactTooltip/react-tooltip/issues/587#issuecomment-619675399
         />
       )}
     </button>
