@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import { useKBar } from 'kbar'
 
 import { isMac } from 'util/browser'
@@ -6,6 +8,15 @@ import { Button } from 'components/ui'
 
 const KBarButton = () => {
   const { query } = useKBar()
+  const [isMacUser, setIsMacUser] = useState(false)
+
+  useEffect(() => {
+    const checkIfMacUser = () => {
+      setIsMacUser(isMac)
+    }
+
+    checkIfMacUser()
+  }, [])
 
   return (
     <Button
@@ -17,7 +28,7 @@ const KBarButton = () => {
       padded={false}
     >
       {/* {isMac && <Icon name="command-line" className="mr-1" />} */}
-      {isMac ? <span>K</span> : <span>Ctrl + K</span>}
+      {isMacUser ? <span>Cmd + K</span> : <span>Ctrl + K</span>}
     </Button>
   )
 }

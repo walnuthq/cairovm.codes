@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { GITHUB_REPO_URL } from 'util/constants'
 
+import KBarButton from 'components/KBar/Button'
 import NavLink from 'components/NavLink'
 import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
@@ -28,6 +29,7 @@ const Nav = () => {
           ></ul>
 
           <div className="items-center ml-auto flex">
+            <KBarButton />
             <NavLink href={GITHUB_REPO_URL} external>
               GitHub
             </NavLink>
