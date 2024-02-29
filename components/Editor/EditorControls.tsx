@@ -4,6 +4,7 @@ import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 
 import { Button, Input } from 'components/ui'
+import { useRegisterActions } from 'kbar'
 
 type EditorControlsProps = {
   isCompileDisabled: boolean
@@ -25,6 +26,21 @@ const EditorControls = ({
   onShowArgumentsHelper,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const actions = [
+    {
+      id: 'compile',
+      name: 'Compile and run',
+      shortcut: ['r'],
+      keywords: 'compile run',
+      section: 'Execution',
+      perform: () => {
+        onCompileRun()
+      },
+    },
+  ]
+
+  useRegisterActions(actions, [onCompileRun])
 
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
