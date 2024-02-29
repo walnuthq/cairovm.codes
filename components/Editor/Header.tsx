@@ -37,6 +37,7 @@ const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
           isSearchable={false}
           classNamePrefix="select"
           menuPlacement="auto"
+          instanceId="headerSelect"
         />
       </div>
     </div>
