@@ -13,6 +13,7 @@ const ThemeSelector = () => {
       name: 'Change theme…',
       keywords: 'interface color dark light',
       section: 'Preferences',
+      shortcut: ['t'],
     },
     {
       id: 'theme-light',
@@ -40,13 +41,6 @@ const ThemeSelector = () => {
       section: '',
       perform: () => setTheme('system'),
       parent: 'theme',
-    },
-    {
-      id: 'theme',
-      name: 'Select theme…',
-      shortcut: ['t'],
-      keywords: 'theme appearance',
-      section: 'Preferences',
     },
   ]
 
