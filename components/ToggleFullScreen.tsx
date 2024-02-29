@@ -6,6 +6,7 @@ import {
   RiFullscreenFill,
   RiFullscreenLine,
 } from '@remixicon/react'
+import { Action, useRegisterActions } from 'kbar'
 import { useTheme } from 'next-themes'
 
 import { AppUiContext } from 'context/appUiContext'
@@ -16,6 +17,22 @@ const ToggleFullScreen = () => {
   const { isFullScreen, toggleFullScreen } = useContext(AppUiContext)
 
   const { resolvedTheme } = useTheme()
+
+  const actions: Action[] = [
+    {
+      id: 'fullscreen',
+      name: 'Full Screen',
+      shortcut: ['f'],
+      keywords: 'full screen',
+      section: 'Preferences',
+      subtitle: 'Enter / Exit Full Screen',
+      perform: () => {
+        toggleFullScreen()
+      },
+    },
+  ]
+
+  useRegisterActions(actions, [actions])
 
   const handleToggleFullScreen = () => {
     toggleFullScreen()
