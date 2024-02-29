@@ -3,6 +3,7 @@ import {
   RiArrowGoBackLine,
   RiPlayCircleLine,
 } from '@remixicon/react'
+import { useRegisterActions } from 'kbar'
 
 import { Button } from 'components/ui'
 
@@ -15,6 +16,44 @@ const ExecutionStatus = ({
   onStepOut: () => void
   onContinueExecution: () => void
 }) => {
+  const actions = [
+    {
+      id: 'stepnext',
+      name: 'Step Next',
+      shortcut: ['n'],
+      keywords: 'step next',
+      section: 'Execution',
+      perform: () => {
+        onStepIn()
+      },
+      subtitle: 'Run next execution',
+    },
+    {
+      id: 'stepback',
+      name: 'Step Back',
+      shortcut: ['b'],
+      keywords: 'execution back',
+      section: 'Execution',
+      perform: () => {
+        onStepOut()
+      },
+      subtitle: 'Run back execution',
+    },
+    {
+      id: 'continue',
+      name: 'Continue',
+      shortcut: ['c'],
+      keywords: 'execution continue',
+      section: 'Execution',
+      perform: () => {
+        onContinueExecution()
+      },
+      subtitle: 'Continue execution',
+    },
+  ]
+
+  useRegisterActions(actions, [onStepIn, onStepOut, onContinueExecution])
+
   return (
     <div className="flex flex-grow justify-between items-center text-sm">
       <div>
