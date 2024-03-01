@@ -4,7 +4,7 @@ import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 
 import { Button, Input } from 'components/ui'
-import { useRegisterActions } from 'kbar'
+import { Priority, useRegisterActions } from 'kbar'
 
 type EditorControlsProps = {
   isCompileDisabled: boolean
@@ -37,6 +37,7 @@ const EditorControls = ({
       perform: () => {
         onCompileRun()
       },
+      priority: Priority.HIGH,
     },
   ]
 

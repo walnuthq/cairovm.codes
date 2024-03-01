@@ -1,5 +1,5 @@
 import { RiContrast2Fill, RiContrast2Line } from '@remixicon/react'
-import { useRegisterActions, Action } from 'kbar'
+import { useRegisterActions, Action, Priority } from 'kbar'
 import { useTheme } from 'next-themes'
 
 import { Button } from 'components/ui'
@@ -14,6 +14,7 @@ const ThemeSelector = () => {
       keywords: 'interface color dark light',
       section: 'Preferences',
       shortcut: ['t'],
+      priority: Priority.LOW,
     },
     {
       id: 'theme-light',

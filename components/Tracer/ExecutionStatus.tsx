@@ -3,7 +3,7 @@ import {
   RiArrowGoBackLine,
   RiPlayCircleLine,
 } from '@remixicon/react'
-import { useRegisterActions } from 'kbar'
+import { Priority, useRegisterActions } from 'kbar'
 
 import { Button } from 'components/ui'
 
@@ -27,6 +27,7 @@ const ExecutionStatus = ({
         onStepIn()
       },
       subtitle: 'Run next execution',
+      priority: Priority.HIGH,
     },
     {
       id: 'stepback',
@@ -38,6 +39,7 @@ const ExecutionStatus = ({
         onStepOut()
       },
       subtitle: 'Run back execution',
+      priority: Priority.HIGH,
     },
     {
       id: 'continue',
@@ -49,6 +51,7 @@ const ExecutionStatus = ({
         onContinueExecution()
       },
       subtitle: 'Continue execution',
+      priority: Priority.HIGH,
     },
   ]
 

@@ -6,7 +6,7 @@ import {
   RiFullscreenFill,
   RiFullscreenLine,
 } from '@remixicon/react'
-import { Action, useRegisterActions } from 'kbar'
+import { Action, Priority, useRegisterActions } from 'kbar'
 import { useTheme } from 'next-themes'
 
 import { AppUiContext } from 'context/appUiContext'
@@ -29,6 +29,7 @@ const ToggleFullScreen = () => {
       perform: () => {
         toggleFullScreen()
       },
+      priority: Priority.LOW,
     },
   ]
 
