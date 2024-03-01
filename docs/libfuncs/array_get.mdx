@@ -1,44 +1,94 @@
 ---
 shortDescription: Gets an array element at a given index.
-invokeRefs: '[0] | [1] | [2]'
-outputRefs: '{ fallthrough([3], [4]) <StatementIdx>([5]) }'
+invokeRefs: 'rangeCheck | array | index'
+fallthroughBranch: 'rangeCheck | element'
+statementBranch: 'rangeCheck'
 ---
 
 ## Description
 
-Gets an array element at a given index.
+Gets an array element at a given index, handling out-of-range scenarios with a Statement branch.
 
 ## Syntax
 
-`array_get<T>([0]: RangeCheck, [1]: Array<T>, [2]: usize) -> { fallthrough([3]: RangeCheck, [4]: Box<T>), <StatementIdx>([5]: RangeCheck) }`
+`array_get<T>([rangeCheck]: RangeCheck, [array]: Array<T>, [index]: usize) { fallthrough([rangeCheck]: RangeCheck, [element]: Box<T>), <StatementIdx>([rangeCheck]: RangeCheck) }`
 
 ## Invoke Refs
 
-| Name  | Description                      |     Type     |
-| :---: | :------------------------------- | :----------: |
-| `[0]` | internal RangeCheck              | `RangeCheck` |
-| `[1]` | The array to read                |  `Array<T>`  |
-| `[2]` | The index of the element to read |   `usize`    |
+|      Name      | Description                      |     Type     |
+| :------------: | :------------------------------- | :----------: |
+| `[rangeCheck]` | Internal RangeCheck              | `RangeCheck` |
+|   `[array]`    | The array to read                |  `Array<T>`  |
+|   `[index]`    | The index of the element to read |   `usize`    |
 
-## Result branches
+## Output Refs
 
-## Success: Fallthrough Branch
+### Fallthrough Branch
 
-### Output Refs
+|      Name      | Description                              |     Type     |
+| :------------: | :--------------------------------------- | :----------: |
+| `[rangeCheck]` | The updated RangeCheck                   | `RangeCheck` |
+|  `[element]`   | A pointer to an element at a given index |   `Box<T>`   |
 
-| Name  | Description                              |     Type     |
-| :---: | :--------------------------------------- | :----------: |
-| `[3]` | The updated RangeCheck                   | `RangeCheck` |
-| `[4]` | A pointer to an element at a given index |   `Box<T>`   |
+### Target Statement Branch
 
-## Failure: Target Statement
+|      Name      | Description            |     Type     |
+| :------------: | :--------------------- | :----------: |
+| `[rangeCheck]` | The updated RangeCheck | `RangeCheck` |
 
-### Output Refs
+## Example 1
 
-| Name  | Description            |     Type     |
-| :---: | :--------------------- | :----------: |
-| `[5]` | The updated RangeCheck | `RangeCheck` |
+`array_get<u32>([rangeCheck], [array], [index]) { fallthrough([rangeCheck], [element]) 59([rangeCheck]) }`
 
-## Example
+### Memory
 
-`array_get<u8>([0], [1], [2]) -> { fallthrough([3], [4]), 30([5]) }`
+|       | Value |
+| :---: | :---: |
+| `140` |   2   |
+| `141` |   0   |
+| `145` |   4   |
+| `146` |   3   |
+| `147` |   2   |
+| `148` |   1   |
+
+### Invoke refs
+
+|     Name     |  Value   |
+| :----------: | :------: |
+| `rangeCheck` |   140    |
+|   `array`    | 145, 149 |
+|   `index`    |    1     |
+
+### Fallthrough Branch Output Refs
+
+|     Name     | Value |
+| :----------: | :---: |
+| `rangeCheck` |  141  |
+|  `element`   |  146  |
+
+## Example 2
+
+### Memory
+
+|       | Value |
+| :---: | :---: |
+| `140` |   2   |
+| `141` |   0   |
+| `145` |   4   |
+| `146` |   3   |
+| `147` |   2   |
+| `148` |   1   |
+
+### Invoke refs
+
+|     Name     |  Value   |
+| :----------: | :------: |
+| `rangeCheck` |   140    |
+|   `array`    | 145, 149 |
+|   `index`    |    4     |
+
+### Target Statement Branch Output Refs
+
+|     Name     | Value |
+| :----------: | :---: |
+| `rangeCheck` |  141  |

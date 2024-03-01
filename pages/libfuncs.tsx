@@ -76,7 +76,8 @@ export const getStaticProps = async () => {
             name: libFuncName,
             shortDescription: metadata['shortDescription'] || null,
             invokeRefs: metadata['invokeRefs'] || null,
-            outputRefs: metadata['outputRefs'] || null,
+            fallthroughBranch: metadata['fallthroughBranch'] || null,
+            statementBranch: metadata['statementBranch'] || null,
             mdxDescription:
               content.length > 0
                 ? await serialize(content, {

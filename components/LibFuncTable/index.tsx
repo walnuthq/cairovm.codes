@@ -257,7 +257,7 @@ const LibFuncTable = ({ docs }: { docs: ILibFuncDocs }) => {
 
               {isExpanded ? (
                 <tr className="bg-indigo-50 dark:bg-black-600">
-                  <td colSpan={4}>
+                  <td colSpan={5}>
                     <DocRowDetail mdxContent={rowObject.mdxDescription} />
                   </td>
                 </tr>
