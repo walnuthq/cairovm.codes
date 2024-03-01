@@ -7,6 +7,7 @@ const Results = () => {
 
   return (
     <KBarResults
+      maxHeight={500}
       items={groups}
       onRender={({ item, active }) =>
         typeof item === 'string' ? (
