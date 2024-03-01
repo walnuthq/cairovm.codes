@@ -72,7 +72,8 @@ export interface ILibFuncDoc {
   name: string
   shortDescription: string
   invokeRefs: string
-  outputRefs: string
+  fallthroughBranch: string
+  statementBranch: string
   mdxDescription: any
 }
 
