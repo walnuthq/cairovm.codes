@@ -5,15 +5,20 @@ fallthroughBranch: 'rangeCheck | element'
 statementBranch: 'rangeCheck'
 ---
 
-## Description
+# Description
 
 Gets an array element at a given index, handling out-of-range scenarios with a Statement branch.
 
-## Syntax
+# Syntax
 
-`array_get<T>([rangeCheck]: RangeCheck, [array]: Array<T>, [index]: usize) { fallthrough([rangeCheck]: RangeCheck, [element]: Box<T>), <StatementIdx>([rangeCheck]: RangeCheck) }`
+```
+array_get<T>([rangeCheck]: RangeCheck, [array]: Array<T>, [index]: usize) {
+    fallthrough([rangeCheck]: RangeCheck, [element]: Box<T>)
+    <StatementIdx>([rangeCheck]: RangeCheck)
+}
+```
 
-## Invoke Refs
+# Invoke Refs
 
 |      Name      | Description                      |     Type     |
 | :------------: | :------------------------------- | :----------: |
@@ -21,22 +26,26 @@ Gets an array element at a given index, handling out-of-range scenarios with a S
 |   `[array]`    | The array to read                |  `Array<T>`  |
 |   `[index]`    | The index of the element to read |   `usize`    |
 
-## Output Refs
+# Output Refs
 
-### Fallthrough Branch
+## Fallthrough Branch
 
 |      Name      | Description                              |     Type     |
 | :------------: | :--------------------------------------- | :----------: |
 | `[rangeCheck]` | The updated RangeCheck                   | `RangeCheck` |
 |  `[element]`   | A pointer to an element at a given index |   `Box<T>`   |
 
-### Target Statement Branch
+## Target Statement Branch
 
 |      Name      | Description            |     Type     |
 | :------------: | :--------------------- | :----------: |
 | `[rangeCheck]` | The updated RangeCheck | `RangeCheck` |
 
-## Example 1
+# Examples
+
+## Example 1 - Fallthrough branch
+
+Reading the element at index 1 from an array of 4 elements.
 
 `array_get<u32>([rangeCheck], [array], [index]) { fallthrough([rangeCheck], [element]) 59([rangeCheck]) }`
 
@@ -66,7 +75,14 @@ Gets an array element at a given index, handling out-of-range scenarios with a S
 | `rangeCheck` |  141  |
 |  `element`   |  146  |
 
-## Example 2
+## Example 2 -Statement branch
+
+```
+array_get<u32>([rangeCheck], [array], [index]) {
+    fallthrough([rangeCheck], [element])
+    59([rangeCheck])
+}
+```
 
 ### Memory
 
