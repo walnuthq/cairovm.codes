@@ -7,14 +7,15 @@ import Link from 'next/link'
 const EMPTY_MARK = '*'
 
 type Props = {
-  children: string | JSX.Element
+  children?: string | JSX.Element | JSX.Element[]
 }
 
 type LinkProps = {
   href?: string
 } & Props
 
-type TdProps = {
+export type CellProps = {
+  colSpan?: number
   align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined
 } & Props
 
@@ -54,9 +55,11 @@ export const THead: React.FC<Props> = ({ children }) => (
   <thead className="uppercase">{children}</thead>
 )
 
-export const TH: React.FC<Props> = ({ children }) => {
+export const TH: React.FC<CellProps> = ({ colSpan, align, children }) => {
   return (
     <th
+      align={align}
+      colSpan={colSpan}
       className={cn(
         'py-1 px-2 border-indigo-200 dark:border-black-400 text-gray-800 dark:text-gray-400 text-tiny font-medium break-all',
         {
@@ -69,10 +72,13 @@ export const TH: React.FC<Props> = ({ children }) => {
   )
 }
 
-export const TD: React.FC<TdProps> = ({ align, children }) => {
+export const TR: React.FC<Props> = ({ children }) => <tr>{children}</tr>
+
+export const TD: React.FC<CellProps> = ({ colSpan, align, children }) => {
   return (
     <td
       align={align}
+      colSpan={colSpan}
       className={cn(
         'py-1 px-2 border-indigo-200 dark:border-black-400 text-tiny font-normal break-all',
         {

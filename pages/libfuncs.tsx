@@ -1,6 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 
+import { useState, useEffect } from 'react'
+
+import { RiCloseLine } from '@remixicon/react'
 import matter from 'gray-matter'
 import type { NextPage } from 'next'
 import getConfig from 'next/config'
@@ -12,11 +15,25 @@ import { ILibFuncDocs } from 'types'
 import ContributeBox from 'components/ContributeBox'
 import HomeLayout from 'components/layouts/Home'
 import LibFuncTable from 'components/LibFuncTable'
-import { H1, Container } from 'components/ui'
+import { H1, H2, Container } from 'components/ui'
 
 const { serverRuntimeConfig } = getConfig()
 
 const LibFuncPage = ({ libFuncDocs }: { libFuncDocs: ILibFuncDocs }) => {
+  const [showIntro, setShowIntro] = useState(false)
+
+  useEffect(() => {
+    const isIntroClosed = localStorage.getItem('isIntroClosed')
+    if (!isIntroClosed) {
+      setShowIntro(true)
+    }
+  }, [])
+
+  const handleCloseIntro = () => {
+    localStorage.setItem('isIntroClosed', 'closed')
+    setShowIntro(false)
+  }
+
   return (
     <>
       <Head>
@@ -27,8 +44,81 @@ const LibFuncPage = ({ libFuncDocs }: { libFuncDocs: ILibFuncDocs }) => {
           content="Sierra LibFuncs Interactive Reference"
         />
       </Head>
-      <Container>
-        <H1>Sierra LibFuncs Interactive Reference</H1>
+      <Container className="text-sm leading-6">
+        <H1>Sierra LibFuncs - Interactive Reference</H1>
+
+        {showIntro && (
+          <>
+            <div className="flex flex-row justify-between item-centers">
+              <H2 className="mb-4">Introduction</H2>
+              <button
+                onClick={handleCloseIntro}
+                aria-label="Close Introduction"
+              >
+                <RiCloseLine size={24} />
+              </button>
+            </div>
+            <div>
+              <p className="pb-4">
+                <span className="text-blue-500 font-semibold">Sierra</span> is
+                an intermediate language built as a stable layer between{' '}
+                <span className="text-blue-500 font-semibold">Cairo</span>, a
+                high-level language, and{' '}
+                <span className="text-blue-500 font-semibold">CASM</span>, the
+                instruction set of the Cairo VM.
+              </p>
+              <p className="pb-4">
+                Sierra statements are constructed using a fixed set of functions
+                called{' '}
+                <span className="text-blue-500 font-semibold">Libfuncs</span>.
+                These functions follow a specific format:{' '}
+                <code>{`<libfunc>(<invoke refs>) -> (<output refs>)`}</code>
+              </p>
+              <p>
+                The input parameters are referred to as{' '}
+                <span className="text-blue-500 font-semibold">Invoke Refs</span>{' '}
+                while the output parameters are referred to as{' '}
+                <span className="text-blue-500 font-semibold">Output Refs</span>
+                . Both are{' '}
+                <span className="text-blue-500 font-semibold">references</span>,
+                represented by a numeric value in brackets, such as{' '}
+                <code>[140]</code>.
+              </p>
+              <p className="pb-4">
+                A single reference always refers to the same variable throughout
+                the program's execution. Each variable's value associated with a
+                reference is a set of one or more <code>felt252</code> values.
+              </p>
+              <p>
+                Sierra also employs a specific syntax for handling output
+                branches: the{' '}
+                <span className="text-blue-500 font-semibold">falltrough</span>{' '}
+                branch is used when the function execution is successful while a
+                failure branch can be specified using a{' '}
+                <code className="text-blue-500 font-semibold">
+                  StatementIdx
+                </code>{' '}
+                which is the numerical index of the statement to jump to in case
+                of failure.
+              </p>
+              <p className="py-2">
+                The complete format for this type of libfunc is:
+              </p>
+              <pre className="py-2 ml-8">
+                {`<libfunc>(<invoke refs>) {
+  fallthrough(<output refs>)
+  StatementIdx(<output refs>)
+}`}
+              </pre>
+              <p className="pb-4 italic">
+                Note that in the following documentation, an integer value is
+                represented by a numeric value like <code>10</code> while an
+                address is represented using a <code>@</code> like{' '}
+                <code>@10</code>.
+              </p>
+            </div>
+          </>
+        )}
       </Container>
 
       <section className="py-10 md:py-20 bg-gray-50 dark:bg-black-700">

@@ -6,6 +6,12 @@ import { GITHUB_REPO_URL } from 'util/constants'
 
 import { Button } from 'components/ui'
 import * as Doc from 'components/ui/Doc'
+import {
+  MemoryTable,
+  TableLayout,
+  RefsTable,
+  PlaygroundLink,
+} from 'components/ui/MdxComponents'
 
 const options = {
   mdxOptions: {
@@ -28,6 +34,13 @@ const mdxComponents = {
   td: Doc.TD,
   a: Doc.A,
   pre: Doc.Pre,
+  MemoryTable,
+  TableLayout,
+  RefsTable,
+  PlaygroundLink,
+  Cell: (props: Doc.CellProps) => <Doc.TD align="center" {...props} />,
+  LeftCell: (props: Doc.CellProps) => <Doc.TD align="left" {...props} />,
+  Line: Doc.TR,
 }
 
 const DocRowDetail = ({ mdxContent }: { mdxContent: any }) => {

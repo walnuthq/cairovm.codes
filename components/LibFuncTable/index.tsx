@@ -20,7 +20,7 @@ import {
 } from 'react-table'
 import { ILibFuncDocs, ILibFuncDoc } from 'types'
 
-import { Button } from 'components/ui'
+import { H2, Button } from 'components/ui'
 
 import columnDefinition from './columns'
 import DocRowDetail from './DocRowDetail'
@@ -271,7 +271,10 @@ const LibFuncTable = ({ docs }: { docs: ILibFuncDocs }) => {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-end mb-4 md:mb-10">
+      <div className="flex flex-row items-center justify-between mb-4 md:mb-10">
+        <H2 className="pb-8 md:pb-0 inline-flex items-center">
+          <span>Sierra LibFuncs</span>
+        </H2>
         <Filters onSetFilter={setFilter} />
       </div>
       <table {...getTableProps()} className="w-full table-fixed">

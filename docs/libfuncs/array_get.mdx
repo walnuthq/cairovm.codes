@@ -7,7 +7,7 @@ statementBranch: 'rangeCheck'
 
 # Description
 
-Gets an array element at a given index, handling out-of-range scenarios with a Statement branch.
+Gets an array element at a given index (_fallthrough_ branch) or handles out-of-range scenarios with a _Statement_ branch.
 
 # Syntax
 
@@ -20,91 +20,125 @@ array_get<T>([rangeCheck]: RangeCheck, [array]: Array<T>, [index]: usize) {
 
 # Invoke Refs
 
-|      Name      | Description                      |     Type     |
-| :------------: | :------------------------------- | :----------: |
-| `[rangeCheck]` | Internal RangeCheck              | `RangeCheck` |
-|   `[array]`    | The array to read                |  `Array<T>`  |
-|   `[index]`    | The index of the element to read |   `usize`    |
+- `[rangeCheck]`: internal RangCheck (`RangeCheck`).
+- `[array]`: the array to read (`Array<T>`).
+- `[index]`: the index of the element to read (`usize`).
 
 # Output Refs
 
 ## Fallthrough Branch
 
-|      Name      | Description                              |     Type     |
-| :------------: | :--------------------------------------- | :----------: |
-| `[rangeCheck]` | The updated RangeCheck                   | `RangeCheck` |
-|  `[element]`   | A pointer to an element at a given index |   `Box<T>`   |
+- `[rangeCheck]`: the updated RangeCheck (`RangeCheck`).
+- `[element]`: a pointer to an element at a given index (`Box<T>`).
 
 ## Target Statement Branch
 
-|      Name      | Description            |     Type     |
-| :------------: | :--------------------- | :----------: |
-| `[rangeCheck]` | The updated RangeCheck | `RangeCheck` |
+- `[rangeCheck]`: the updated RangeCheck (`RangeCheck`).
 
 # Examples
 
 ## Example 1 - Fallthrough branch
 
-Reading the element at index 1 from an array of 4 elements.
-
-`array_get<u32>([rangeCheck], [array], [index]) { fallthrough([rangeCheck], [element]) 59([rangeCheck]) }`
-
-### Memory
-
-|       | Value |
-| :---: | :---: |
-| `140` |   2   |
-| `141` |   0   |
-| `145` |   4   |
-| `146` |   3   |
-| `147` |   2   |
-| `148` |   1   |
-
-### Invoke refs
-
-|     Name     |  Value   |
-| :----------: | :------: |
-| `rangeCheck` |   140    |
-|   `array`    | 145, 149 |
-|   `index`    |    1     |
-
-### Fallthrough Branch Output Refs
-
-|     Name     | Value |
-| :----------: | :---: |
-| `rangeCheck` |  141  |
-|  `element`   |  146  |
-
-## Example 2 -Statement branch
+Reading the element at index 1 from an array of 4 elements (`u32`).
 
 ```
-array_get<u32>([rangeCheck], [array], [index]) {
-    fallthrough([rangeCheck], [element])
-    59([rangeCheck])
+array_get<u32>([140], [141], [142]) {
+    fallthrough([144], [146])
+    59([144])
 }
 ```
 
-### Memory
+<TableLayout>
+  <MemoryTable>
+    <Line>
+      <Cell>145</Cell>
+      <Cell>1</Cell>
+    </Line>
+    <Line>
+      <Cell>149</Cell>
+      <Cell>4</Cell>
+    </Line>
+  </MemoryTable>
 
-|       | Value |
-| :---: | :---: |
-| `140` |   2   |
-| `141` |   0   |
-| `145` |   4   |
-| `146` |   3   |
-| `147` |   2   |
-| `148` |   1   |
+<RefsTable title="Invoke Refs">
+  <Line>
+    <Cell>`rangeCheck`</Cell>
+    <Cell>[140]</Cell>
+    <Cell>2</Cell>
+  </Line>
+  <Line>
+    <Cell>`array`</Cell>
+    <Cell>[141]</Cell>
+    <Cell>`@145, @149`</Cell>
+  </Line>
+  <Line>
+    <Cell>`index`</Cell>
+    <Cell>[142]</Cell>
+    <Cell>1</Cell>
+  </Line>
+</RefsTable>
 
-### Invoke refs
+  <RefsTable title="Fallthrough Branch Output Refs">
+    <Line>
+      <Cell>`rangeCheck`</Cell>
+      <Cell>[144]</Cell>
+      <Cell>3</Cell>
+    </Line>
+    <Line>
+      <Cell>`element`</Cell>
+      <Cell>[146]</Cell>
+      <Cell>`@145`</Cell>
+    </Line>
+  </RefsTable>
+</TableLayout>
 
-|     Name     |  Value   |
-| :----------: | :------: |
-| `rangeCheck` |   140    |
-|   `array`    | 145, 149 |
-|   `index`    |    4     |
+## Example 2 -Statement branch
 
-### Target Statement Branch Output Refs
+Reading the element at index 4 from an array of 4 elements (`u32`), leads to a jump to
+the statement branch 59 because of an out-of-range error.
 
-|     Name     | Value |
-| :----------: | :---: |
-| `rangeCheck` |  141  |
+```
+array_get<u32>([140], [141], [142]) {
+    fallthrough([144], [150])
+    59([144])
+}
+```
+
+<TableLayout>
+  <MemoryTable>
+    <Line>
+      <Cell>145</Cell>
+      <Cell>1</Cell>
+    </Line>
+    <Line>
+      <Cell>149</Cell>
+      <Cell>4</Cell>
+    </Line>
+  </MemoryTable>
+
+  <RefsTable title="Invoke Refs">
+    <Line>
+      <Cell>`rangeCheck`</Cell>
+      <Cell>[140]</Cell>
+      <Cell>2</Cell>
+    </Line>
+    <Line>
+      <Cell>`array`</Cell>
+      <Cell>[141]</Cell>
+      <Cell>`@145, @149`</Cell>
+    </Line>
+    <Line>
+      <Cell>`index`</Cell>
+      <Cell>[142]</Cell>
+      <Cell>4</Cell>
+    </Line>
+  </RefsTable>
+  
+  <RefsTable title="Fallthrough Branch Output Refs">
+    <Line>
+      <Cell>`rangeCheck`</Cell>
+      <Cell>[144]</Cell>
+      <Cell>3</Cell>
+    </Line>
+  </RefsTable>
+</TableLayout>
