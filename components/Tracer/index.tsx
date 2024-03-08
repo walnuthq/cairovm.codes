@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 
 import cn from 'classnames'
+import { Priority, useRegisterActions } from 'kbar'
 
 import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
 
@@ -130,6 +131,35 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
     }
   }
 
+  const actions = [
+    {
+      id: 'debugInfo',
+      name: 'Debug Info',
+      shortcut: ['d'],
+      keywords: 'switch to debug info',
+      section: 'Excetution',
+      perform: () => {
+        setSelectedConsoleTab(IConsoleTab.DebugInfo)
+      },
+      subtitle: 'Switch to Debug Info',
+      priority: Priority.HIGH,
+    },
+    {
+      id: 'console',
+      name: 'Console',
+      shortcut: ['e'],
+      keywords: 'switch to console',
+      section: 'Excetution',
+      perform: () => {
+        setSelectedConsoleTab(IConsoleTab.Console)
+      },
+      subtitle: 'Switch to Console',
+      priority: Priority.HIGH,
+    },
+  ]
+
+  useRegisterActions(actions, [setSelectedConsoleTab])
+
   return (
     <>
       <div className="flex-grow">
@@ -173,7 +203,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
               )}`}
               onClick={() => setSelectedConsoleTab(IConsoleTab.DebugInfo)}
             >
-              Debug Info
+              Debug Info [d]
             </button>
             <button
               onClick={() => setSelectedConsoleTab(IConsoleTab.Console)}
@@ -186,7 +216,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
                 },
               )}`}
             >
-              Console
+              Console [e]
             </button>
           </nav>
         </div>

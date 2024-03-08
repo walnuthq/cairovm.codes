@@ -2,9 +2,9 @@ import { useRef } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
+import { Priority, useRegisterActions } from 'kbar'
 
 import { Button, Input } from 'components/ui'
-import { Priority, useRegisterActions } from 'kbar'
 
 type EditorControlsProps = {
   isCompileDisabled: boolean
@@ -37,11 +37,24 @@ const EditorControls = ({
       perform: () => {
         onCompileRun()
       },
+      subtitle: 'Run execution',
+      priority: Priority.HIGH,
+    },
+    {
+      id: 'permalink',
+      name: 'Share permalink',
+      shortcut: ['p'],
+      keywords: 'share permalink',
+      section: 'Excetution',
+      perform: () => {
+        onCopyPermalink()
+      },
+      subtitle: 'Copy permalink',
       priority: Priority.HIGH,
     },
   ]
 
-  useRegisterActions(actions, [onCompileRun])
+  useRegisterActions(actions, [onCompileRun, onCopyPermalink])
 
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
@@ -50,7 +63,7 @@ const EditorControls = ({
           onClick={onCopyPermalink}
           transparent
           padded={false}
-          tooltip="Share permalink"
+          tooltip="Share permalink [p]"
           tooltipId="share-permalink"
         >
           <span className="inline-block mr-4 select-all">
