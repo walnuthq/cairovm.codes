@@ -4,7 +4,8 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   pull_request_target:
-    types: [labeled]
+    types: [labeled, synchronize]
+
 jobs:
   preview:
     runs-on: ubuntu-latest
@@ -14,6 +15,9 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'safe to preview')
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - run: npm install --global vercel@latest
       - run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
       - run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
