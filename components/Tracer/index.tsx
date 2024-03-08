@@ -136,8 +136,8 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
       id: 'debugInfo',
       name: 'Debug Info',
       shortcut: ['d'],
-      keywords: 'switch to debug info',
-      section: 'Excetution',
+      keywords: 'Debug info',
+      section: 'Excecution',
       perform: () => {
         setSelectedConsoleTab(IConsoleTab.DebugInfo)
       },
@@ -148,8 +148,8 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
       id: 'console',
       name: 'Console',
       shortcut: ['e'],
-      keywords: 'switch to console',
-      section: 'Excetution',
+      keywords: 'Console',
+      section: 'Excecution',
       perform: () => {
         setSelectedConsoleTab(IConsoleTab.Console)
       },

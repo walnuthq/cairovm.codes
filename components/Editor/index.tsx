@@ -203,8 +203,8 @@ const Editor = ({ readOnly = false }: Props) => {
       id: 'cairo',
       name: 'Cairo',
       shortcut: ['x'],
-      keywords: 'Switch to cairo',
-      section: 'Excetution',
+      keywords: 'Cairo',
+      section: 'Execution',
       perform: () => {
         setCodeType(CodeType.Cairo)
       },
@@ -215,8 +215,8 @@ const Editor = ({ readOnly = false }: Props) => {
       id: 'sierra',
       name: 'Sierra',
       shortcut: ['s'],
-      keywords: 'Switch to sierra',
-      section: 'Excetution',
+      keywords: 'Sierra',
+      section: 'Execution',
       perform: () => {
         setCodeType(CodeType.Sierra)
       },
@@ -227,8 +227,8 @@ const Editor = ({ readOnly = false }: Props) => {
       id: 'casm',
       name: 'Casm',
       shortcut: ['w'],
-      keywords: 'Switch to casm',
-      section: 'Excetution',
+      keywords: 'Casm',
+      section: 'Execution',
       perform: () => {
         setCodeType(CodeType.CASM)
       },
