@@ -44,8 +44,8 @@ const EditorControls = ({
       id: 'permalink',
       name: 'Share permalink',
       shortcut: ['p'],
-      keywords: 'share permalink',
-      section: 'Excetution',
+      keywords: 'Share permalink',
+      section: 'Execution',
       perform: () => {
         onCopyPermalink()
       },

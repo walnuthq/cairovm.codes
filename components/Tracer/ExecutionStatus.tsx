@@ -45,7 +45,7 @@ const ExecutionStatus = ({
       id: 'continue',
       name: 'Continue',
       shortcut: ['c'],
-      keywords: 'execution continue',
+      keywords: 'Execution continue',
       section: 'Execution',
       perform: () => {
         onContinueExecution()
