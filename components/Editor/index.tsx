@@ -11,6 +11,7 @@ import React, {
 import { decode, encode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
+import { Priority, useRegisterActions } from 'kbar'
 import { useRouter } from 'next/router'
 import SCEditor from 'react-simple-code-editor'
 
@@ -196,6 +197,46 @@ const Editor = ({ readOnly = false }: Props) => {
   }, [compilationState, cairoCode])
 
   const isBytecode = false
+
+  const actions = [
+    {
+      id: 'cairo',
+      name: 'Cairo',
+      shortcut: ['x'],
+      keywords: 'Cairo',
+      section: 'Execution',
+      perform: () => {
+        setCodeType(CodeType.Cairo)
+      },
+      subtitle: 'Switch to Cairo',
+      priority: Priority.HIGH,
+    },
+    {
+      id: 'sierra',
+      name: 'Sierra',
+      shortcut: ['s'],
+      keywords: 'Sierra',
+      section: 'Execution',
+      perform: () => {
+        setCodeType(CodeType.Sierra)
+      },
+      subtitle: 'Switch to Sierra',
+      priority: Priority.HIGH,
+    },
+    {
+      id: 'casm',
+      name: 'Casm',
+      shortcut: ['w'],
+      keywords: 'Casm',
+      section: 'Execution',
+      perform: () => {
+        setCodeType(CodeType.CASM)
+      },
+      subtitle: 'Switch to Casm',
+      priority: Priority.HIGH,
+    },
+  ]
+  useRegisterActions(actions, [highlightCode])
 
   return (
     <>

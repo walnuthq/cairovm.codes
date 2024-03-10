@@ -45,7 +45,7 @@ const ExecutionStatus = ({
       id: 'continue',
       name: 'Continue',
       shortcut: ['c'],
-      keywords: 'execution continue',
+      keywords: 'Execution continue',
       section: 'Execution',
       perform: () => {
         onContinueExecution()
@@ -70,7 +70,7 @@ const ExecutionStatus = ({
           transparent
           onClick={onStepOut}
           padded={false}
-          tooltip="Step back"
+          tooltip="Step back [b]"
           tooltipId="step1"
         >
           <RiArrowGoBackLine size={16} className="text-indigo-500" />
@@ -79,7 +79,7 @@ const ExecutionStatus = ({
           transparent
           onClick={onStepIn}
           padded={false}
-          tooltip="Step next"
+          tooltip="Step next [n]"
           tooltipId="step2"
         >
           <RiArrowGoForwardLine size={16} className="text-indigo-500" />
@@ -88,7 +88,7 @@ const ExecutionStatus = ({
           transparent
           onClick={onContinueExecution}
           padded={false}
-          tooltip="Continue execution"
+          tooltip="Continue execution [c]"
           tooltipId="continue-execution"
         >
           <RiPlayCircleLine size={16} className="text-indigo-500" />
