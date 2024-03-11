@@ -27,13 +27,15 @@ export const StackBox: React.FC<Props> = ({
         <div
           key={index}
           className={cn(
-            'font-mono inline-block border px-2 py-1 mb-1 rounded-sm',
+            'font-mono mb-1 rounded-sm',
             { 'w-full': isFullWidth, 'mr-1': !isFullWidth },
             className,
           )}
           style={{ minHeight: 26 }}
         >
-          {p.replace(/\\\|/g, '|')}
+          <span className={cn('px-2 py-1 border', className)}>
+            {p.trim().replace(/\\\|/g, '|')}
+          </span>
         </div>
       ))}
     </>

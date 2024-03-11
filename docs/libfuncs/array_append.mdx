@@ -1,0 +1,70 @@
+---
+shortDescription: Appends an element to the end of an array.
+invokeRefs: 'array | element'
+fallthroughBranch: 'array'
+---
+
+# Description
+
+Appends an element to the end of an array.
+
+# Syntax
+
+```
+array_append<T>([array]: Array<T>, [element]: T) -> ([array]: Array<T>)
+```
+
+# Invoke Refs
+
+- `[array]`: the array to update (`Array<T>`).
+- `[element]`: the element to insert (`T`).
+
+# Output Refs
+
+- `[array]`: the updated array (`Array<T>`).
+
+# Examples
+
+Append the value `42` to the end of an array.
+
+```
+array_append<u8>([1], [2]) -> ([3])
+```
+
+<TableLayout>
+  <MemoryTable>
+    <Line>
+      <Cell>145</Cell>
+      <Cell>1</Cell>
+    </Line>
+    <Line>
+      <Cell>149</Cell>
+      <Cell>4</Cell>
+    </Line>
+    <Line>
+      <Cell>150</Cell>
+      <Cell>42</Cell>
+    </Line>
+  </MemoryTable>
+
+<RefsTable title="Invoke Refs">
+  <Line>
+    <Cell>`array`</Cell>
+    <Cell>[1]</Cell>
+    <Cell>`@145, @149`</Cell>
+  </Line>
+  <Line>
+    <Cell>`element`</Cell>
+    <Cell>[2]</Cell>
+    <Cell>42</Cell>
+  </Line>
+</RefsTable>
+
+  <RefsTable title="Output Refs">
+    <Line>
+      <Cell>`array`</Cell>
+      <Cell>[3]</Cell>
+      <Cell>`@145, @150`</Cell>
+    </Line>
+  </RefsTable>
+</TableLayout>
