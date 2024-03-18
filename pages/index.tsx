@@ -1,6 +1,5 @@
-import { useContext } from 'react'
+import { ReactNode, useContext } from 'react'
 
-import type { NextPage } from 'next'
 import Head from 'next/head'
 
 import { AppUiContext } from 'context/appUiContext'
@@ -37,7 +36,7 @@ const HomePage = () => {
   )
 }
 
-HomePage.getLayout = function getLayout(page: NextPage) {
+HomePage.getLayout = function getLayout(page: ReactNode) {
   return <HomeLayout>{page}</HomeLayout>
 }
 
