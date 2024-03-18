@@ -45,6 +45,20 @@ Before you submit a pull request, please make sure there isn't an existing [GitH
 
 Once you are about to submit a pull request, prefix the name with either `chore:` (small improvements and regular maintenance), `fix:` (bugs and hot fixes), or `feat:` (new features) to help us quickly look up the type of the issue from the Git history.
 
+### Assigning to an issue
+
+If this is your first issue on cairovm.codes, add a comment with the following:
+
+- Present yourself briefly
+- Mention you want to work on the issue and explain shortly how you want to tackle it
+- When you are selected, you will be assigned to the issue
+
+If this is not your first issue, simply add a comment that you are interested in working on it. 
+
+### Contributor's chat
+
+Join us on Telegram [here](https://t.me/+DYI4FMia43I1NDI8). Do not hesitate to ask any question, we will do our best to answer in the best way we can.
+
 ### Coding conventions
 
 The project is already pre-configured with [Eslint](.eslintrc.js), [TypeScript](tsconfig.json), and [Prettier](.prettierrc). Here are some useful commands you can run to ensure your changes follow the project's coding conventions:
