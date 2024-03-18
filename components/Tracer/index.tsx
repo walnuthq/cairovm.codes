@@ -29,11 +29,19 @@ export interface TraceEntry {
   fp: number
 }
 
+export interface CallstackEntry {
+  fp: number
+  call_pc: number | null
+  ret_pc: number | null
+  fn_name: string | null
+}
+
 export type SierraVariables = { [key: string]: Array<string> }
 
 export interface TracerData {
   pcInstMap: { [key: string]: Instruction }
   trace: TraceEntry[]
+  callstack: CallstackEntry[][]
   memory: { [key: string]: string }
   pcToInstIndexesMap: { [key: string]: number }
   entryToSierraVarsMap: { [key: string]: SierraVariables }
@@ -61,6 +69,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+  const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
@@ -231,6 +240,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
               trace={trace}
               currentTraceEntry={currentTraceEntry}
               executionTraceStepNumber={executionTraceStepNumber}
+              currentCallstackEntry={currentCallstackEntry}
               handleRegisterPointerClick={handleRegisterPointerClick}
             />
           )}
@@ -243,11 +253,13 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 function DebugInfoTab({
   trace,
   currentTraceEntry,
+  currentCallstackEntry,
   executionTraceStepNumber,
   handleRegisterPointerClick,
 }: {
   trace: TraceEntry[] | undefined
   currentTraceEntry: TraceEntry | undefined
+  currentCallstackEntry?: CallstackEntry[]
   executionTraceStepNumber: number
   handleRegisterPointerClick: (num: number) => void
 }) {
@@ -302,6 +314,40 @@ function DebugInfoTab({
                 </div>
               </dd>
             </div>
+          </div>
+          <div>
+            <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+              Callstack
+            </dt>
+            <dd className="font-mono mb-2 flex flex-col">
+              {currentCallstackEntry?.map((callstackEntry, index) => (
+                <div key={index} className="flex gap-1">
+                  <button
+                    onClick={() => {
+                      handleRegisterPointerClick(callstackEntry.fp)
+                    }}
+                    className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
+                  >
+                    FP: {callstackEntry.fp}
+                  </button>
+                  {callstackEntry.call_pc && (
+                    <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                      CALL PC: {callstackEntry.call_pc}
+                    </div>
+                  )}
+                  {callstackEntry.ret_pc && (
+                    <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                      RET PC: {callstackEntry.ret_pc}
+                    </div>
+                  )}
+                  {callstackEntry.fn_name && (
+                    <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                      NAME: {callstackEntry.fn_name}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </dd>
           </div>
         </dl>
       )}
