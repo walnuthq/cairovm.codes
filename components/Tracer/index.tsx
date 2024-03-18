@@ -330,7 +330,7 @@ function InstructionsTable({
 
   return (
     <table className="w-full font-mono text-tiny">
-      <thead style={{ zIndex: 2, position: 'sticky', top: 0 }}>
+      <thead style={{ zIndex: 1, position: 'sticky', top: 0 }}>
         <tr className="text-left bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
           <th className="py-1"></th>
           <th className="py-1"></th>
