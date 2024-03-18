@@ -238,6 +238,83 @@ const Editor = ({ readOnly = false }: Props) => {
   ]
   useRegisterActions(actions, [highlightCode])
 
+  const handleCommentLine = useCallback(() => {
+    if (!editorRef.current) {
+      return
+    }
+    const textareaRef = editorRef.current._input
+    const lineNumberStart = textareaRef.value
+      .substring(0, textareaRef.selectionStart)
+      .split('\n').length
+    const lineNumberEnd = textareaRef.value
+      .substring(0, textareaRef.selectionEnd)
+      .split('\n').length
+
+    const selectionStart = textareaRef.selectionStart
+    const selectionEnd = textareaRef.selectionEnd
+    const lines = cairoCode.split('\n')
+    const linesToHandle: number[] = []
+    for (let k = lineNumberStart; k <= lineNumberEnd; k++) {
+      linesToHandle.push(k)
+    }
+
+    function isCommentLine(input: string) {
+      return input.startsWith('// ')
+    }
+
+    const isMultilineSelection = linesToHandle.length > 1
+    let charOffsetStart = 0
+    let charOffsetEnd = 0
+    if (isMultilineSelection) {
+      let commentedLines = 0
+      for (const lineNumber of linesToHandle) {
+        if (lines[lineNumber - 1] !== undefined) {
+          const line = lines[lineNumber - 1]
+          if (isCommentLine(line)) {
+            lines[lineNumber - 1] = line.substring(3)
+          } else {
+            lines[lineNumber - 1] = '// ' + line
+            commentedLines += 1
+          }
+        }
+      }
+      charOffsetEnd = commentedLines * 3
+    } else {
+      const lineNumber = linesToHandle[0]
+      const line = lines[lineNumber - 1]
+      if (isCommentLine(line)) {
+        lines[lineNumber - 1] = line.substring(3)
+        charOffsetStart = -3
+        charOffsetEnd = -3
+      } else {
+        lines[lineNumber - 1] = '// ' + line
+        charOffsetStart = 3
+        charOffsetEnd = 3
+      }
+    }
+
+    setCairoCode(lines.join('\n'))
+    setTimeout(() => {
+      textareaRef.setSelectionRange(
+        selectionStart + charOffsetStart,
+        selectionEnd + charOffsetEnd,
+      )
+    }, 0)
+  }, [cairoCode])
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === '/') {
+        event.preventDefault()
+        handleCommentLine()
+      }
+    }
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [handleCommentLine, cairoCode])
+
   return (
     <>
       <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
