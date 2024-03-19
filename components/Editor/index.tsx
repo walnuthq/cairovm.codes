@@ -260,7 +260,6 @@ const Editor = ({ readOnly = false }: Props) => {
                   codeType={codeType}
                   activeIndexes={[activeCasmInstructionIndex]}
                   variables={{}}
-                  height={cairoEditorHeight}
                 />
               ) : codeType === CodeType.Sierra ? (
                 <InstructionsTable
@@ -270,7 +269,6 @@ const Editor = ({ readOnly = false }: Props) => {
                     casmToSierraMap[activeCasmInstructionIndex] ?? []
                   }
                   variables={currentSierraVariables || {}}
-                  height={cairoEditorHeight}
                 />
               ) : (
                 <SCEditor
