@@ -28,7 +28,6 @@ export const InstructionsTable = ({
       focusRowRef.current &&
       focusRowRef.current.offsetTop
     ) {
-      // tableRef.current.scrollTop = focusRowRef.current.offsetTop - 58
       tableRef.current.scrollTo({
         top: focusRowRef.current.offsetTop - 58,
         behavior: 'smooth',
