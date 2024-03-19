@@ -89,7 +89,11 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
       '#focus_row',
     ) as HTMLElement | null
     if (tableRef.current && element?.offsetTop) {
-      tableRef.current.scrollTop = element.offsetTop - 58
+      // tableRef.current.scrollTop = element.offsetTop - 58
+      tableRef.current.scrollTo({
+        top: element.offsetTop - 58,
+        behavior: 'smooth',
+      })
     }
   }, [currentTraceEntry, currentFocus])
 
