@@ -38,15 +38,15 @@ import { InstructionsTable } from './InstructionsTable'
 
 type Props = {
   readOnly?: boolean
+  isFullScreen?: boolean
 }
 
 type SCEditorRef = {
   _input: HTMLTextAreaElement
 } & RefObject<React.FC>
 
-const cairoEditorHeight = 350
-
-const Editor = ({ readOnly = false }: Props) => {
+const Editor = ({ readOnly = false, isFullScreen = false }: Props) => {
+  const cairoEditorHeight = isFullScreen ? 650 : 350
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
 

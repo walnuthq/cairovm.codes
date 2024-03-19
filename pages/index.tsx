@@ -25,14 +25,14 @@ const HomePage = () => {
         />
       </Head>
       <AboutCairoVMBanner />
-
       <Container fullWidth={isFullScreen}>
-        <Editor />
+        <Editor isFullScreen={isFullScreen} />
       </Container>
-
-      <section className="pt-20 pb-10 text-center">
-        <ContributeBox />
-      </section>
+      {!isFullScreen && (
+        <section className="pt-20 pb-10 text-center">
+          <ContributeBox />
+        </section>
+      )}
     </>
   )
 }
