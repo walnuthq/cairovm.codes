@@ -319,34 +319,30 @@ function DebugInfoTab({
             <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
               Callstack
             </dt>
-            <dd className="font-mono mb-2 flex flex-col">
-              {currentCallstackEntry?.map((callstackEntry, index) => (
-                <div key={index} className="flex gap-1">
-                  <button
-                    onClick={() => {
-                      handleRegisterPointerClick(callstackEntry.fp)
-                    }}
-                    className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
-                  >
-                    FP: {callstackEntry.fp}
-                  </button>
-                  {callstackEntry.call_pc && (
-                    <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
-                      CALL PC: {callstackEntry.call_pc}
-                    </div>
-                  )}
-                  {callstackEntry.ret_pc && (
-                    <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
-                      RET PC: {callstackEntry.ret_pc}
-                    </div>
-                  )}
-                  {callstackEntry.fn_name && (
-                    <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
-                      NAME: {callstackEntry.fn_name}
-                    </div>
-                  )}
-                </div>
-              ))}
+            <dd className="font-mono mb-2">
+              <table className="w-full font-mono text-tiny">
+                <thead>
+                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+                    <th className="py-1 px-2 font-thin">FP</th>
+                    <th className="py-1 px-2 font-thin">CALL PC</th>
+                    <th className="py-1 px-2 font-thin">RET PC</th>
+                    <th className="py-1 px-2 font-thin">FN NAME</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentCallstackEntry?.map((callstackEntry, index) => (
+                    <tr
+                      key={index}
+                      className="relative border-b border-gray-200 dark:border-black-500 text-gray-400 dark:text-gray-600"
+                    >
+                      <td className="py-1 px-2">{callstackEntry.fp}</td>
+                      <td className="py-1 px-2">{callstackEntry.call_pc}</td>
+                      <td className="py-1 px-2">{callstackEntry.ret_pc}</td>
+                      <td className="py-1 px-2">{callstackEntry.fn_name}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </dd>
           </div>
         </dl>
