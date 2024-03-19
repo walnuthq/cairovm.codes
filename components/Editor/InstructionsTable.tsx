@@ -14,13 +14,11 @@ export const InstructionsTable = ({
   activeIndexes,
   variables,
   codeType,
-  height,
 }: {
   instructions: IInstruction[]
   activeIndexes: number[]
   variables: SierraVariables
   codeType: CodeType
-  height: number
 }) => {
   useEffect(() => {
     if (
@@ -121,7 +119,6 @@ export const InstructionsTable = ({
     <div
       ref={tableRef}
       className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-      style={{ height }}
     >
       <table className="w-full font-mono text-tiny">
         <tbody>
