@@ -46,6 +46,10 @@ type SCEditorRef = {
 
 const cairoEditorHeight = 350
 
+function isCommentLine(input: string) {
+  return input.startsWith('// ')
+}
+
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
@@ -243,44 +247,39 @@ const Editor = ({ readOnly = false }: Props) => {
       return
     }
     const textareaRef = editorRef.current._input
-    const lineNumberStart = textareaRef.value
+    const selectionLineNumberStart = cairoCode
       .substring(0, textareaRef.selectionStart)
       .split('\n').length
-    const lineNumberEnd = textareaRef.value
+    const selectionLineNumberEnd = cairoCode
       .substring(0, textareaRef.selectionEnd)
       .split('\n').length
 
     const selectionStart = textareaRef.selectionStart
     const selectionEnd = textareaRef.selectionEnd
     const lines = cairoCode.split('\n')
-    const linesToHandle: number[] = []
-    for (let k = lineNumberStart; k <= lineNumberEnd; k++) {
-      linesToHandle.push(k)
+    const linesToComment: number[] = []
+    for (let k = selectionLineNumberStart; k <= selectionLineNumberEnd; k++) {
+      linesToComment.push(k)
     }
 
-    function isCommentLine(input: string) {
-      return input.startsWith('// ')
-    }
-
-    const isMultilineSelection = linesToHandle.length > 1
+    const isMultilineSelection = linesToComment.length > 1
     let charOffsetStart = 0
     let charOffsetEnd = 0
     if (isMultilineSelection) {
-      let commentedLines = 0
-      for (const lineNumber of linesToHandle) {
+      for (const lineNumber of linesToComment) {
         if (lines[lineNumber - 1] !== undefined) {
           const line = lines[lineNumber - 1]
           if (isCommentLine(line)) {
             lines[lineNumber - 1] = line.substring(3)
+            charOffsetEnd -= 3
           } else {
             lines[lineNumber - 1] = '// ' + line
-            commentedLines += 1
+            charOffsetEnd += 3
           }
         }
       }
-      charOffsetEnd = commentedLines * 3
     } else {
-      const lineNumber = linesToHandle[0]
+      const lineNumber = linesToComment[0]
       const line = lines[lineNumber - 1]
       if (isCommentLine(line)) {
         lines[lineNumber - 1] = line.substring(3)
@@ -294,12 +293,16 @@ const Editor = ({ readOnly = false }: Props) => {
     }
 
     setCairoCode(lines.join('\n'))
-    setTimeout(() => {
-      textareaRef.setSelectionRange(
-        selectionStart + charOffsetStart,
-        selectionEnd + charOffsetEnd,
-      )
-    }, 0)
+    const timeoutId = setTimeout(
+      () =>
+        textareaRef.setSelectionRange(
+          selectionStart + charOffsetStart,
+          selectionEnd + charOffsetEnd,
+        ),
+      0,
+    )
+
+    return () => clearTimeout(timeoutId)
   }, [cairoCode])
 
   useEffect(() => {
