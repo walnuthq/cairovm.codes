@@ -77,6 +77,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const editorRef = useRef<SCEditorRef>()
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const query = router.query
@@ -293,7 +294,10 @@ const Editor = ({ readOnly = false }: Props) => {
     }
 
     setCairoCode(lines.join('\n'))
-    const timeoutId = setTimeout(
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    timeoutRef.current = setTimeout(
       () =>
         textareaRef.setSelectionRange(
           selectionStart + charOffsetStart,
@@ -301,8 +305,6 @@ const Editor = ({ readOnly = false }: Props) => {
         ),
       0,
     )
-
-    return () => clearTimeout(timeoutId)
   }, [cairoCode])
 
   useEffect(() => {
@@ -317,6 +319,14 @@ const Editor = ({ readOnly = false }: Props) => {
       document.removeEventListener('keydown', handleKeyPress)
     }
   }, [handleCommentLine, cairoCode])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <>
