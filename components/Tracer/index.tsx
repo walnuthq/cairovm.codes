@@ -162,7 +162,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   return (
     <>
-      <div className="flex-grow">
+      <div>
         <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
           <ExecutionStatus
             onStepIn={stepIn}
@@ -189,7 +189,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
           </>
         )}
       </div>
-      <div className="border-gray-200 border-t">
+      <div className="border-gray-200 border-t dark:border-black-500 h-52">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
