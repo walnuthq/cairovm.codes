@@ -76,7 +76,7 @@ const EditorControls = ({
     [],
   )
 
-  const examplesOptionos = examples.Cairo.map((example, i) => ({
+  const examplesOptions = examples.Cairo.map((example, i) => ({
     value: i,
     label: CairoNameExamples[i],
   }))
@@ -134,7 +134,7 @@ const EditorControls = ({
         classNamePrefix="select"
         menuPlacement="auto"
         value={exampleNameValue}
-        options={examplesOptionos}
+        options={examplesOptions}
         instanceId="exampleSelect"
         onChange={handleChangeExampleOption}
         isDisabled={isCompileDisabled}
