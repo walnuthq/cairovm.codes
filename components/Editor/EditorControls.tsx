@@ -8,16 +8,12 @@ import examples from 'components/Editor/examples'
 
 import { Button, Input } from 'components/ui'
 
-type SelectOption = { value: number; label: string }
-
 type EditorControlsProps = {
   isCompileDisabled: boolean
   programArguments: string
   areProgramArgumentsValid: boolean
   exampleName: number
-  handleChangeExampleOption: (
-    option: OnChangeValue<SelectOption, boolean>,
-  ) => void
+  handleChangeExampleOption: (option: OnChangeValue<any, any>) => void
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
