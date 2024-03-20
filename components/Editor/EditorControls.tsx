@@ -62,16 +62,19 @@ const EditorControls = ({
 
   useRegisterActions(actions, [onCompileRun, onCopyPermalink])
 
-  const CairoNameExamples = [
-    'Default',
-    'Variables & mutability',
-    'Type casting',
-    'Control flow',
-    'Functions',
-    'Arrays',
-    'Dictionaries',
-    'Ownership',
-  ]
+  const CairoNameExamples = useMemo(
+    () => [
+      'Default',
+      'Variables & mutability',
+      'Type casting',
+      'Control flow',
+      'Functions',
+      'Arrays',
+      'Dictionaries',
+      'Ownership',
+    ],
+    [],
+  )
 
   const examplesOptionos = examples.Cairo.map((example, i) => ({
     value: i,
@@ -83,7 +86,7 @@ const EditorControls = ({
       value: exampleName,
       label: CairoNameExamples[exampleName],
     }),
-    [exampleName],
+    [CairoNameExamples, exampleName],
   )
 
   return (
