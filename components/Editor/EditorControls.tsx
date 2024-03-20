@@ -1,8 +1,10 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
+import Select, { OnChangeValue } from 'react-select'
+import examples from 'components/Editor/examples'
 
 import { Button, Input } from 'components/ui'
 
@@ -10,6 +12,8 @@ type EditorControlsProps = {
   isCompileDisabled: boolean
   programArguments: string
   areProgramArgumentsValid: boolean
+  exampleName: number
+  handleChangeExampleOption: (option: OnChangeValue<any, any>) => void
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
@@ -20,6 +24,8 @@ const EditorControls = ({
   isCompileDisabled,
   programArguments,
   areProgramArgumentsValid,
+  exampleName,
+  handleChangeExampleOption,
   onCopyPermalink,
   onCompileRun,
   onProgramArgumentsUpdate,
@@ -55,6 +61,30 @@ const EditorControls = ({
   ]
 
   useRegisterActions(actions, [onCompileRun, onCopyPermalink])
+
+  const CairoNameExamples = [
+    'Default',
+    'Variables & mutability',
+    'Type casting',
+    'Control flow',
+    'Functions',
+    'Arrays',
+    'Dictionaries',
+    'Ownership',
+  ]
+
+  const examplesOptionos = examples.Cairo.map((example, i) => ({
+    value: i,
+    label: CairoNameExamples[i],
+  }))
+
+  const exampleNameValue = useMemo(
+    () => ({
+      value: exampleName,
+      label: CairoNameExamples[exampleName],
+    }),
+    [exampleName],
+  )
 
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
@@ -95,6 +125,16 @@ const EditorControls = ({
         inputClassName={cn({
           'text-red-500': !areProgramArgumentsValid,
         })}
+      />
+      <Select
+        isSearchable={false}
+        classNamePrefix="select"
+        menuPlacement="auto"
+        value={exampleNameValue}
+        options={examplesOptionos}
+        instanceId="exampleSelect"
+        onChange={handleChangeExampleOption}
+        isDisabled={isCompileDisabled}
       />
       <div>
         <Button

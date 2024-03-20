@@ -8,6 +8,193 @@ fn main() -> felt252 {
     let n = 2 + 3;
     n
 }`,
+    `use core::felt252;
+
+const my_constant: felt252 = 42;
+
+fn main() {    
+    
+    // non-mutable variable
+    let my_var = 12;
+
+    println!("{my_var}");
+     
+    // my_var = 38;  <-- fails to compile
+    
+    // variable shadowing (declare another variable with the same name)
+    let my_var = 'hello world';
+
+    println!("{my_var}");
+    
+    // mutable variable
+    let mut my_mut_var = 10;
+    my_mut_var = my_mut_var * 2;
+    
+    println!("{my_mut_var}");
+    
+    // my_mut_var = 'hello world' <-- fails to compile
+}`,
+    `use core::felt252;
+
+fn main() {    
+    let my_felt252 = 10;
+    
+    // Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
+    let my_u8: u8 = my_felt252.try_into().unwrap();
+    
+    let my_u16: u16 = my_u8.into();
+    let my_u32: u32 = my_u16.into();
+    let my_u64: u64 = my_u32.into();
+    let _my_u128: u128 = my_u64.into();
+    
+    // As a felt252 is smaller than a u256, we can use the into() method
+    let _my_u256: u256 = my_felt252.into();
+    let _my_usize: usize = my_felt252.try_into().unwrap();
+    let _my_other_felt252: felt252 = my_u8.into();
+    let _my_third_felt252: felt252 = my_u16.into();
+}`,
+    `#[derive(Drop)]
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
+fn main() {
+
+    // if / else expression
+    let x = 10;
+    let y = 20;
+    
+    if x == y {
+        println!("x == y");
+    }
+    else {
+        println!("x != y");
+    };
+
+    // if with return value
+    let _res = if x == y {
+        'equal'
+    }
+    else {
+        'not_equal'
+    };
+
+    // match expression (with some limitations in Cairo <= 2.5)
+    let x = Direction::Up;
+    match x {
+        Direction::Up => println!("you win !"),
+        _ => println!("you loose ...")
+    }
+
+    // match expression with return value
+    let x = Direction::Down;
+    let _res = match x {
+        Direction::Up => 1,
+        Direction::Down => -1,
+        Direction::Left => -1,
+        Direction::Right => 1,
+    };
+
+    // loop expression
+    
+    let mut i: u128 = 0;
+    loop {
+        if i > 9 { // Break condition
+            break;
+        }
+
+        i = i + 1;
+    };
+    
+    // loop with return value
+    let _res = loop {
+        if i > 9 { break (42); }
+        i = i + 1;
+    };
+    
+}`,
+    `// This function returns an u32.
+fn add(a: u32, b: u32) -> u64 {
+
+    // there is no semi-colon at the end so the
+    // result of this expression is returned.
+    // equivalent to: return x + 1;
+    a.into() + b.into()
+}
+
+// This functions doesn't return anything.
+fn main() {
+    let a = 1;
+    let b = 2;
+    let x = 3;
+    let y = 4;
+
+    // named parameters to be more explicit
+    let _c = add(:a, :b);
+    let _z = add(a: x, b: y);
+}
+`,
+    `use array::ArrayTrait;
+
+fn main () {
+    let mut a = ArrayTrait::new();
+
+    // add some items in the array
+    a.append(1);
+    a.append(2);
+    
+    // get array length
+    assert!(a.len() == 2, "wrong array length");
+
+    // 2 ways to read an item from the array
+    // * get() returns an Option so you can handle out-of-bounds error
+    // * at() panics in case of out-of-bounds error
+    let first_element = *a.get(0).unwrap().unbox();
+    // a.get(2) will return None
+
+    let second_element = *a.at(1);
+    // a.at(2) will cause an error
+}`,
+    `fn main () {
+    let mut balances: Felt252Dict<u64> = Default::default();
+
+    balances.insert('Alex', 100);
+    balances.insert('Maria', 200);
+
+    let alex_balance = balances.get('Alex');
+    assert!(alex_balance == 100, "Balance is not 100");
+
+    let maria_balance = balances.get('Maria');
+    assert!(maria_balance == 200, "Balance is not 200");
+}`,
+    `use array::ArrayTrait;
+
+fn foo_takes_ownership(arr: Array<u128>) {
+    // foo takes ownership of the array.
+    // when this function returns, arr is dropped.
+}
+
+fn foo_receives_ref(ref arr: Array<u128>) {
+    // receives a ref to an array so the calling function
+    // keeps the ownership of the array.
+}
+
+fn main() {
+    // as the creator of arr, the main function owns the array
+    let mut arr = ArrayTrait::<u128>::new();
+
+    foo_takes_ownership(arr); // moves ownership of the array to function call
+
+    // foo(arr); // <- fails to compile, as main doesn't own the array anymore
+    
+    let mut another_arr = ArrayTrait::<u128>::new();
+    
+    foo_receives_ref(ref another_arr);
+    foo_receives_ref(ref another_arr); // no compilation issue, main still owns another_arr 
+}`,
   ],
   Sierra: [
     `type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
