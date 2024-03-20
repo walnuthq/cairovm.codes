@@ -15,7 +15,7 @@ export const ArgumentsHelperModal = ({
       visible={showArgumentsHelper}
       setVisible={setShowArgumentsHelper}
     >
-      <div className="text-sm text-gray-900">
+      <div className="text-sm text-gray-900 dark:text-gray-200">
         <p className="my-2">
           This input field accepts a list of program arguments for the{' '}
           <CodeElement>main()</CodeElement> function, separated by a{' '}
@@ -58,7 +58,7 @@ export const ArgumentsHelperModal = ({
 
 const CodeElement = ({ children }: { children: string }) => {
   return (
-    <code className="inline-block px-1.5 py-0.5 my-0.5 rounded bg-stone-200/70 text-red-500">
+    <code className="inline-block px-1.5 py-0.5 my-0.5 rounded bg-stone-200/70 dark:bg-slate-700 text-red-400">
       {children}
     </code>
   )

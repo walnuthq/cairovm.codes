@@ -26,7 +26,7 @@ export const Modal = ({
         onKeyDown={closeModal}
       >
         <div
-          className="md:max-w-3xl relative p-4 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-400 w-full m-auto flex-col flex rounded-lg cursor-auto"
+          className="md:max-w-3xl relative p-4 bg-white dark:bg-gray-800 w-full m-auto flex-col flex rounded-lg cursor-auto"
           role="button"
           tabIndex={0}
           onClick={(e) => e.stopPropagation()}
