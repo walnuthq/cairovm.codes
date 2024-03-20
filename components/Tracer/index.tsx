@@ -3,6 +3,7 @@ import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 
+import { AppUiContext } from 'context/appUiContext'
 import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
 
 import Console from '../Editor/Console'
@@ -44,11 +45,9 @@ enum IConsoleTab {
   DebugInfo = 'output',
 }
 
-interface TracerProps {
-  mainHeight: number
-}
+export const Tracer = () => {
+  const { isFullScreen } = useContext(AppUiContext)
 
-export const Tracer = ({ mainHeight }: TracerProps) => {
   const {
     tracerData,
     breakPoints,
@@ -65,8 +64,6 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
   )
-
-  const consoleHeight = 150
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -174,8 +171,9 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
           <>
             <div
               ref={tableRef}
-              className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: mainHeight }}
+              className={`overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
+                isFullScreen ? 'h-[500px]' : 'h-[225px]'
+              }`}
             >
               <InstructionsTable
                 memory={tracerData.memory}
@@ -189,8 +187,8 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
           </>
         )}
       </div>
-      <div className="border-gray-200 border-t dark:border-black-500 h-52">
-        <div className="px-4">
+      <div className="border-gray-200 border-t dark:border-black-500 h-40">
+        <div className="px-4 h-12">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
               className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
@@ -220,10 +218,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
             </button>
           </nav>
         </div>
-        <div
-          className="pane pane-light overflow-auto"
-          style={{ height: consoleHeight }}
-        >
+        <div className="pane pane-light overflow-auto">
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (

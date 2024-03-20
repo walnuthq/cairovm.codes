@@ -30,7 +30,9 @@ const HomePage = () => {
         <Editor />
       </Container>
 
-      <section className="pt-20 pb-10 text-center">
+      <section
+        className={`pt-20 pb-10 text-center ${isFullScreen ? 'hidden' : ''}`}
+      >
         <ContributeBox />
       </section>
     </>

@@ -243,7 +243,11 @@ const Editor = ({ readOnly = false }: Props) => {
   return (
     <>
       <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
-        <div className={`flex flex-col md:flex-row ${isFullScreen ? "h-[80vh]": ""}`}>
+        <div
+          className={`flex flex-col md:flex-row ${
+            isFullScreen ? 'h-[92vh]' : ''
+          }`}
+        >
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
               <Header
@@ -300,7 +304,7 @@ const Editor = ({ readOnly = false }: Props) => {
           </div>
 
           <div className="w-full md:w-1/2 flex flex-col">
-            <Tracer mainHeight={cairoEditorHeight} />
+            <Tracer />
           </div>
         </div>
 

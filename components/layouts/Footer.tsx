@@ -1,10 +1,20 @@
+import { useContext } from 'react'
+
+import { AppUiContext } from 'context/appUiContext'
+
 import { GITHUB_REPO_URL } from 'util/constants'
 
 import { Container } from 'components/ui/Container'
 
 const Footer = () => {
+  const { isFullScreen } = useContext(AppUiContext)
+
   return (
-    <footer className="border-t border-gray-100 dark:border-black-600 py-4">
+    <footer
+      className={`border-t border-gray-100 dark:border-black-600 py-4 ${
+        isFullScreen ? 'hidden' : ''
+      }`}
+    >
       <Container>
         <div className="flex justify-between text-tiny text-gray-500 items-start">
           <div className="flex flex-col md:flex-row leading-6">

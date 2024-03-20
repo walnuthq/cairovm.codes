@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 
 import { RiCloseLine } from '@remixicon/react'
 
+import { AppUiContext } from 'context/appUiContext'
+
 const AboutCairoVMBanner = () => {
   const [isShown, setIsShown] = useState(false)
+
+  const { isFullScreen } = useContext(AppUiContext)
 
   useEffect(() => {
     // Check if the banner was closed previously
@@ -23,7 +27,11 @@ const AboutCairoVMBanner = () => {
   }
 
   return (
-    <div className="relative bg-gray-50 dark:bg-black-700 pb-6 mt-0 mb-10">
+    <div
+      className={`relative bg-gray-50 dark:bg-black-700 pb-6 mt-0 mb-10 ${
+        isFullScreen ? 'hidden' : ''
+      }`}
+    >
       <button
         className="absolute top-6 right-6 focus:outline-none"
         onClick={handleCloseBanner}

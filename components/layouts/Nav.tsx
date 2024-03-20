@@ -1,5 +1,9 @@
+import { useContext } from 'react'
+
 import cn from 'classnames'
 import Link from 'next/link'
+
+import { AppUiContext } from 'context/appUiContext'
 
 import { GITHUB_REPO_URL } from 'util/constants'
 
@@ -10,8 +14,14 @@ import ToggleFullScreen from 'components/ToggleFullScreen'
 import { Container, Logo } from 'components/ui'
 
 const Nav = () => {
+  const { isFullScreen } = useContext(AppUiContext)
+
   return (
-    <nav className="fixed z-40 top-0 inset-x-0 py-2 bg-white dark:bg-black-800">
+    <nav
+      className={`fixed z-40 top-0 inset-x-0 py-2 bg-white dark:bg-black-800 ${
+        isFullScreen ? 'hidden' : ''
+      }`}
+    >
       <Container>
         <div className="h-10 flex items-center justify-between">
           <Link href="/" passHref legacyBehavior>
