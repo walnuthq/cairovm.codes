@@ -8,12 +8,16 @@ import examples from 'components/Editor/examples'
 
 import { Button, Input } from 'components/ui'
 
+type SelectOption = { value: number; label: string }
+
 type EditorControlsProps = {
   isCompileDisabled: boolean
   programArguments: string
   areProgramArgumentsValid: boolean
   exampleName: number
-  handleChangeExampleOption: (option: OnChangeValue<any, any>) => void
+  handleChangeExampleOption: (
+    option: OnChangeValue<SelectOption, boolean>,
+  ) => void
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
@@ -129,16 +133,19 @@ const EditorControls = ({
           'text-red-500': !areProgramArgumentsValid,
         })}
       />
-      <Select
-        isSearchable={false}
-        classNamePrefix="select"
-        menuPlacement="auto"
-        value={exampleNameValue}
-        options={examplesOptions}
-        instanceId="exampleSelect"
-        onChange={handleChangeExampleOption}
-        isDisabled={isCompileDisabled}
-      />
+      <div className="w-full lg:w-28 ">
+        <Select
+          isSearchable={false}
+          classNamePrefix="select"
+          menuPlacement="auto"
+          value={exampleNameValue}
+          options={examplesOptions}
+          instanceId="exampleSelect"
+          onChange={handleChangeExampleOption}
+          isDisabled={isCompileDisabled}
+        />
+      </div>
+
       <div>
         <Button
           onClick={onCompileRun}
