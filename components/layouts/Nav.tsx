@@ -12,7 +12,7 @@ import { Container, Logo } from 'components/ui'
 
 const Nav = () => {
   return (
-    <nav className="fixed z-40 top-0 inset-x-0 py-2 bg-white dark:bg-black-800">
+    <nav className="sticky z-40 top-0 inset-x-0 py-2 bg-white dark:bg-black-800">
       <Container>
         <div className="h-10 flex items-center justify-between">
           <Link href="/" passHref legacyBehavior>
