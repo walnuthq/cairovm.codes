@@ -455,7 +455,7 @@ const Editor = ({ readOnly = false }: Props) => {
               </div>
               <div>
                 <span>
-                  Made with ❤️ by{' '}
+                  Made with ❤️ by
                   <a
                     className="underline font-medium"
                     href="https://walnut.dev"

@@ -31,17 +31,20 @@ const EditorHeader = ({
     }),
     [codeType],
   )
+  
   const { isFullScreen } = useContext(AppUiContext)
-  return (
+  return <>
     <div className="flex justify-between items-center w-full">
-      {isFullScreen ? (
+      { isFullScreen ? (
         <Image src={cairoLogo} width={20} height={20} alt="cairo" />
       ) : (
-      { !onlyDropDown && (
+       !onlyDropDown && (
         <h3 className="font-semibold text-md hidden xl:inline-flex items-center">
           <span>Cairo VM Playground</span>
         </h3>
-      )}
+       )
+      )
+      }
       <div className="flex items-center justify-between w-full xl:w-auto">
         <Select
           onChange={onCodeTypeChange}
@@ -52,9 +55,8 @@ const EditorHeader = ({
           menuPlacement="auto"
           instanceId={useId()}
         />
-      </div>
+      </div>   
     </div>
-  )
-}
-
+  </>
+} 
 export default EditorHeader
