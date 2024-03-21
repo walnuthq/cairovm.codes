@@ -21,7 +21,7 @@
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
     "@next/third-parties": "^14.1.0",
-    "@remixicon/react": "^4.1.1",
+    "@remixicon/react": "^4.2.0",
     "@types/bn.js": "^5.1.5",
     "assert": "^2.0.0",
     "babel-preset-es2020": "^1.0.2",
