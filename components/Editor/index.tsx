@@ -386,7 +386,11 @@ const Editor = ({ readOnly = false }: Props) => {
               onCompileRun={handleCompileRun}
               onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
               exampleName={exampleOption}
-              handleChangeExampleOption={({ value }) => setExampleOption(value)}
+              handleChangeExampleOption={(newExample) =>
+                newExample !== null
+                  ? setExampleOption(newExample.value)
+                  : setExampleOption(0)
+              }
             />
           </div>
 

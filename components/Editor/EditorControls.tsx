@@ -19,7 +19,7 @@ type EditorControlsProps = {
   areProgramArgumentsValid: boolean
   exampleName: number
   handleChangeExampleOption: (
-    option: OnChangeValue<SelectOption, boolean>,
+    option: OnChangeValue<SelectOption, false>,
   ) => void
   onCopyPermalink: () => void
   onCompileRun: () => void
