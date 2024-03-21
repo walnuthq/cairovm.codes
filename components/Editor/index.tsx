@@ -72,6 +72,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const { addToConsoleLog } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
+  const [exampleOption, setExampleOption] = useState<number>(0)
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
 
@@ -90,10 +91,10 @@ const Editor = ({ readOnly = false }: Props) => {
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
-      setCairoCode(examples[initialCodeType][0])
+      setCairoCode(examples[initialCodeType][exampleOption])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsLoaded && router.isReady])
+  }, [settingsLoaded && router.isReady, exampleOption])
 
   useEffect(() => {
     if (compilationState === ProgramCompilationState.Compiling) {
@@ -384,6 +385,12 @@ const Editor = ({ readOnly = false }: Props) => {
               onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
               onCompileRun={handleCompileRun}
               onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+              exampleName={exampleOption}
+              handleChangeExampleOption={(newExample) =>
+                newExample !== null
+                  ? setExampleOption(newExample.value)
+                  : setExampleOption(0)
+              }
             />
           </div>
 
