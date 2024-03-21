@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { PropsWithChildren, createContext, useState } from 'react'
 
 export enum LogType {
   Error,
@@ -31,7 +31,7 @@ export const AppUiContext = createContext<AppUiContextProps>({
   addToConsoleLog: () => undefined,
 })
 
-export const AppUiProvider: React.FC = ({ children }) => {
+export const AppUiProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [consoleLog, setConsoleLog] = useState<IConsoleOutput[]>([
     {

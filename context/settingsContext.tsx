@@ -1,4 +1,9 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, {
+  PropsWithChildren,
+  createContext,
+  useEffect,
+  useState,
+} from 'react'
 
 const LOCAL_SETTINGS_KEY = 'cairovmcodes_settings'
 
@@ -23,7 +28,7 @@ export const SettingsContext = createContext<ContextProps>({
   setSetting: () => null,
 })
 
-export const SettingsProvider: React.FC<{}> = ({ children }) => {
+export const SettingsProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [settings, setSettings] = useState<any>({})
   const [settingsLoaded, setSettingsLoaded] = useState(false)
 

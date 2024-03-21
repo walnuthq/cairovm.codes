@@ -46,6 +46,10 @@ type SCEditorRef = {
 
 const cairoEditorHeight = 350
 
+function isCommentLine(input: string) {
+  return input.startsWith('// ')
+}
+
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
@@ -74,6 +78,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const editorRef = useRef<SCEditorRef>()
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const query = router.query
@@ -238,6 +243,91 @@ const Editor = ({ readOnly = false }: Props) => {
     },
   ]
   useRegisterActions(actions, [highlightCode])
+
+  const handleCommentLine = useCallback(() => {
+    if (!editorRef.current) {
+      return
+    }
+    const textareaRef = editorRef.current._input
+    const selectionLineNumberStart = cairoCode
+      .substring(0, textareaRef.selectionStart)
+      .split('\n').length
+    const selectionLineNumberEnd = cairoCode
+      .substring(0, textareaRef.selectionEnd)
+      .split('\n').length
+
+    const selectionStart = textareaRef.selectionStart
+    const selectionEnd = textareaRef.selectionEnd
+    const lines = cairoCode.split('\n')
+    const linesToComment: number[] = []
+    for (let k = selectionLineNumberStart; k <= selectionLineNumberEnd; k++) {
+      linesToComment.push(k)
+    }
+
+    const isMultilineSelection = linesToComment.length > 1
+    let charOffsetStart = 0
+    let charOffsetEnd = 0
+    if (isMultilineSelection) {
+      for (const lineNumber of linesToComment) {
+        if (lines[lineNumber - 1] !== undefined) {
+          const line = lines[lineNumber - 1]
+          if (isCommentLine(line)) {
+            lines[lineNumber - 1] = line.substring(3)
+            charOffsetEnd -= 3
+          } else {
+            lines[lineNumber - 1] = '// ' + line
+            charOffsetEnd += 3
+          }
+        }
+      }
+    } else {
+      const lineNumber = linesToComment[0]
+      const line = lines[lineNumber - 1]
+      if (isCommentLine(line)) {
+        lines[lineNumber - 1] = line.substring(3)
+        charOffsetStart = -3
+        charOffsetEnd = -3
+      } else {
+        lines[lineNumber - 1] = '// ' + line
+        charOffsetStart = 3
+        charOffsetEnd = 3
+      }
+    }
+
+    setCairoCode(lines.join('\n'))
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    timeoutRef.current = setTimeout(
+      () =>
+        textareaRef.setSelectionRange(
+          selectionStart + charOffsetStart,
+          selectionEnd + charOffsetEnd,
+        ),
+      0,
+    )
+  }, [cairoCode])
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === '/') {
+        event.preventDefault()
+        handleCommentLine()
+      }
+    }
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [handleCommentLine, cairoCode])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <>

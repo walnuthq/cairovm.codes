@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useId } from 'react'
 
 import Select, { OnChangeValue } from 'react-select'
 
@@ -37,7 +37,7 @@ const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
           isSearchable={false}
           classNamePrefix="select"
           menuPlacement="auto"
-          instanceId="headerSelect"
+          instanceId={useId()}
         />
       </div>
     </div>
