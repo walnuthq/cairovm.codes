@@ -111,7 +111,18 @@ const EditorControls = ({
           </span>
         </Button>
       </div>
-
+      <div className="w-full md:w-60 lg:mr-20">
+        <Select
+          isSearchable={false}
+          classNamePrefix="select"
+          menuPlacement="auto"
+          value={exampleNameValue}
+          options={examplesOptions}
+          instanceId={useId()}
+          onChange={handleChangeExampleOption}
+          isDisabled={isCompileDisabled}
+        />
+      </div>
       <Input
         ref={inputRef}
         rightIcon={
@@ -127,8 +138,8 @@ const EditorControls = ({
         }}
         readOnly={isCompileDisabled}
         value={programArguments}
-        placeholder={`Enter program arguments...`}
-        className={cn('grow border bg-gray-200 dark:bg-gray-800', {
+        placeholder={`Program arguments`}
+        className={cn('grow border bg-gray-200 dark:bg-gray-800 ', {
           'dark:border-gray-800 border-gray-200': areProgramArgumentsValid,
           'border-red-500': !areProgramArgumentsValid,
         })}
@@ -136,18 +147,6 @@ const EditorControls = ({
           'text-red-500': !areProgramArgumentsValid,
         })}
       />
-      <div className="w-full lg:w-28 ">
-        <Select
-          isSearchable={false}
-          classNamePrefix="select"
-          menuPlacement="auto"
-          value={exampleNameValue}
-          options={examplesOptions}
-          instanceId={useId()}
-          onChange={handleChangeExampleOption}
-          isDisabled={isCompileDisabled}
-        />
-      </div>
 
       <div>
         <Button
@@ -156,7 +155,7 @@ const EditorControls = ({
           size="sm"
           contentClassName="justify-center"
         >
-          Compile and run
+          Run
         </Button>
       </div>
     </div>
