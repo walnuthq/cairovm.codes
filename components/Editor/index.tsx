@@ -27,6 +27,9 @@ import { isArgumentStringValid } from 'util/compiler'
 import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
+import KBarButton from 'components/KBar/Button'
+import ThemeSelector from 'components/ThemeSelector'
+import ToggleFullScreen from 'components/ToggleFullScreen'
 import { Tracer } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
@@ -242,11 +245,16 @@ const Editor = ({ readOnly = false }: Props) => {
 
   return (
     <>
-      <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
+      <div
+        className={cn('bg-gray-100 dark:bg-black-700 ',  {
+          'rounded-lg': !isFullScreen,
+        })}
+      >
         <div
-          className={`flex flex-col md:flex-row ${
-            isFullScreen ? 'h-[92vh]' : ''
-          }`}
+          className="flex flex-col md:flex-row"
+          style={{
+            height: isFullScreen ? 'calc(100vh - 40.5px)' : '60vh',
+          }}
         >
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
@@ -303,15 +311,44 @@ const Editor = ({ readOnly = false }: Props) => {
             />
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col">
+          <div className="w-full md:w-1/2 flex flex-col ">
             <Tracer />
           </div>
         </div>
 
-        <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
+        <div
+          className={cn(
+            'px-5 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs h-10 items-center ml-auto flex',
+            {
+              'rounded-b-lg': !isFullScreen,
+            },
+          )}
+        >
           {cairoLangCompilerVersion !== ''
             ? `Cairo Compiler v${cairoLangCompilerVersion}`
             : ' '}
+          {isFullScreen && (
+            <>
+              <div className="items-center ml-auto mr-auto flex">
+                <KBarButton />
+                <ToggleFullScreen />
+                <ThemeSelector />
+              </div>
+              <div>
+                <span>
+                  Made with ❤️ by{' '}
+                  <a
+                    className="underline font-medium"
+                    href="https://walnut.dev"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Walnut
+                  </a>
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <ArgumentsHelperModal

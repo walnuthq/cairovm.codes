@@ -36,7 +36,7 @@ const HomeLayout: NextPage = ({ children }) => {
       <div className="flex flex-col h-screen justify-between">
         <Nav />
 
-        <main className={`mb-auto ${isFullScreen ? 'mt-6' : 'mt-20 pb-10'}`}>
+        <main className={`${isFullScreen ? '' : 'mt-20 pb-10'}`}>
           {children}
         </main>
 

@@ -172,7 +172,7 @@ export const Tracer = () => {
             <div
               ref={tableRef}
               className={`overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
-                isFullScreen ? 'h-[500px]' : 'h-[225px]'
+                isFullScreen ? 'h-[500px]' : 'h-[300px]'
               }`}
             >
               <InstructionsTable
