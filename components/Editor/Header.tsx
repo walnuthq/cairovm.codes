@@ -36,7 +36,7 @@ const EditorHeader = ({
         </h3>
       )}
 
-      <div className="flex items-center justify-between w-full xl:w-auto">
+      <div className="flex items-center justify-between w-full xl:w-auto z-20">
         <Select
           onChange={onCodeTypeChange}
           options={codeLangOptions}
