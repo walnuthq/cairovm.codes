@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-import type { NextPage } from 'next'
 import Head from 'next/head'
 
 import HomeLayout from 'components/layouts/Home'
@@ -513,7 +512,7 @@ const AboutPage = () => {
   )
 }
 
-AboutPage.getLayout = function getLayout(page: NextPage) {
+AboutPage.getLayout = function getLayout(page: ReactNode) {
   return <HomeLayout>{page}</HomeLayout>
 }
 

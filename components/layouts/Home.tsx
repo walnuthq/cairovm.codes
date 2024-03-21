@@ -1,3 +1,5 @@
+import { PropsWithChildren } from 'react'
+
 import { GoogleAnalytics } from '@next/third-parties/google'
 import type { NextPage } from 'next'
 import Head from 'next/head'
@@ -7,7 +9,7 @@ import { getAbsoluteURL } from 'util/browser'
 import Footer from './Footer'
 import Nav from './Nav'
 
-const HomeLayout: NextPage = ({ children }) => {
+const HomeLayout: NextPage<PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Head>
