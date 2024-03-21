@@ -33,6 +33,7 @@ import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
+import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
 
@@ -69,7 +70,7 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
-  const { addToConsoleLog } = useContext(AppUiContext)
+  const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [exampleOption, setExampleOption] = useState<number>(0)
@@ -143,7 +144,7 @@ const Editor = ({ readOnly = false }: Props) => {
     setCairoCode(value)
   }
 
-  const highlightCode = (value: string) => {
+  const highlightCode = (value: string, codeType: string | undefined) => {
     if (!codeType) {
       return value
     }
@@ -333,7 +334,12 @@ const Editor = ({ readOnly = false }: Props) => {
     <>
       <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
         <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-1/2 flex flex-col">
+          <div
+            className={cn(
+              'w-full md:w-1/2 flex flex-col',
+              isThreeColumnLayout && 'md:w-1/3',
+            )}
+          >
             <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
               <Header
                 codeType={codeType}
@@ -368,7 +374,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   value={codeType === CodeType.Cairo ? cairoCode : ''}
                   readOnly={readOnly}
                   onValueChange={handleCairoCodeChange}
-                  highlight={highlightCode}
+                  highlight={(value) => highlightCode(value, codeType)}
                   tabSize={4}
                   className={cn('code-editor', {
                     'with-numbers': !isBytecode,
@@ -394,7 +400,21 @@ const Editor = ({ readOnly = false }: Props) => {
             />
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col">
+          {isThreeColumnLayout && (
+            <ExtraColumn
+              cairoCode={cairoCode}
+              cairoEditorHeight={cairoEditorHeight}
+              highlightCode={highlightCode}
+              isBytecode={isBytecode}
+            />
+          )}
+
+          <div
+            className={cn(
+              'w-full md:w-1/2 flex flex-col',
+              isThreeColumnLayout && 'md:w-1/3',
+            )}
+          >
             <Tracer mainHeight={cairoEditorHeight} />
           </div>
         </div>
