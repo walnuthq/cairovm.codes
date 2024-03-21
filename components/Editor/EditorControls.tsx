@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useId } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
@@ -8,12 +8,19 @@ import examples from 'components/Editor/examples'
 
 import { Button, Input } from 'components/ui'
 
+type SelectOption = {
+  value: number
+  label: string
+}
+
 type EditorControlsProps = {
   isCompileDisabled: boolean
   programArguments: string
   areProgramArgumentsValid: boolean
   exampleName: number
-  handleChangeExampleOption: (option: OnChangeValue<any, any>) => void
+  handleChangeExampleOption: (
+    option: OnChangeValue<SelectOption, boolean>,
+  ) => void
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
@@ -136,7 +143,7 @@ const EditorControls = ({
           menuPlacement="auto"
           value={exampleNameValue}
           options={examplesOptions}
-          instanceId="exampleSelect"
+          instanceId={useId()}
           onChange={handleChangeExampleOption}
           isDisabled={isCompileDisabled}
         />
