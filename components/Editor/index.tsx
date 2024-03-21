@@ -36,6 +36,7 @@ import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
+import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
 
@@ -48,6 +49,10 @@ type SCEditorRef = {
 } & RefObject<React.FC>
 
 const cairoEditorHeight = 350
+
+function isCommentLine(input: string) {
+  return input.startsWith('// ')
+}
 
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
@@ -68,14 +73,16 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
-  const { addToConsoleLog } = useContext(AppUiContext)
+  const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
+  const [exampleOption, setExampleOption] = useState<number>(0)
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
 
   const editorRef = useRef<SCEditorRef>()
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const { isFullScreen } = useContext(AppUiContext)
 
@@ -90,10 +97,10 @@ const Editor = ({ readOnly = false }: Props) => {
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
-      setCairoCode(examples[initialCodeType][0])
+      setCairoCode(examples[initialCodeType][exampleOption])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsLoaded && router.isReady])
+  }, [settingsLoaded && router.isReady, exampleOption])
 
   useEffect(() => {
     if (compilationState === ProgramCompilationState.Compiling) {
@@ -142,7 +149,7 @@ const Editor = ({ readOnly = false }: Props) => {
     setCairoCode(value)
   }
 
-  const highlightCode = (value: string) => {
+  const highlightCode = (value: string, codeType: string | undefined) => {
     if (!codeType) {
       return value
     }
@@ -243,8 +250,94 @@ const Editor = ({ readOnly = false }: Props) => {
   ]
   useRegisterActions(actions, [highlightCode])
 
+  const handleCommentLine = useCallback(() => {
+    if (!editorRef.current) {
+      return
+    }
+    const textareaRef = editorRef.current._input
+    const selectionLineNumberStart = cairoCode
+      .substring(0, textareaRef.selectionStart)
+      .split('\n').length
+    const selectionLineNumberEnd = cairoCode
+      .substring(0, textareaRef.selectionEnd)
+      .split('\n').length
+
+    const selectionStart = textareaRef.selectionStart
+    const selectionEnd = textareaRef.selectionEnd
+    const lines = cairoCode.split('\n')
+    const linesToComment: number[] = []
+    for (let k = selectionLineNumberStart; k <= selectionLineNumberEnd; k++) {
+      linesToComment.push(k)
+    }
+
+    const isMultilineSelection = linesToComment.length > 1
+    let charOffsetStart = 0
+    let charOffsetEnd = 0
+    if (isMultilineSelection) {
+      for (const lineNumber of linesToComment) {
+        if (lines[lineNumber - 1] !== undefined) {
+          const line = lines[lineNumber - 1]
+          if (isCommentLine(line)) {
+            lines[lineNumber - 1] = line.substring(3)
+            charOffsetEnd -= 3
+          } else {
+            lines[lineNumber - 1] = '// ' + line
+            charOffsetEnd += 3
+          }
+        }
+      }
+    } else {
+      const lineNumber = linesToComment[0]
+      const line = lines[lineNumber - 1]
+      if (isCommentLine(line)) {
+        lines[lineNumber - 1] = line.substring(3)
+        charOffsetStart = -3
+        charOffsetEnd = -3
+      } else {
+        lines[lineNumber - 1] = '// ' + line
+        charOffsetStart = 3
+        charOffsetEnd = 3
+      }
+    }
+
+    setCairoCode(lines.join('\n'))
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    timeoutRef.current = setTimeout(
+      () =>
+        textareaRef.setSelectionRange(
+          selectionStart + charOffsetStart,
+          selectionEnd + charOffsetEnd,
+        ),
+      0,
+    )
+  }, [cairoCode])
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === '/') {
+        event.preventDefault()
+        handleCommentLine()
+      }
+    }
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [handleCommentLine, cairoCode])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
   return (
     <>
+
       <div
         className={cn('bg-gray-100 dark:bg-black-700 ',  {
           'rounded-lg': !isFullScreen,
@@ -256,7 +349,11 @@ const Editor = ({ readOnly = false }: Props) => {
             height: isFullScreen ? 'calc(100vh - 40.5px)' : '60vh',
           }}
         >
-          <div className="w-full md:w-1/2 flex flex-col">
+          <div  className={cn(
+              'w-full md:w-1/2 flex flex-col',
+              isThreeColumnLayout && 'md:w-1/3',
+            )}>
+
             <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
               <Header
                 codeType={codeType}
@@ -291,7 +388,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   value={codeType === CodeType.Cairo ? cairoCode : ''}
                   readOnly={readOnly}
                   onValueChange={handleCairoCodeChange}
-                  highlight={highlightCode}
+                  highlight={(value) => highlightCode(value, codeType)}
                   tabSize={4}
                   className={cn('code-editor', {
                     'with-numbers': !isBytecode,
@@ -308,11 +405,33 @@ const Editor = ({ readOnly = false }: Props) => {
               onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
               onCompileRun={handleCompileRun}
               onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+              exampleName={exampleOption}
+              handleChangeExampleOption={(newExample) =>
+                newExample !== null
+                  ? setExampleOption(newExample.value)
+                  : setExampleOption(0)
+              }
             />
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col ">
+
+          {isThreeColumnLayout && (
+            <ExtraColumn
+              cairoCode={cairoCode}
+              cairoEditorHeight={cairoEditorHeight}
+              highlightCode={highlightCode}
+              isBytecode={isBytecode}
+            />
+          )}
+
+          <div
+            className={cn(
+              'w-full md:w-1/2 flex flex-col',
+              isThreeColumnLayout && 'md:w-1/3',
+            )}
+          >
             <Tracer />
+
           </div>
         </div>
 

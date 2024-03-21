@@ -1,15 +1,26 @@
-import { useRef } from 'react'
+import { useMemo, useRef, useId } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
+import Select, { OnChangeValue } from 'react-select'
+import examples from 'components/Editor/examples'
 
 import { Button, Input } from 'components/ui'
+
+type SelectOption = {
+  value: number
+  label: string
+}
 
 type EditorControlsProps = {
   isCompileDisabled: boolean
   programArguments: string
   areProgramArgumentsValid: boolean
+  exampleName: number
+  handleChangeExampleOption: (
+    option: OnChangeValue<SelectOption, false>,
+  ) => void
   onCopyPermalink: () => void
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
@@ -20,6 +31,8 @@ const EditorControls = ({
   isCompileDisabled,
   programArguments,
   areProgramArgumentsValid,
+  exampleName,
+  handleChangeExampleOption,
   onCopyPermalink,
   onCompileRun,
   onProgramArgumentsUpdate,
@@ -56,6 +69,33 @@ const EditorControls = ({
 
   useRegisterActions(actions, [onCompileRun, onCopyPermalink])
 
+  const CairoNameExamples = useMemo(
+    () => [
+      'Default',
+      'Variables & mutability',
+      'Type casting',
+      'Control flow',
+      'Functions',
+      'Arrays',
+      'Dictionaries',
+      'Ownership',
+    ],
+    [],
+  )
+
+  const examplesOptions = examples.Cairo.map((example, i) => ({
+    value: i,
+    label: CairoNameExamples[i],
+  }))
+
+  const exampleNameValue = useMemo(
+    () => ({
+      value: exampleName,
+      label: CairoNameExamples[exampleName],
+    }),
+    [CairoNameExamples, exampleName],
+  )
+
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
       <div className="flex flex-col md:flex-row md:gap-x-4 gap-y-2 md:gap-y-0 mb-4 md:mb-0">
@@ -71,7 +111,18 @@ const EditorControls = ({
           </span>
         </Button>
       </div>
-
+      <div className="w-full md:w-60 lg:mr-20">
+        <Select
+          isSearchable={false}
+          classNamePrefix="select"
+          menuPlacement="auto"
+          value={exampleNameValue}
+          options={examplesOptions}
+          instanceId={useId()}
+          onChange={handleChangeExampleOption}
+          isDisabled={isCompileDisabled}
+        />
+      </div>
       <Input
         ref={inputRef}
         rightIcon={
@@ -87,8 +138,8 @@ const EditorControls = ({
         }}
         readOnly={isCompileDisabled}
         value={programArguments}
-        placeholder={`Enter program arguments...`}
-        className={cn('grow border bg-gray-200 dark:bg-gray-800', {
+        placeholder={`Program arguments`}
+        className={cn('grow border bg-gray-200 dark:bg-gray-800 ', {
           'dark:border-gray-800 border-gray-200': areProgramArgumentsValid,
           'border-red-500': !areProgramArgumentsValid,
         })}
@@ -96,6 +147,7 @@ const EditorControls = ({
           'text-red-500': !areProgramArgumentsValid,
         })}
       />
+
       <div>
         <Button
           onClick={onCompileRun}
@@ -103,7 +155,7 @@ const EditorControls = ({
           size="sm"
           contentClassName="justify-center"
         >
-          Compile and run
+          Run
         </Button>
       </div>
     </div>

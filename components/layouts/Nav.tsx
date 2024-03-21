@@ -11,6 +11,7 @@ import KBarButton from 'components/KBar/Button'
 import NavLink from 'components/NavLink'
 import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
+import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
 import { Container, Logo } from 'components/ui'
 
 const Nav = () => {
@@ -44,6 +45,7 @@ const Nav = () => {
               GitHub
             </NavLink>
             <ToggleFullScreen />
+            <ToggleThreeColumnLayout />
             <ThemeSelector />
           </div>
         </div>

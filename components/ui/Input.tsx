@@ -4,12 +4,11 @@ import cn from 'classnames'
 
 type Props = {
   searchable?: boolean
-  ref?: ForwardedRef<HTMLInputElement>
   rightIcon?: JSX.Element
   className?: string
   inputClassName?: string
   readOnly?: boolean
-} & React.ComponentPropsWithoutRef<'input'>
+} & React.ComponentProps<'input'>
 
 export const Input: React.FC<Props> = forwardRef(
   (

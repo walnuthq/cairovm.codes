@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, PropsWithChildren } from 'react'
 
 import { GoogleAnalytics } from '@next/third-parties/google'
 import type { NextPage } from 'next'
@@ -11,9 +11,9 @@ import { getAbsoluteURL } from 'util/browser'
 import Footer from './Footer'
 import Nav from './Nav'
 
-const HomeLayout: NextPage = ({ children }) => {
-  const { isFullScreen } = useContext(AppUiContext)
 
+const HomeLayout: NextPage<PropsWithChildren> = ({ children }) => {
+  const { isFullScreen } = useContext(AppUiContext)
   return (
     <>
       <Head>

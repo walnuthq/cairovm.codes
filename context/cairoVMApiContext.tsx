@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { PropsWithChildren, createContext, useState } from 'react'
 
 import { IInstruction, ILogEntry } from 'types'
 
@@ -74,7 +74,9 @@ export const CairoVMApiContext = createContext<ContextProps>({
   removeBreakPoint: noOp,
 })
 
-export const CairoVMApiProvider: React.FC = ({ children }) => {
+export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
   const [sierraCode, setSierraCode] = useState<string>('')
   const [casmCode, setCasmCode] = useState<string>('')
   const [casmInstructions, setCasmInstructions] = useState<IInstruction[]>([])

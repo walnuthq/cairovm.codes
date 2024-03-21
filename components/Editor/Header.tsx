@@ -1,4 +1,4 @@
-import { useMemo, useContext } from 'react'
+import { useMemo, useContext, useId } from 'react'
 
 import Image from 'next/image'
 import cairoLogo from 'public/cairo_logo.png'
@@ -9,6 +9,7 @@ import { CodeType, AppUiContext } from '../../context/appUiContext'
 type Props = {
   codeType: string | undefined
   onCodeTypeChange: (option: OnChangeValue<any, any>) => void
+  onlyDropDown?: boolean
 }
 
 const codeLangOptions = Object.keys(CodeType).map((lang) => ({
@@ -16,8 +17,12 @@ const codeLangOptions = Object.keys(CodeType).map((lang) => ({
   label: lang,
 }))
 
-const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
-  const { isFullScreen } = useContext(AppUiContext)
+
+const EditorHeader = ({
+  codeType,
+  onCodeTypeChange,
+  onlyDropDown = false,
+}: Props) => {
 
   const codeTypeValue = useMemo(
     () => ({
@@ -26,12 +31,13 @@ const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
     }),
     [codeType],
   )
-
+  const { isFullScreen } = useContext(AppUiContext)
   return (
     <div className="flex justify-between items-center w-full">
       {isFullScreen ? (
         <Image src={cairoLogo} width={20} height={20} alt="cairo" />
       ) : (
+      { !onlyDropDown && (
         <h3 className="font-semibold text-md hidden xl:inline-flex items-center">
           <span>Cairo VM Playground</span>
         </h3>
@@ -44,7 +50,7 @@ const EditorHeader = ({ codeType, onCodeTypeChange }: Props) => {
           isSearchable={false}
           classNamePrefix="select"
           menuPlacement="auto"
-          instanceId="headerSelect"
+          instanceId={useId()}
         />
       </div>
     </div>
