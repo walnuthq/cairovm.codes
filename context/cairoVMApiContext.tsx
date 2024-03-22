@@ -188,6 +188,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
           memory: data.tracer_data.memory,
           pcInstMap: data.tracer_data.pc_inst_map,
           trace: data.tracer_data.trace,
+          callstack: data.tracer_data.callstack,
           pcToInstIndexesMap: data.tracer_data.pc_to_inst_indexes_map,
           entryToSierraVarsMap: data.tracer_data.trace_entries_to_sierra_vars,
         })

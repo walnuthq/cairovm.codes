@@ -33,11 +33,19 @@ export interface TraceEntry {
   fp: number
 }
 
+export interface CallstackEntry {
+  fp: number
+  call_pc: number | null
+  ret_pc: number | null
+  fn_name: string | null
+}
+
 export type SierraVariables = { [key: string]: Array<string> }
 
 export interface TracerData {
   pcInstMap: { [key: string]: Instruction }
   trace: TraceEntry[]
+  callstack: CallstackEntry[][]
   memory: { [key: string]: string }
   pcToInstIndexesMap: { [key: string]: number }
   entryToSierraVarsMap: { [key: string]: SierraVariables }
@@ -67,6 +75,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const errorTraceEntry = tracerData?.trace.at(-1)
+  const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
@@ -245,6 +254,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
               trace={trace}
               currentTraceEntry={currentTraceEntry}
               executionTraceStepNumber={executionTraceStepNumber}
+              currentCallstackEntry={currentCallstackEntry}
               handleRegisterPointerClick={handleRegisterPointerClick}
             />
           )}
@@ -257,11 +267,13 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 function DebugInfoTab({
   trace,
   currentTraceEntry,
+  currentCallstackEntry,
   executionTraceStepNumber,
   handleRegisterPointerClick,
 }: {
   trace: TraceEntry[] | undefined
   currentTraceEntry: TraceEntry | undefined
+  currentCallstackEntry?: CallstackEntry[]
   executionTraceStepNumber: number
   handleRegisterPointerClick: (num: number) => void
 }) {
@@ -316,6 +328,36 @@ function DebugInfoTab({
                 </div>
               </dd>
             </div>
+          </div>
+          <div>
+            <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+              Callstack
+            </dt>
+            <dd className="font-mono mb-2">
+              <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
+                <thead>
+                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
+                    <th className="py-1 px-2 font-thin">FP</th>
+                    <th className="py-1 px-2 font-thin">CALL PC</th>
+                    <th className="py-1 px-2 font-thin">RET PC</th>
+                    <th className="py-1 px-2 font-thin">FN NAME</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentCallstackEntry?.map((callstackEntry, index) => (
+                    <tr
+                      key={index}
+                      className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
+                    >
+                      <td className="py-1 px-2">{callstackEntry.fp}</td>
+                      <td className="py-1 px-2">{callstackEntry.call_pc}</td>
+                      <td className="py-1 px-2">{callstackEntry.ret_pc}</td>
+                      <td className="py-1 px-2">{callstackEntry.fn_name}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </dd>
           </div>
         </dl>
       )}
