@@ -3,7 +3,11 @@ import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 
-import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
+import {
+  CairoVMApiContext,
+  BreakPoints,
+  ProgramExecutionState,
+} from 'context/cairoVMApiContext'
 
 import Console from '../Editor/Console'
 
@@ -50,6 +54,7 @@ interface TracerProps {
 
 export const Tracer = ({ mainHeight }: TracerProps) => {
   const {
+    executionState,
     tracerData,
     breakPoints,
     onExecutionStepChange,
@@ -61,6 +66,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+  const errorTraceEntry = tracerData?.trace.at(-1)
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
@@ -187,6 +193,11 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
                 currentFocus={currentFocus.idx}
                 breakpoints={breakPoints}
                 toogleBreakPoint={toogleBreakPoint}
+                errorTraceEntry={
+                  executionState === ProgramExecutionState.Error
+                    ? errorTraceEntry
+                    : null
+                }
               />
             </div>
           </>
@@ -319,6 +330,7 @@ function InstructionsTable({
   currentFocus,
   breakpoints,
   toogleBreakPoint,
+  errorTraceEntry,
 }: {
   memory: TracerData['memory']
   pcInstMap: TracerData['pcInstMap']
@@ -326,8 +338,10 @@ function InstructionsTable({
   currentFocus: number
   breakpoints: BreakPoints
   toogleBreakPoint: (addr: string) => void
+  errorTraceEntry?: TraceEntry | null
 }) {
   const { pc, ap, fp } = currentTraceEntry
+  const errorPc = errorTraceEntry?.pc || 0
 
   const [hoveredAddr, setHoveredAddr] = useState<string>('')
 
@@ -355,6 +369,7 @@ function InstructionsTable({
       <tbody>
         {Object.keys(memory).map((addr) => {
           const isCurrent = pc.toString() == addr
+          const isError = errorPc.toString() == addr
           const addrNum = Number(addr)
           const isFocus = currentFocus == addrNum
           const hasBreakpoint = breakpoints[addr]
@@ -362,11 +377,14 @@ function InstructionsTable({
             <tr
               key={addr}
               id={isFocus ? 'focus_row' : undefined}
-              className={`relative border-b border-gray-200 dark:border-black-500 ${
-                isCurrent
-                  ? 'text-gray-900 dark:text-gray-200'
-                  : 'text-gray-400 dark:text-gray-600'
-              }`}
+              className={cn(
+                'relative border-b border-gray-200 dark:border-black-500',
+                {
+                  'text-gray-900 dark:text-gray-200': isCurrent,
+                  'text-gray-400 dark:text-gray-600': !isCurrent,
+                  'bg-red-100 dark:bg-red-500/10': isError,
+                },
+              )}
               onMouseEnter={() => setHoveredAddr(addr)}
               onMouseLeave={() => setHoveredAddr('')}
             >

@@ -38,6 +38,7 @@ type ContextProps = {
   tracerData?: TracerData
   executionTraceStepNumber: number
   activeCasmInstructionIndex: number
+  errorCasmInstructionIndex: number
   sierraStatements: IInstruction[]
   casmToSierraMap: CasmToSierraMap
   currentTraceEntry?: TraceEntry
@@ -63,6 +64,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   executionPanicMessage: '',
   executionTraceStepNumber: 0,
   activeCasmInstructionIndex: 0,
+  errorCasmInstructionIndex: 0,
   sierraStatements: [],
   casmToSierraMap: {},
   breakPoints: {},
@@ -105,6 +107,12 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     tracerData?.entryToSierraVarsMap[executionTraceStepNumber]
   const activeCasmInstructionIndex =
     tracerData?.pcToInstIndexesMap[(currentTraceEntry?.pc ?? 0).toString()] ?? 0
+  const errorTraceEntry =
+    executionState === ProgramExecutionState.Error
+      ? tracerData?.trace.at(-1)
+      : null
+  const errorCasmInstructionIndex =
+    tracerData?.pcToInstIndexesMap[(errorTraceEntry?.pc ?? 0).toString()] ?? -1
 
   function onExecutionStepChange(stepNumber: number) {
     setExecutionTraceStepNumber(stepNumber)
@@ -224,6 +232,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         currentTraceEntry,
         currentSierraVariables,
         activeCasmInstructionIndex,
+        errorCasmInstructionIndex,
         sierraStatements,
         casmToSierraMap,
         breakPoints,
