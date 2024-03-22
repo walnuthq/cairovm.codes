@@ -320,9 +320,9 @@ function DebugInfoTab({
               Callstack
             </dt>
             <dd className="font-mono mb-2">
-              <table className="w-full font-mono text-tiny">
+              <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
                 <thead>
-                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
                     <th className="py-1 px-2 font-thin">FP</th>
                     <th className="py-1 px-2 font-thin">CALL PC</th>
                     <th className="py-1 px-2 font-thin">RET PC</th>
@@ -333,7 +333,7 @@ function DebugInfoTab({
                   {currentCallstackEntry?.map((callstackEntry, index) => (
                     <tr
                       key={index}
-                      className="relative border-b border-gray-200 dark:border-black-500 text-gray-400 dark:text-gray-600"
+                      className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
                     >
                       <td className="py-1 px-2">{callstackEntry.fp}</td>
                       <td className="py-1 px-2">{callstackEntry.call_pc}</td>
