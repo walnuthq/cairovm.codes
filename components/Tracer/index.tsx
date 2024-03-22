@@ -162,7 +162,6 @@ export const Tracer = () => {
 
   return (
     <>
-      <div>
         <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
           <ExecutionStatus
             onStepIn={stepIn}
@@ -170,28 +169,29 @@ export const Tracer = () => {
             onContinueExecution={continueExecution}
           />
         </div>
-        {tracerData && currentTraceEntry && trace && breakPoints && (
-          <>
-            <div
-              ref={tableRef}
-              className={`overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
-                isFullScreen ? 'h-[500px]' : 'h-[300px]'
-              }`}
-            >
-              <InstructionsTable
-                memory={tracerData.memory}
-                pcInstMap={tracerData.pcInstMap}
-                currentTraceEntry={currentTraceEntry}
-                currentFocus={currentFocus.idx}
-                breakpoints={breakPoints}
-                toogleBreakPoint={toogleBreakPoint}
-              />
-            </div>
-          </>
-        )}
-      </div>
-      <div className="border-gray-200 border-t dark:border-black-500 h-40">
-        <div className="px-4 h-12">
+        <div className=' min-h-[300px]'>
+          {tracerData && currentTraceEntry && trace && breakPoints && (
+            <>
+              <div
+                ref={tableRef}
+                className={`overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
+                  isFullScreen ? 'h-[500px]' : 'h-[300px]'
+                }`}
+              >
+                <InstructionsTable
+                  memory={tracerData.memory}
+                  pcInstMap={tracerData.pcInstMap}
+                  currentTraceEntry={currentTraceEntry}
+                  currentFocus={currentFocus.idx}
+                  breakpoints={breakPoints}
+                  toogleBreakPoint={toogleBreakPoint}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      <div className="border-gray-200 border-t dark:border-black-500 h-44">
+        <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
               className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
@@ -221,7 +221,7 @@ export const Tracer = () => {
             </button>
           </nav>
         </div>
-        <div className="pane pane-light overflow-auto">
+        <div className="pane pane-light overflow-auto " style={{height: 150}}>
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (

@@ -346,7 +346,7 @@ const Editor = ({ readOnly = false }: Props) => {
         <div
           className="flex flex-col md:flex-row"
           style={{
-            height: isFullScreen ? 'calc(100vh - 40.5px)' : '60vh',
+            minHeight: isFullScreen ? 'calc(100vh - 40.4px)' : '60vh',
           }}
         >
           <div  className={cn(

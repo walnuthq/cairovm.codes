@@ -35,8 +35,13 @@ const EditorHeader = ({
   const { isFullScreen } = useContext(AppUiContext)
   return <>
     <div className="flex justify-between items-center w-full">
-      { isFullScreen ? (
-        <Image src={cairoLogo} width={20} height={20} alt="cairo" />
+
+      { isFullScreen ? (       
+              <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                <span className="pr-2">cairovm</span>
+                  <Image src={cairoLogo} width={20} height={20} alt="cairo" />
+                <span className="pl-2">codes</span>
+              </div>
       ) : (
        !onlyDropDown && (
         <h3 className="font-semibold text-md hidden xl:inline-flex items-center">
