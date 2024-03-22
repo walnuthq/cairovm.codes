@@ -98,7 +98,10 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
       '#focus_row',
     ) as HTMLElement | null
     if (tableRef.current && element?.offsetTop) {
-      tableRef.current.scrollTop = element.offsetTop - 58
+      tableRef.current.scrollTo({
+        top: element.offsetTop - 58,
+        behavior: 'smooth',
+      })
     }
   }, [currentTraceEntry, currentFocus])
 
@@ -373,7 +376,7 @@ function InstructionsTable({
   return (
     <table className="w-full font-mono text-tiny">
       <thead>
-        <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+        <tr className="sticky top-0 z-10 text-left bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
           <th className="py-1"></th>
           <th className="py-1"></th>
           <th className="py-1"></th>
