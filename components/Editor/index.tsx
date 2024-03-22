@@ -348,7 +348,7 @@ const Editor = ({ readOnly = false }: Props) => {
             </div>
 
             <div
-              className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+              className="relative pane grow pane-light md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
               style={{ height: cairoEditorHeight }}
             >
               {codeType === CodeType.CASM ? (
