@@ -69,23 +69,19 @@ const reactSelectStyles: StylesConfig<
 
 const DropdownIndicator = (props: DropdownIndicatorProps<SelectOption>) => {
   return (
-    <div>
-      <components.DropdownIndicator {...props}>
-        <Button
-          transparent
-          padded={false}
-          tooltip="Cairo Examples"
-          tooltipId="cairo-examples"
-          className={cn(
-            'p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none',
-            props.selectProps.menuIsOpen
-              ? 'bg-black-900/5 dark:bg-white/5'
-              : '',
-          )}
-        >
-          <RiFileCodeLine size={16} />
-        </Button>
-      </components.DropdownIndicator>
-    </div>
+    <components.DropdownIndicator {...props}>
+      <Button
+        transparent
+        padded={false}
+        tooltip="Cairo Examples"
+        tooltipId="cairo-examples"
+        className={cn(
+          'p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none',
+          props.selectProps.menuIsOpen ? 'bg-black-900/5 dark:bg-white/5' : '',
+        )}
+      >
+        <RiFileCodeLine size={16} />
+      </Button>
+    </components.DropdownIndicator>
   )
 }
