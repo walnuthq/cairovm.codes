@@ -5,6 +5,7 @@ import { useKBar } from 'kbar'
 import { isMac } from 'util/browser'
 
 import { Button } from 'components/ui'
+import { RiCommandLine } from '@remixicon/react'
 
 const KBarButton = () => {
   const { query } = useKBar()
@@ -27,8 +28,13 @@ const KBarButton = () => {
       outline
       padded={false}
     >
-      {/* {isMac && <Icon name="command-line" className="mr-1" />} */}
-      {isMacUser ? <span>Cmd + K</span> : <span>Ctrl + K</span>}
+      {isMacUser ? (
+        <span className="flex flex-row">
+          <RiCommandLine size={16} className="mr-0.5" />K
+        </span>
+      ) : (
+        <span>Ctrl + K</span>
+      )}
     </Button>
   )
 }
