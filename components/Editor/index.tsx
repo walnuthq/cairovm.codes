@@ -40,6 +40,9 @@ import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
 
+import cairoLogo from 'public/cairo_logo.png'
+import Image from 'next/image'
+
 type Props = {
   readOnly?: boolean
 }
@@ -346,7 +349,7 @@ const Editor = ({ readOnly = false }: Props) => {
         <div
           className="flex flex-col md:flex-row"
           style={{
-            minHeight: isFullScreen ? 'calc(100vh - 40.4px)' : '60vh',
+            minHeight: isFullScreen ? 'calc(100vh - 40.4px)' : '70vh',
           }}
         >
           <div  className={cn(
@@ -354,7 +357,15 @@ const Editor = ({ readOnly = false }: Props) => {
               isThreeColumnLayout && 'md:w-1/3',
             )}>
 
-            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
+            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r justify-between">
+                { isFullScreen && 
+                    
+                    <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                      <span className="pr-2">cairovm</span>
+                        <Image src={cairoLogo} width={20} height={20} alt="cairo" />
+                      <span className="pl-2">codes</span>
+                    </div>
+                  }    
               <Header
                 codeType={codeType}
                 onCodeTypeChange={({ value }) => setCodeType(value)}
@@ -363,7 +374,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
             <div
               className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: cairoEditorHeight }}
+              style={{ height: '30vh' }}
             >
               {codeType === CodeType.CASM ? (
                 <InstructionsTable

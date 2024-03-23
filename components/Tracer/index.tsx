@@ -178,14 +178,14 @@ export const Tracer = () => {
             onContinueExecution={continueExecution}
           />
         </div>
-        <div className=' min-h-[300px]'>
+        <div className={isFullScreen?'min-h-[45vh]' : 'min-h-[30vh]'}>
           {tracerData && currentTraceEntry && trace && breakPoints && (
             <>
               <div
                 ref={tableRef}
                 className={`overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
-                  isFullScreen ? 'h-[500px]' : 'h-[300px]'
-                }`}
+                  isFullScreen ? 'h-[45vh]' : 'h-[30vh]'
+                }`} style={{minHeight: '5vh'}}
               >
                 <InstructionsTable
                   memory={tracerData.memory}
