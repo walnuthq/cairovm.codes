@@ -4,8 +4,8 @@ import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 import Select, { OnChangeValue } from 'react-select'
-import examples from 'components/Editor/examples'
 
+import examples from 'components/Editor/examples'
 import { Button, Input } from 'components/ui'
 
 type SelectOption = {

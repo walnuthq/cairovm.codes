@@ -12,7 +12,9 @@ import { decode, encode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
+import cairoLogo from 'public/cairo_logo.png'
 import SCEditor from 'react-simple-code-editor'
 
 import {
@@ -40,9 +42,6 @@ import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
 
-import cairoLogo from 'public/cairo_logo.png'
-import Image from 'next/image'
-
 type Props = {
   readOnly?: boolean
 }
@@ -50,8 +49,6 @@ type Props = {
 type SCEditorRef = {
   _input: HTMLTextAreaElement
 } & RefObject<React.FC>
-
-const cairoEditorHeight = 350
 
 function isCommentLine(input: string) {
   return input.startsWith('// ')
@@ -340,9 +337,8 @@ const Editor = ({ readOnly = false }: Props) => {
 
   return (
     <>
-
       <div
-        className={cn('bg-gray-100 dark:bg-black-700 ',  {
+        className={cn('bg-gray-100 dark:bg-black-700 ', {
           'rounded-lg': !isFullScreen,
         })}
       >
@@ -352,20 +348,20 @@ const Editor = ({ readOnly = false }: Props) => {
             minHeight: isFullScreen ? 'calc(100vh - 40.4px)' : '70vh',
           }}
         >
-          <div  className={cn(
+          <div
+            className={cn(
               'w-full md:w-1/2 flex flex-col',
               isThreeColumnLayout && 'md:w-1/3',
-            )}>
-
+            )}
+          >
             <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r justify-between">
-                { isFullScreen && 
-                    
-                    <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
-                      <span className="pr-2">cairovm</span>
-                        <Image src={cairoLogo} width={20} height={20} alt="cairo" />
-                      <span className="pl-2">codes</span>
-                    </div>
-                  }    
+              {isFullScreen && (
+                <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                  <span className="pr-2">cairovm</span>
+                  <Image src={cairoLogo} width={20} height={20} alt="cairo" />
+                  <span className="pl-2">codes</span>
+                </div>
+              )}
               <Header
                 codeType={codeType}
                 onCodeTypeChange={({ value }) => setCodeType(value)}
@@ -425,11 +421,9 @@ const Editor = ({ readOnly = false }: Props) => {
             />
           </div>
 
-
           {isThreeColumnLayout && (
             <ExtraColumn
               cairoCode={cairoCode}
-              cairoEditorHeight={cairoEditorHeight}
               highlightCode={highlightCode}
               isBytecode={isBytecode}
             />
@@ -442,7 +436,6 @@ const Editor = ({ readOnly = false }: Props) => {
             )}
           >
             <Tracer />
-
           </div>
         </div>
 

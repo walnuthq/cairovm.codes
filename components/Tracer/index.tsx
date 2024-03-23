@@ -171,34 +171,35 @@ export const Tracer = () => {
 
   return (
     <>
-        <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
-          <ExecutionStatus
-            onStepIn={stepIn}
-            onStepOut={stepOut}
-            onContinueExecution={continueExecution}
-          />
-        </div>
-        <div className={isFullScreen?'min-h-[45vh]' : 'min-h-[30vh]'}>
-          {tracerData && currentTraceEntry && trace && breakPoints && (
-            <>
-              <div
-                ref={tableRef}
-                className={`overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
-                  isFullScreen ? 'h-[45vh]' : 'h-[30vh]'
-                }`} style={{minHeight: '5vh'}}
-              >
-                <InstructionsTable
-                  memory={tracerData.memory}
-                  pcInstMap={tracerData.pcInstMap}
-                  currentTraceEntry={currentTraceEntry}
-                  currentFocus={currentFocus.idx}
-                  breakpoints={breakPoints}
-                  toogleBreakPoint={toogleBreakPoint}
-                />
-              </div>
-            </>
-          )}
-        </div>
+      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
+        <ExecutionStatus
+          onStepIn={stepIn}
+          onStepOut={stepOut}
+          onContinueExecution={continueExecution}
+        />
+      </div>
+      <div className={isFullScreen ? 'min-h-[45vh]' : 'min-h-[30vh]'}>
+        {tracerData && currentTraceEntry && trace && breakPoints && (
+          <>
+            <div
+              ref={tableRef}
+              className={`overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
+                isFullScreen ? 'h-[45vh]' : 'h-[30vh]'
+              }`}
+              style={{ minHeight: '5vh' }}
+            >
+              <InstructionsTable
+                memory={tracerData.memory}
+                pcInstMap={tracerData.pcInstMap}
+                currentTraceEntry={currentTraceEntry}
+                currentFocus={currentFocus.idx}
+                breakpoints={breakPoints}
+                toogleBreakPoint={toogleBreakPoint}
+              />
+            </div>
+          </>
+        )}
+      </div>
       <div className="border-gray-200 border-t dark:border-black-500 h-44">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
@@ -230,7 +231,7 @@ export const Tracer = () => {
             </button>
           </nav>
         </div>
-        <div className="pane pane-light overflow-auto " style={{height: 150}}>
+        <div className="pane pane-light overflow-auto " style={{ height: 150 }}>
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (

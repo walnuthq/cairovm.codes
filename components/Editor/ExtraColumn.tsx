@@ -10,14 +10,12 @@ import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
 
 type ExtraColumnProps = {
-  cairoEditorHeight: number
   cairoCode: string
   highlightCode: (value: string, codeType: string | undefined) => string
   isBytecode: boolean
 }
 
 const ExtraColumn = ({
-  cairoEditorHeight,
   cairoCode,
   highlightCode,
   isBytecode,
@@ -41,9 +39,7 @@ const ExtraColumn = ({
           onlyDropDown
         />
       </div>
-      <div
-        className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-      >
+      <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
         {codeType === CodeType.CASM ? (
           <InstructionsTable
             instructions={casmInstructions}

@@ -11,7 +11,6 @@ import { getAbsoluteURL } from 'util/browser'
 import Footer from './Footer'
 import Nav from './Nav'
 
-
 const HomeLayout: NextPage<PropsWithChildren> = ({ children }) => {
   const { isFullScreen } = useContext(AppUiContext)
   return (
