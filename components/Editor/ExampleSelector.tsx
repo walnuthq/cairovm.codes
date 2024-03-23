@@ -1,6 +1,7 @@
 import React, { useId } from 'react'
 
 import { RiFileCodeLine } from '@remixicon/react'
+import cn from 'classnames'
 import Select, {
   components,
   DropdownIndicatorProps,
@@ -75,7 +76,12 @@ const DropdownIndicator = (props: DropdownIndicatorProps<SelectOption>) => {
           padded={false}
           tooltip="Cairo Examples"
           tooltipId="cairo-examples"
-          className="p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none"
+          className={cn(
+            'p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none',
+            props.selectProps.menuIsOpen
+              ? 'bg-black-900/5 dark:bg-white/5'
+              : '',
+          )}
         >
           <RiFileCodeLine size={16} />
         </Button>
