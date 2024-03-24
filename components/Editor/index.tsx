@@ -345,7 +345,7 @@ const Editor = ({ readOnly = false }: Props) => {
         <div
           className="flex flex-col md:flex-row"
           style={{
-            minHeight: isFullScreen ? 'calc(100vh - 40.4px)' : '70vh',
+            minHeight: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
           }}
         >
           <div
@@ -441,36 +441,39 @@ const Editor = ({ readOnly = false }: Props) => {
 
         <div
           className={cn(
-            'px-5 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs h-10 items-center ml-auto flex',
+            'px-5 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs h-[42px] items-center ml-auto flex',
             {
               'rounded-b-lg': !isFullScreen,
             },
           )}
         >
-          {cairoLangCompilerVersion !== ''
-            ? `Cairo Compiler v${cairoLangCompilerVersion}`
-            : ' '}
-          {isFullScreen && (
-            <>
-              <div className="items-center ml-auto mr-auto flex">
-                <KBarButton />
-                <ToggleFullScreen />
-                <ThemeSelector />
+          
+            <div className={isFullScreen? 'w-[20%]': 'w-[100%]'}>
+              <span>
+                {cairoLangCompilerVersion !== ''
+                ? `Cairo Compiler v${cairoLangCompilerVersion}`
+                : ' '}
+              </span>
+            </div>    
+            {isFullScreen && (
+              <div className='flex items-center justify-end w-[80%]'>
+                <div className="items-center flex mr-[5%]">
+                  <KBarButton />
+                  <ToggleFullScreen />
+                  <ThemeSelector />
+                </div>
+                  <span>
+                    Made with ❤️ by{' '}
+                    <a
+                      className="underline font-medium"
+                      href="https://walnut.dev"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Walnut
+                    </a>
+                  </span>
               </div>
-              <div>
-                <span>
-                  Made with ❤️ by{' '}
-                  <a
-                    className="underline font-medium"
-                    href="https://walnut.dev"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Walnut
-                  </a>
-                </span>
-              </div>
-            </>
           )}
         </div>
       </div>

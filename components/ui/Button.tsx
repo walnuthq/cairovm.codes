@@ -3,6 +3,9 @@ import React from 'react'
 import cn from 'classnames'
 import ReactTooltip from 'react-tooltip'
 
+import { useContext } from 'react'
+import { AppUiContext } from 'context/appUiContext'
+
 type Props = {
   children: React.ReactNode | string
   href?: string
@@ -33,6 +36,8 @@ export const Button: React.FC<Props> = ({
   ...rest
 }: Props) => {
   const tooltipIdPrefixed = tooltipId ? ['btn', tooltipId].join('-') : ''
+  const { isFullScreen } = useContext(AppUiContext)
+
 
   const button = (
     <button
@@ -49,8 +54,9 @@ export const Button: React.FC<Props> = ({
           'text-tiny font-medium': size === 'sm',
           'text-sm font-medium': size === 'md',
           'text-xs': size === 'xs',
-          'border border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white':
-            outline,
+          'border hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white':
+            outline ,
+          'border-gray-600' : isFullScreen,
         },
         className,
       )}

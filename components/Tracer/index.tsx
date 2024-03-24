@@ -200,7 +200,7 @@ export const Tracer = () => {
           </>
         )}
       </div>
-      <div className="border-gray-200 border-t dark:border-black-500 h-44">
+      <div className="border-gray-200 border-t dark:border-black-500 h-44 grow overflow-hidden mb-[10px]">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
@@ -231,7 +231,7 @@ export const Tracer = () => {
             </button>
           </nav>
         </div>
-        <div className="pane pane-light overflow-auto " style={{ height: 150 }}>
+        <div className="pane pane-light overflow-auto grow h-[90%]" >
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (
