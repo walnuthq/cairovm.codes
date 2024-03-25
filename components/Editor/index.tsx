@@ -40,6 +40,7 @@ import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
+import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
 import { InstructionsTable } from './InstructionsTable'
 
 type Props = {
@@ -460,6 +461,7 @@ const Editor = ({ readOnly = false }: Props) => {
                 <div className="items-center flex mr-[5%]">
                   <KBarButton />
                   <ToggleFullScreen />
+                  <ToggleThreeColumnLayout />
                   <ThemeSelector />
                 </div>
                   <span>
