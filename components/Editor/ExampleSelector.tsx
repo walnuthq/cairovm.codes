@@ -38,7 +38,7 @@ function ExampleSelector({ onExampleChange }: Props) {
       controlShouldRenderValue={false}
       classNamePrefix="select"
       styles={reactSelectStyles}
-      menuPlacement="auto"
+      menuPlacement="top"
       isSearchable={false}
       instanceId={useId()}
     />
