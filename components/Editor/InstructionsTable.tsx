@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import cn from 'classnames'
 import ReactTooltip from 'react-tooltip'
@@ -24,20 +24,19 @@ export const InstructionsTable = ({
   codeType: CodeType
 }) => {
   useEffect(() => {
-    if (
-      tableRef.current &&
-      focusRowRef.current &&
-      focusRowRef.current.offsetTop
-    ) {
-      tableRef.current.scrollTo({
-        top: focusRowRef.current.offsetTop - 58,
-        behavior: 'smooth',
-      })
+    if (tableRef.current) {
+      const activeRowRef = rowRefs.current[activeIndexes[0]]
+      if (activeRowRef) {
+        tableRef.current?.scrollTo({
+          top: activeRowRef.offsetTop - 58,
+          behavior: 'smooth',
+        })
+      }
     }
   }, [activeIndexes])
 
   const tableRef = useRef<HTMLDivElement>(null)
-  const focusRowRef = useRef<HTMLTableRowElement>(null)
+  const rowRefs = useRef<Array<HTMLTableRowElement | null>>([])
 
   const splitInLines = (instructionName: string) =>
     instructionName.split('\n').map((line, i) => (
@@ -87,9 +86,8 @@ export const InstructionsTable = ({
     const tooltipId = getRandomToolTipId()
 
     return (
-      <>
+      <React.Fragment key={key}>
         <span
-          key={key}
           data-tip
           data-for={tooltipId}
           className="hover:text-orange-500 cursor-pointer"
@@ -99,7 +97,7 @@ export const InstructionsTable = ({
         <ReactTooltip id={tooltipId} effect="solid">
           <span>{formatSierraVariableValue(variableValues)}</span>
         </ReactTooltip>
-      </>
+      </React.Fragment>
     )
   }
 
@@ -124,7 +122,7 @@ export const InstructionsTable = ({
   return (
     <div
       ref={tableRef}
-      className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+      className="overflow-auto h-full pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
     >
       <table className="w-full font-mono text-tiny">
         <tbody>
@@ -133,7 +131,7 @@ export const InstructionsTable = ({
             const isError = errorIndexes.includes(index)
             return (
               <tr
-                ref={activeIndexes[0] === index ? focusRowRef : undefined}
+                ref={(el) => (rowRefs.current[index] = el)}
                 key={index}
                 className={cn(
                   'border-b border-gray-200 dark:border-black-500',
