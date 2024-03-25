@@ -231,7 +231,7 @@ export const Tracer = () => {
             </button>
           </nav>
         </div>
-        <div className="pane pane-light overflow-auto grow h-[90%]" >
+        <div className="pane pane-light overflow-auto grow h-[90%]">
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (

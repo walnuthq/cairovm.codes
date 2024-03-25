@@ -32,6 +32,7 @@ import examples from 'components/Editor/examples'
 import KBarButton from 'components/KBar/Button'
 import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
+import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
 import { Tracer } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
@@ -40,7 +41,6 @@ import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
-import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
 import { InstructionsTable } from './InstructionsTable'
 
 type Props = {
@@ -448,34 +448,33 @@ const Editor = ({ readOnly = false }: Props) => {
             },
           )}
         >
-          
-            <div className={isFullScreen? 'w-[20%]': 'w-[100%]'}>
-              <span>
-                {cairoLangCompilerVersion !== ''
+          <div className={isFullScreen ? 'w-[20%]' : 'w-[100%]'}>
+            <span>
+              {cairoLangCompilerVersion !== ''
                 ? `Cairo Compiler v${cairoLangCompilerVersion}`
                 : ' '}
-              </span>
-            </div>    
-            {isFullScreen && (
-              <div className='flex items-center justify-end w-[80%]'>
-                <div className="items-center flex mr-[5%]">
-                  <KBarButton />
-                  <ToggleFullScreen />
-                  <ToggleThreeColumnLayout />
-                  <ThemeSelector />
-                </div>
-                  <span>
-                    Made with ❤️ by{' '}
-                    <a
-                      className="underline font-medium"
-                      href="https://walnut.dev"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Walnut
-                    </a>
-                  </span>
+            </span>
+          </div>
+          {isFullScreen && (
+            <div className="flex items-center justify-end w-[80%]">
+              <div className="items-center flex mr-[5%]">
+                <KBarButton />
+                <ToggleFullScreen />
+                <ToggleThreeColumnLayout />
+                <ThemeSelector />
               </div>
+              <span>
+                Made with ❤️ by{' '}
+                <a
+                  className="underline font-medium"
+                  href="https://walnut.dev"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Walnut
+                </a>
+              </span>
+            </div>
           )}
         </div>
       </div>
