@@ -390,18 +390,20 @@ const Editor = ({ readOnly = false }: Props) => {
                   variables={currentSierraVariables || {}}
                 />
               ) : (
-                <SCEditor
-                  // @ts-ignore: SCEditor is not TS-friendly
-                  ref={editorRef}
-                  value={codeType === CodeType.Cairo ? cairoCode : ''}
-                  readOnly={readOnly}
-                  onValueChange={handleCairoCodeChange}
-                  highlight={(value) => highlightCode(value, codeType)}
-                  tabSize={4}
-                  className={cn('code-editor', {
-                    'with-numbers': !isBytecode,
-                  })}
-                />
+                <div className="h-full overflow-auto pane pane-light">
+                  <SCEditor
+                    // @ts-ignore: SCEditor is not TS-friendly
+                    ref={editorRef}
+                    value={codeType === CodeType.Cairo ? cairoCode : ''}
+                    readOnly={readOnly}
+                    onValueChange={handleCairoCodeChange}
+                    highlight={(value) => highlightCode(value, codeType)}
+                    tabSize={4}
+                    className={cn('code-editor', {
+                      'with-numbers': !isBytecode,
+                    })}
+                  />
+                </div>
               )}
             </div>
 
