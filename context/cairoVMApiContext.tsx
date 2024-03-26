@@ -177,7 +177,11 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
             : ProgramExecutionState.Error,
         )
 
-        setExecutionTraceStepNumber(0)
+        setExecutionTraceStepNumber(
+          data.is_execution_successful === true
+            ? 0
+            : data.tracer_data.trace.length - 1,
+        )
         setCasmCode(data.casm_program_code)
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
