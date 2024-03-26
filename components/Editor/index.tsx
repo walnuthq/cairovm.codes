@@ -12,9 +12,7 @@ import { decode, encode } from '@kunigi/string-compression'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
-import cairoLogo from 'public/cairo_logo.png'
 import SCEditor from 'react-simple-code-editor'
 
 import {
@@ -29,16 +27,13 @@ import { isArgumentStringValid } from 'util/compiler'
 import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import examples from 'components/Editor/examples'
-import KBarButton from 'components/KBar/Button'
-import ThemeSelector from 'components/ThemeSelector'
-import ToggleFullScreen from 'components/ToggleFullScreen'
-import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
 import { Tracer } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import EditorControls from './EditorControls'
+import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
@@ -64,7 +59,6 @@ const Editor = ({ readOnly = false }: Props) => {
     executionState,
     executionPanicMessage,
     compileCairoCode,
-    cairoLangCompilerVersion,
     serializedOutput,
     casmInstructions,
     activeCasmInstructionIndex,
@@ -339,14 +333,15 @@ const Editor = ({ readOnly = false }: Props) => {
   return (
     <>
       <div
-        className={cn('bg-gray-100 dark:bg-black-700 ', {
-          'rounded-lg': !isFullScreen,
-        })}
+        className={cn(
+          'bg-gray-100 dark:bg-black-700 ',
+          !isFullScreen && 'rounded-lg',
+        )}
       >
         <div
           className="flex flex-col md:flex-row"
           style={{
-            minHeight: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
+            height: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
           }}
         >
           <div
@@ -355,24 +350,15 @@ const Editor = ({ readOnly = false }: Props) => {
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >
-            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r justify-between">
-              {isFullScreen && (
-                <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
-                  <span className="pr-2">cairovm</span>
-                  <Image src={cairoLogo} width={20} height={20} alt="cairo" />
-                  <span className="pl-2">codes</span>
-                </div>
-              )}
+            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none md:border-r justify-between">
               <Header
                 codeType={codeType}
                 onCodeTypeChange={({ value }) => setCodeType(value)}
+                withLogo={isFullScreen}
               />
             </div>
 
-            <div
-              className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: '30vh' }}
-            >
+            <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
               {codeType === CodeType.CASM ? (
                 <InstructionsTable
                   instructions={casmInstructions}
@@ -434,7 +420,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col',
+              'w-full md:w-1/2 flex flex-col justify-between',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >
@@ -442,43 +428,7 @@ const Editor = ({ readOnly = false }: Props) => {
           </div>
         </div>
 
-        <div
-          className={cn(
-            'px-5 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs h-[42px] items-center ml-auto flex',
-            {
-              'rounded-b-lg': !isFullScreen,
-            },
-          )}
-        >
-          <div className={isFullScreen ? 'w-[20%]' : 'w-[100%]'}>
-            <span>
-              {cairoLangCompilerVersion !== ''
-                ? `Cairo Compiler v${cairoLangCompilerVersion}`
-                : ' '}
-            </span>
-          </div>
-          {isFullScreen && (
-            <div className="flex items-center justify-end w-[80%]">
-              <div className="items-center flex mr-[5%]">
-                <KBarButton />
-                <ToggleFullScreen />
-                <ToggleThreeColumnLayout />
-                <ThemeSelector />
-              </div>
-              <span>
-                Made with ❤️ by{' '}
-                <a
-                  className="underline font-medium"
-                  href="https://walnut.dev"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Walnut
-                </a>
-              </span>
-            </div>
-          )}
-        </div>
+        <EditorFooter />
       </div>
       <ArgumentsHelperModal
         showArgumentsHelper={showArgumentsHelper}

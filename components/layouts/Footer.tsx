@@ -1,63 +1,53 @@
-import { useContext } from 'react'
-
-import { AppUiContext } from 'context/appUiContext'
-
 import { GITHUB_REPO_URL } from 'util/constants'
 
 import { Container } from 'components/ui/Container'
 
 const Footer = () => {
-  const { isFullScreen } = useContext(AppUiContext)
-
   return (
-    <>
-      {!isFullScreen && (
-        <footer className="border-t border-gray-100 dark:border-black-600 py-4">
-          <Container>
-            <div className="flex justify-between text-tiny text-gray-500 items-start">
-              <div className="flex flex-col md:flex-row leading-6">
-                <span>
-                  Brought to you by{' '}
-                  <a
-                    className="underline font-medium"
-                    href="https://walnut.dev"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Walnut
-                  </a>
-                  .
-                </span>
+    <footer className="border-t border-gray-100 dark:border-black-600 py-4">
+      <Container>
+        <div className="flex justify-between text-tiny text-gray-500 items-start">
+          <div className="flex flex-col md:flex-row leading-6">
+            <span>
+              Brought to you by{' '}
+              <a
+                className="underline font-medium"
+                href="https://walnut.dev"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Walnut
+              </a>
+              .
+            </span>
 
-                <span className="md:mx-2">
-                  Forked from{' '}
-                  <a
-                    className="underline font-medium"
-                    href="https://evm.codes"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    evm.codes
-                  </a>
-                  .
-                </span>
-              </div>
+            <span className="md:mx-2">
+              Forked from{' '}
+              <a
+                className="underline font-medium"
+                href="https://evm.codes"
+                target="_blank"
+                rel="noreferrer"
+              >
+                evm.codes
+              </a>
+              .
+            </span>
+          </div>
 
-              <div>
-                <a
-                  className="underline"
-                  href={GITHUB_REPO_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
-              </div>
-            </div>
-          </Container>
-        </footer>
-      )}
-    </>
+          <div>
+            <a
+              className="underline"
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+      </Container>
+    </footer>
   )
 }
 

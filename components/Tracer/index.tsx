@@ -3,7 +3,6 @@ import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 
-import { AppUiContext } from 'context/appUiContext'
 import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
 
 import Console from '../Editor/Console'
@@ -54,8 +53,6 @@ enum IConsoleTab {
 }
 
 export const Tracer = () => {
-  const { isFullScreen } = useContext(AppUiContext)
-
   const {
     tracerData,
     breakPoints,
@@ -171,36 +168,33 @@ export const Tracer = () => {
 
   return (
     <>
-      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
+      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
         <ExecutionStatus
           onStepIn={stepIn}
           onStepOut={stepOut}
           onContinueExecution={continueExecution}
         />
       </div>
-      <div className={isFullScreen ? 'min-h-[45vh]' : 'min-h-[30vh]'}>
-        {tracerData && currentTraceEntry && trace && breakPoints && (
-          <>
-            <div
-              ref={tableRef}
-              className={`overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500 ${
-                isFullScreen ? 'h-[45vh]' : 'h-[30vh]'
-              }`}
-              style={{ minHeight: '5vh' }}
-            >
-              <InstructionsTable
-                memory={tracerData.memory}
-                pcInstMap={tracerData.pcInstMap}
-                currentTraceEntry={currentTraceEntry}
-                currentFocus={currentFocus.idx}
-                breakpoints={breakPoints}
-                toogleBreakPoint={toogleBreakPoint}
-              />
-            </div>
-          </>
-        )}
-      </div>
-      <div className="border-gray-200 border-t dark:border-black-500 h-44 grow overflow-hidden mb-[10px]">
+
+      {tracerData && currentTraceEntry && trace && breakPoints && (
+        <div
+          ref={tableRef}
+          className={
+            'overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
+          }
+        >
+          <InstructionsTable
+            memory={tracerData.memory}
+            pcInstMap={tracerData.pcInstMap}
+            currentTraceEntry={currentTraceEntry}
+            currentFocus={currentFocus.idx}
+            breakpoints={breakPoints}
+            toogleBreakPoint={toogleBreakPoint}
+          />
+        </div>
+      )}
+
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
@@ -231,7 +225,7 @@ export const Tracer = () => {
             </button>
           </nav>
         </div>
-        <div className="pane pane-light overflow-auto grow h-[90%]">
+        <div className="pane pane-light overflow-auto pb-4 grow h-[90%]">
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (

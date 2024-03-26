@@ -1,6 +1,7 @@
 import { useContext, PropsWithChildren } from 'react'
 
 import { GoogleAnalytics } from '@next/third-parties/google'
+import cn from 'classnames'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 
@@ -33,13 +34,11 @@ const HomeLayout: NextPage<PropsWithChildren> = ({ children }) => {
       </Head>
 
       <div className="flex flex-col h-screen justify-between">
-        <Nav />
+        {!isFullScreen && <Nav />}
 
-        <main className={`${isFullScreen ? '' : 'mt-20 pb-10'}`}>
-          {children}
-        </main>
+        <main className={cn(!isFullScreen && 'mt-20 pb-10')}>{children}</main>
 
-        <Footer />
+        {!isFullScreen && <Footer />}
         <GoogleAnalytics gaId="G-E1BJYMMWDD" />
       </div>
     </>
