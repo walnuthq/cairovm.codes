@@ -124,9 +124,9 @@ const Editor = ({ readOnly = false }: Props) => {
       )
       setDecorations(newDecorationsIds)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCasmInstructionIndex])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const query = router.query
@@ -293,14 +293,6 @@ const Editor = ({ readOnly = false }: Props) => {
     },
   ]
   useRegisterActions(actions, [highlightCode])
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
 
   return (
     <>
