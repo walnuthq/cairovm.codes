@@ -28,7 +28,7 @@ import { getAbsoluteURL } from 'util/browser'
 import { isArgumentStringValid } from 'util/compiler'
 import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
-import examples from 'components/Editor/examples'
+import { Examples } from 'components/Editor/examples'
 import KBarButton from 'components/KBar/Button'
 import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
@@ -98,7 +98,7 @@ const Editor = ({ readOnly = false }: Props) => {
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
-      setCairoCode(examples[initialCodeType][exampleOption])
+      setCairoCode(Examples[initialCodeType][exampleOption])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady, exampleOption])
@@ -415,7 +415,6 @@ const Editor = ({ readOnly = false }: Props) => {
               onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
               onCompileRun={handleCompileRun}
               onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
-              exampleName={exampleOption}
               handleChangeExampleOption={(newExample) =>
                 newExample !== null
                   ? setExampleOption(newExample.value)
