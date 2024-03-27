@@ -1,12 +1,13 @@
-import { useMemo, useRef, useState } from 'react'
+import { useRef } from 'react'
 
-import { RiLinksLine, RiQuestionLine, RiFileCodeLine } from '@remixicon/react'
+import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 import { OnChangeValue } from 'react-select'
 
-import examples from 'components/Editor/examples'
 import { Button, Input } from 'components/ui'
+
+import ExampleSelector from './ExampleSelector'
 
 type SelectOption = {
   value: number
@@ -17,7 +18,6 @@ type EditorControlsProps = {
   isCompileDisabled: boolean
   programArguments: string
   areProgramArgumentsValid: boolean
-  exampleName: number
   handleChangeExampleOption: (
     option: OnChangeValue<SelectOption, false>,
   ) => void
@@ -31,7 +31,6 @@ const EditorControls = ({
   isCompileDisabled,
   programArguments,
   areProgramArgumentsValid,
-  exampleName,
   handleChangeExampleOption,
   onCopyPermalink,
   onCompileRun,
@@ -39,7 +38,6 @@ const EditorControls = ({
   onShowArgumentsHelper,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [isExampleSelectorOpen, setIsExampleSelectorOpen] = useState(false)
 
   const actions = [
     {
@@ -70,27 +68,7 @@ const EditorControls = ({
 
   useRegisterActions(actions, [onCompileRun, onCopyPermalink])
 
-  const CairoNameExamples = useMemo(
-    () => [
-      'Simple',
-      'Variables & mutability',
-      'Type casting',
-      'Control flow',
-      'Functions',
-      'Arrays',
-      'Dictionaries',
-      'Ownership',
-    ],
-    [],
-  )
-
-  const examplesOptions = examples.Cairo.map((example, i) => ({
-    value: i,
-    label: CairoNameExamples[i],
-  }))
-
-  const onExampleSelectorItemClick = (option: SelectOption) => {
-    setIsExampleSelectorOpen(false)
+  const onExampleChange = (option: SelectOption | null) => {
     handleChangeExampleOption(option)
   }
 
@@ -108,53 +86,7 @@ const EditorControls = ({
           <RiLinksLine size={16} />
         </Button>
 
-        <div className="relative">
-          <Button
-            onClick={() => setIsExampleSelectorOpen((prev) => !prev)}
-            transparent
-            padded={false}
-            tooltip="Change Cairo code example"
-            tooltipId="change-cairo-example"
-            className={`p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none ${cn(
-              {
-                'bg-indigo-100': isExampleSelectorOpen,
-              },
-            )}`}
-          >
-            <RiFileCodeLine size={16} />
-          </Button>
-
-          {isExampleSelectorOpen && (
-            <ul
-              className="absolute left-0 bottom-0 z-20 mb-10 w-72 border-0 border-slate-200 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-gray-200 focus:outline-none"
-              tabIndex={-1}
-              role="listbox"
-              aria-labelledby="listbox-label"
-              aria-activedescendant="listbox-option-0"
-            >
-              <li className="p-4 border-l-2 border-white text-2xs text-gray-400 uppercase dark:text-gray-600">
-                Cairo Examples
-              </li>
-              {examplesOptions.map((option, idx) => (
-                <li
-                  key={option.value}
-                  className="text-gray-900 dark:text-gray-200 border-l-2 border-white cursor-pointer select-none p-4 text-sm hover:bg-gray-50 dark:hover:bg-black-50 hover:border-indigo-500"
-                  id={`listbox-option-${idx}`}
-                  role="option"
-                  aria-selected={option.value === exampleName}
-                  onKeyDown={(e) =>
-                    e.key === 'Enter' && onExampleSelectorItemClick(option)
-                  }
-                  onClick={() => onExampleSelectorItemClick(option)}
-                >
-                  <div className="flex flex-col">
-                    <p>{option.label}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ExampleSelector onExampleChange={onExampleChange} />
       </div>
 
       <div className="flex flex-row grow gap-x-2 items-center justify-end">

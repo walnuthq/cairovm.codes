@@ -23,7 +23,8 @@ const HomePage = () => {
           content="An Ethereum Virtual Machine Opcodes Interactive Reference"
         />
       </Head>
-      <AboutCairoVMBanner />
+
+      {!isFullScreen && <AboutCairoVMBanner />}
 
       <Container fullWidth={isFullScreen}>
         <Editor />

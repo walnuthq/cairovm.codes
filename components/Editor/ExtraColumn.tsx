@@ -32,7 +32,7 @@ const ExtraColumn = ({
 
   return (
     <div className="w-full md:w-1/3 flex flex-col">
-      <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
+      <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r flex-none">
         <Header
           codeType={codeType}
           onCodeTypeChange={({ value }) => setCodeType(value)}
