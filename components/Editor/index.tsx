@@ -1,5 +1,4 @@
 import React, {
-  RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -9,11 +8,13 @@ import React, {
 } from 'react'
 
 import { decode, encode } from '@kunigi/string-compression'
+import { Editor as NewEditor, useMonaco } from '@monaco-editor/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
+import { registerCairoLanguageSupport } from 'monaco-language-cairo'
 import { useRouter } from 'next/router'
-import SCEditor from 'react-simple-code-editor'
+// import SCEditor from 'react-simple-code-editor'
 
 import {
   CairoVMApiContext,
@@ -41,10 +42,6 @@ type Props = {
   readOnly?: boolean
 }
 
-type SCEditorRef = {
-  _input: HTMLTextAreaElement
-} & RefObject<React.FC>
-
 const cairoEditorHeight = 350
 
 function isCommentLine(input: string) {
@@ -67,6 +64,7 @@ const Editor = ({ readOnly = false }: Props) => {
     sierraStatements,
     casmToSierraMap,
     currentSierraVariables,
+    cairoLocation,
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
@@ -77,7 +75,52 @@ const Editor = ({ readOnly = false }: Props) => {
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
 
-  const editorRef = useRef<SCEditorRef>()
+  const editorRef = useRef(null)
+
+  const monaco = useMonaco()
+
+  const handleEditorDidMount = (editor: null, monaco: any) => {
+    editorRef.current = editor
+    registerCairoLanguageSupport(monaco)
+  }
+  const [decorations, setDecorations] = useState([])
+  useEffect(() => {
+    const newDecorations =
+      casmToSierraMap[activeCasmInstructionIndex]?.map((item) => {
+        const index = +sierraStatements[item].name
+          .slice(sierraStatements[item].name.indexOf('//') + 2)
+          .trim()
+        let startLine, endLine, startCol, endCol
+        if (cairoLocation) {
+          startLine =
+            (cairoLocation[index]?.cairo_location?.start.line ?? 0) + 1
+          endLine = (cairoLocation[index]?.cairo_location?.end?.line ?? 0) + 1
+          startCol = (cairoLocation[index]?.cairo_location?.start.col ?? 0) + 1
+          endCol = (cairoLocation[index]?.cairo_location?.end?.col ?? 0) + 1
+        }
+
+        if (monaco) {
+          return {
+            range: new monaco.Range(
+              startLine ?? 1,
+              startCol ?? 1,
+              endLine ?? 1,
+              endCol ?? 1,
+            ),
+            options: { inlineClassName: 'bg-red-100' },
+          }
+        }
+      }) || []
+
+    const editor = editorRef.current
+    if (editor) {
+      const newDecorationsIds = editor.deltaDecorations(
+        decorations,
+        newDecorations,
+      )
+      setDecorations(newDecorationsIds)
+    }
+  }, [activeCasmInstructionIndex])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -140,8 +183,10 @@ const Editor = ({ readOnly = false }: Props) => {
     executionPanicMessage,
   ])
 
-  const handleCairoCodeChange = (value: string) => {
-    setCairoCode(value)
+  const handleCairoCodeChange = (value: string | undefined) => {
+    if (value) {
+      setCairoCode(value)
+    }
   }
 
   const highlightCode = (value: string, codeType: string | undefined) => {
@@ -369,17 +414,24 @@ const Editor = ({ readOnly = false }: Props) => {
                 />
               ) : (
                 <div className="h-full overflow-auto pane pane-light">
-                  <SCEditor
+                  <NewEditor
                     // @ts-ignore: SCEditor is not TS-friendly
-                    ref={editorRef}
+                    onMount={handleEditorDidMount}
+                    options={{
+                      minimap: { enabled: false },
+                      wordBreak: 'keepAll',
+                      wordWrap: 'on',
+                    }}
                     value={codeType === CodeType.Cairo ? cairoCode : ''}
-                    readOnly={readOnly}
-                    onValueChange={handleCairoCodeChange}
-                    highlight={(value) => highlightCode(value, codeType)}
+                    onChange={handleCairoCodeChange}
+                    language={'cairo'}
                     tabSize={4}
-                    className={cn('code-editor', {
-                      'with-numbers': !isBytecode,
-                    })}
+                    className={cn(
+                      'code-editor whitespace-pre-wrap overflow-hidden',
+                      {
+                        'with-numbers': !isBytecode,
+                      },
+                    )}
                   />
                 </div>
               )}

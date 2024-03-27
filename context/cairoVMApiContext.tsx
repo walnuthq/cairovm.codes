@@ -19,7 +19,21 @@ export enum ProgramExecutionState {
   Success,
   Error,
 }
-
+type CairoLocation = {
+  [key: string]: {
+    fn_name: string
+    cairo_location: {
+      start: {
+        line: number
+        col: number
+      }
+      end: {
+        line: number
+        col: number
+      } | null
+    } | null
+  }
+}
 type CasmToSierraMap = { [key: string]: number[] }
 export type BreakPoints = { [key: string]: boolean }
 
@@ -43,6 +57,7 @@ type ContextProps = {
   currentTraceEntry?: TraceEntry
   currentSierraVariables?: SierraVariables
   breakPoints?: BreakPoints
+  cairoLocation?: CairoLocation
 
   compileCairoCode: (cairoCode: string, programArguments: string) => void
   onExecutionStepChange: (step: number) => void
@@ -66,6 +81,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   sierraStatements: [],
   casmToSierraMap: {},
   breakPoints: {},
+  cairoLocation: {},
 
   compileCairoCode: noOp,
   onExecutionStepChange: noOp,
@@ -98,6 +114,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const [executionTraceStepNumber, setExecutionTraceStepNumber] =
     useState<number>(0)
   const [sierraStatements, setSierraStatements] = useState<IInstruction[]>([])
+  const [cairoLocation, setCairoLocation] = useState<CairoLocation>({})
   const [casmToSierraMap, setCasmToSierraMap] = useState<CasmToSierraMap>({})
 
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
@@ -190,6 +207,10 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
             {},
           ),
         )
+        setCairoLocation(
+          data.tracer_data.sierra_to_cairo_debug_info
+            .sierra_statements_to_cairo_info,
+        )
         setCasmInstructions(
           parseStringInstructions(data.casm_formatted_instructions),
         )
@@ -228,6 +249,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         sierraStatements,
         casmToSierraMap,
         breakPoints,
+        cairoLocation,
 
         compileCairoCode,
         onExecutionStepChange,
