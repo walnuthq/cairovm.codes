@@ -107,7 +107,7 @@ const Editor = ({ readOnly = false }: Props) => {
               endLine ?? 1,
               endCol ?? 1,
             ),
-            options: { inlineClassName: 'bg-red-100' },
+            options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
           }
         }
       }) || []
