@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react'
 
+import { Editor as MonacoEditor, Monaco } from '@monaco-editor/react'
 import cn from 'classnames'
-import SCEditor from 'react-simple-code-editor'
+import { editor } from 'monaco-editor'
 
 import { CodeType } from '../../context/appUiContext'
 import { CairoVMApiContext } from '../../context/cairoVMApiContext'
@@ -12,14 +13,19 @@ import { InstructionsTable } from './InstructionsTable'
 type ExtraColumnProps = {
   cairoEditorHeight: number
   cairoCode: string
-  highlightCode: (value: string, codeType: string | undefined) => string
+  handleCairoCodeChange: (value: string | undefined) => void
+  handleEditorDidMount: (
+    editor: editor.IStandaloneCodeEditor,
+    monaco: Monaco,
+  ) => void
   isBytecode: boolean
 }
 
 const ExtraColumn = ({
   cairoEditorHeight,
   cairoCode,
-  highlightCode,
+  handleCairoCodeChange,
+  handleEditorDidMount,
   isBytecode,
 }: ExtraColumnProps) => {
   const [codeType, setCodeType] = useState<string | undefined>(CodeType.Sierra)
@@ -60,14 +66,18 @@ const ExtraColumn = ({
             variables={currentSierraVariables || {}}
           />
         ) : (
-          <SCEditor
+          <MonacoEditor
             // @ts-ignore: SCEditor is not TS-friendly
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              wordBreak: 'keepAll',
+              wordWrap: 'on',
+            }}
             value={codeType === CodeType.Cairo ? cairoCode : ''}
-            readOnly={true}
-            onValueChange={() => void 0} // as its readonly mode, we do nothing onValueChange(a required prop)
-            highlight={(value) => highlightCode(value, codeType)}
-            tabSize={4}
-            className={cn('code-editor', {
+            onChange={handleCairoCodeChange}
+            language={'cairo'}
+            className={cn('code-editor whitespace-pre-wrap overflow-hidden', {
               'with-numbers': !isBytecode,
             })}
           />
