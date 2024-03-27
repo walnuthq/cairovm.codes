@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
+import { RiCommandLine } from '@remixicon/react'
 import { useKBar } from 'kbar'
 
 import { isMac } from 'util/browser'
 
 import { Button } from 'components/ui'
-import { RiCommandLine } from '@remixicon/react'
 
 const KBarButton = () => {
   const { query } = useKBar()
