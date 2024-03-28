@@ -23,15 +23,18 @@ const HomePage = () => {
           content="An Ethereum Virtual Machine Opcodes Interactive Reference"
         />
       </Head>
-      <AboutCairoVMBanner />
+
+      {!isFullScreen && <AboutCairoVMBanner />}
 
       <Container fullWidth={isFullScreen}>
         <Editor />
       </Container>
 
-      <section className="pt-20 pb-10 text-center">
-        <ContributeBox />
-      </section>
+      {!isFullScreen && (
+        <section className="pt-20 pb-10 text-center">
+          <ContributeBox />
+        </section>
+      )}
     </>
   )
 }

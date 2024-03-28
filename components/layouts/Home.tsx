@@ -1,8 +1,11 @@
-import { PropsWithChildren } from 'react'
+import { useContext, PropsWithChildren } from 'react'
 
 import { GoogleAnalytics } from '@next/third-parties/google'
+import cn from 'classnames'
 import type { NextPage } from 'next'
 import Head from 'next/head'
+
+import { AppUiContext } from 'context/appUiContext'
 
 import { getAbsoluteURL } from 'util/browser'
 
@@ -10,6 +13,7 @@ import Footer from './Footer'
 import Nav from './Nav'
 
 const HomeLayout: NextPage<PropsWithChildren> = ({ children }) => {
+  const { isFullScreen } = useContext(AppUiContext)
   return (
     <>
       <Head>
@@ -30,11 +34,11 @@ const HomeLayout: NextPage<PropsWithChildren> = ({ children }) => {
       </Head>
 
       <div className="flex flex-col h-screen justify-between">
-        <Nav />
+        {!isFullScreen && <Nav />}
 
-        <main className="mb-auto mt-20 pb-10">{children}</main>
+        <main className={cn(!isFullScreen && 'mt-20 pb-10')}>{children}</main>
 
-        <Footer />
+        {!isFullScreen && <Footer />}
         <GoogleAnalytics gaId="G-E1BJYMMWDD" />
       </div>
     </>

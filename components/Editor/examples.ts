@@ -1,6 +1,6 @@
 import { ExampleCode } from './types'
 
-const examples: ExampleCode = {
+export const Examples: ExampleCode = {
   Cairo: [
     `use core::felt252;
 
@@ -410,4 +410,13 @@ ret;
   //   ],
 }
 
-export default examples
+export const CairoExampleNames = [
+  'Simple',
+  'Variables & mutability',
+  'Type casting',
+  'Control flow',
+  'Functions',
+  'Arrays',
+  'Dictionaries',
+  'Ownership',
+]

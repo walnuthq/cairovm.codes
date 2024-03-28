@@ -49,7 +49,7 @@ export const Button: React.FC<Props> = ({
           'text-tiny font-medium': size === 'sm',
           'text-sm font-medium': size === 'md',
           'text-xs': size === 'xs',
-          'border border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white':
+          'border hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white':
             outline,
         },
         className,

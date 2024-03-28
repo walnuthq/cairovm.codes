@@ -56,11 +56,7 @@ enum IConsoleTab {
   DebugInfo = 'output',
 }
 
-interface TracerProps {
-  mainHeight: number
-}
-
-export const Tracer = ({ mainHeight }: TracerProps) => {
+export const Tracer = () => {
   const {
     executionState,
     tracerData,
@@ -83,8 +79,6 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
   )
-
-  const consoleHeight = 150
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -183,36 +177,37 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   return (
     <>
-      <div className="flex-grow">
-        <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
-          <ExecutionStatus
-            onStepIn={stepIn}
-            onStepOut={stepOut}
-            onContinueExecution={continueExecution}
-          />
-        </div>
-        {tracerData && currentTraceEntry && trace && breakPoints && (
-          <div
-            ref={tableRef}
-            className="overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-            style={{ height: mainHeight }}
-          >
-            <InstructionsTable
-              memory={tracerData.memory}
-              pcInstMap={tracerData.pcInstMap}
-              currentTraceEntry={currentTraceEntry}
-              currentFocus={currentFocus.idx}
-              breakpoints={breakPoints}
-              toogleBreakPoint={toogleBreakPoint}
-              errorTraceEntry={
+      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
+        <ExecutionStatus
+          onStepIn={stepIn}
+          onStepOut={stepOut}
+          onContinueExecution={continueExecution}
+        />
+      </div>
+
+      {tracerData && currentTraceEntry && trace && breakPoints && (
+        <div
+          ref={tableRef}
+          className={
+            'overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
+          }
+        >
+          <InstructionsTable
+            memory={tracerData.memory}
+            pcInstMap={tracerData.pcInstMap}
+            currentTraceEntry={currentTraceEntry}
+            currentFocus={currentFocus.idx}
+            breakpoints={breakPoints}
+            toogleBreakPoint={toogleBreakPoint}
+            errorTraceEntry={
                 executionState === ProgramExecutionState.Error
                   ? errorTraceEntry
                   : null
               }
-            />
-          </div>
-        )}
-      </div>
+          />
+        </div>
+      )}
+
       <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
@@ -244,10 +239,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
             </button>
           </nav>
         </div>
-        <div
-          className="pane pane-light overflow-auto"
-          style={{ height: consoleHeight }}
-        >
+        <div className="pane pane-light overflow-auto pb-4 grow h-[90%]">
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (
