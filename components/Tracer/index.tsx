@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 
 import cn from 'classnames'
-import { Priority, useRegisterActions } from 'kbar'
 
 import {
   CairoVMApiContext,
@@ -12,6 +11,8 @@ import {
 import Console from '../Editor/Console'
 
 import ExecutionStatus from './ExecutionStatus'
+
+import { AppUiContext } from 'context/appUiContext'
 
 export interface Instruction {
   ap_update: string
@@ -74,7 +75,6 @@ export const Tracer = () => {
     executionState === ProgramExecutionState.Error
       ? tracerData?.trace.at(-2)
       : null
-  const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
@@ -91,10 +91,6 @@ export const Tracer = () => {
     },
     { idx: 0, incrementCounter: 0 },
   )
-
-  const handleRegisterPointerClick = (num: number) => {
-    setCurrentFocus(num)
-  }
 
   useEffect(() => {
     const element = tableRef.current?.querySelector(
@@ -146,38 +142,9 @@ export const Tracer = () => {
     }
   }
 
-  const actions = [
-    {
-      id: 'debugInfo',
-      name: 'Debug Info',
-      shortcut: ['d'],
-      keywords: 'Debug info',
-      section: 'Execution',
-      perform: () => {
-        setSelectedConsoleTab(IConsoleTab.DebugInfo)
-      },
-      subtitle: 'Switch to Debug Info',
-      priority: Priority.HIGH,
-    },
-    {
-      id: 'console',
-      name: 'Console',
-      shortcut: ['e'],
-      keywords: 'Console',
-      section: 'Execution',
-      perform: () => {
-        setSelectedConsoleTab(IConsoleTab.Console)
-      },
-      subtitle: 'Switch to Console',
-      priority: Priority.HIGH,
-    },
-  ]
-
-  useRegisterActions(actions, [setSelectedConsoleTab])
-
   return (
     <>
-      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
+      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none bg-gray-100 dark:bg-black-700">
         <ExecutionStatus
           onStepIn={stepIn}
           onStepOut={stepOut}
@@ -206,55 +173,74 @@ export const Tracer = () => {
             }
           />
         </div>
-      )}
-
-      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
-        <div className="px-4">
-          <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
-            <button
-              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
-                {
-                  'border-indigo-600 text-gray-700':
-                    selectedConsoleTab === IConsoleTab.DebugInfo,
-                  'border-transparent text-gray-500':
-                    selectedConsoleTab !== IConsoleTab.DebugInfo,
-                },
-              )}`}
-              onClick={() => setSelectedConsoleTab(IConsoleTab.DebugInfo)}
-            >
-              Debug Info [d]
-            </button>
-            <button
-              onClick={() => setSelectedConsoleTab(IConsoleTab.Console)}
-              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
-                {
-                  'border-indigo-600 text-gray-700':
-                    selectedConsoleTab === IConsoleTab.Console,
-                  'border-transparent text-gray-500':
-                    selectedConsoleTab !== IConsoleTab.Console,
-                },
-              )}`}
-            >
-              Console [e]
-            </button>
-          </nav>
-        </div>
-        <div className="pane pane-light overflow-auto pb-4 grow h-[90%]">
-          {selectedConsoleTab === IConsoleTab.Console && <Console />}
-
-          {selectedConsoleTab === IConsoleTab.DebugInfo && (
-            <DebugInfoTab
-              trace={trace}
-              currentTraceEntry={currentTraceEntry}
-              executionTraceStepNumber={executionTraceStepNumber}
-              currentCallstackEntry={currentCallstackEntry}
-              handleRegisterPointerClick={handleRegisterPointerClick}
-            />
-          )}
-        </div>
-      </div>
+      )}     
     </>
   )
+}
+
+export const DebugInfoConsole = () => {
+  const { isThreeColumnLayout } = useContext(AppUiContext)
+  const {
+    tracerData,
+    executionTraceStepNumber,
+  } = useContext(CairoVMApiContext)
+
+  const trace = tracerData?.trace
+  const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+  const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
+
+  const [currentFocus, setCurrentFocus] = useReducer(
+    (state: any, newIdx: number) => {
+      state = {
+        idx: newIdx,
+        incrementCounter: state.incrementCounter + 1,
+      }
+
+      return state
+    },
+    { idx: 0, incrementCounter: 0 },
+  )
+
+  const handleRegisterPointerClick = (num: number) => {
+    setCurrentFocus(num)
+  }
+
+  useEffect(() => {
+    const element = tableRef.current?.querySelector(
+      '#focus_row',
+    ) as HTMLElement | null
+    if (tableRef.current && element?.offsetTop) {
+      tableRef.current.scrollTo({
+        top: element.offsetTop - 58,
+        behavior: 'smooth',
+      })
+    }
+  }, [currentTraceEntry, currentFocus])
+
+  const tableRef = useRef<HTMLDivElement>(null)
+
+  return <>
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none h-[22vh]">
+        <div className=" h-full flex flex-col md:flex-row">
+          <div className={`h-full w-1/2 border-r border-gray-200 dark:border-black-500 p-4 overflow-auto pane pane-light ${isThreeColumnLayout? 'w-2/3' : 'w-1/2'}`}>
+            <div className='mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase text-2xs pl-4 overflow-auto'>Console</div>
+            <Console />
+          </div>
+
+          <div className={`h-full p-4 overflow-auto pane pane-light ${isThreeColumnLayout? 'w-1/3' : 'w-1/2'}`}>
+            <DebugInfoTab
+                trace={trace}
+                currentTraceEntry={currentTraceEntry}
+                executionTraceStepNumber={executionTraceStepNumber}
+                currentCallstackEntry={currentCallstackEntry}
+                handleRegisterPointerClick={handleRegisterPointerClick}
+              />
+          </div>
+            
+        
+        </div>
+      </div>
+  </>
 }
 
 function DebugInfoTab({
@@ -329,7 +315,7 @@ function DebugInfoTab({
             <dd className="font-mono mb-2">
               <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
                 <thead>
-                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
+                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500 z-10">
                     <th className="py-1 px-2 font-thin">FP</th>
                     <th className="py-1 px-2 font-thin">CALL PC</th>
                     <th className="py-1 px-2 font-thin">RET PC</th>

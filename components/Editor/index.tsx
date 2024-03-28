@@ -28,6 +28,7 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import { Examples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
+import { DebugInfoConsole } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
@@ -69,7 +70,7 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
-  const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
+  const { addToConsoleLog, isThreeColumnLayout, isFullScreen } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [exampleOption, setExampleOption] = useState<number>(0)
@@ -79,8 +80,6 @@ const Editor = ({ readOnly = false }: Props) => {
   const editorRef = useRef<SCEditorRef>()
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  const { isFullScreen } = useContext(AppUiContext)
 
   useEffect(() => {
     const query = router.query
@@ -342,7 +341,7 @@ const Editor = ({ readOnly = false }: Props) => {
         <div
           className="flex flex-col md:flex-row"
           style={{
-            height: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
+            height: isFullScreen ? 'calc(78vh - 42px)' : '50vh',
           }}
         >
           <div
@@ -424,13 +423,15 @@ const Editor = ({ readOnly = false }: Props) => {
 
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col justify-between',
+              'w-full md:w-1/2 flex flex-col justify-between bg-gray-50 dark:bg-black-600',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >
             <Tracer />
           </div>
         </div>
+
+        <DebugInfoConsole/>
 
         <EditorFooter />
       </div>
