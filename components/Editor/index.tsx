@@ -62,6 +62,7 @@ const Editor = ({ readOnly = false }: Props) => {
     serializedOutput,
     casmInstructions,
     activeCasmInstructionIndex,
+    errorCasmInstructionIndex,
     sierraStatements,
     casmToSierraMap,
     currentSierraVariables,
@@ -364,6 +365,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   instructions={casmInstructions}
                   codeType={codeType}
                   activeIndexes={[activeCasmInstructionIndex]}
+                  errorIndexes={[errorCasmInstructionIndex]}
                   variables={{}}
                 />
               ) : codeType === CodeType.Sierra ? (
@@ -372,6 +374,9 @@ const Editor = ({ readOnly = false }: Props) => {
                   codeType={codeType}
                   activeIndexes={
                     casmToSierraMap[activeCasmInstructionIndex] ?? []
+                  }
+                  errorIndexes={
+                    casmToSierraMap[errorCasmInstructionIndex] ?? []
                   }
                   variables={currentSierraVariables || {}}
                 />

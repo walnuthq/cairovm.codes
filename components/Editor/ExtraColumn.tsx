@@ -25,6 +25,7 @@ const ExtraColumn = ({
   const {
     casmInstructions,
     activeCasmInstructionIndex,
+    errorCasmInstructionIndex,
     sierraStatements,
     casmToSierraMap,
     currentSierraVariables,
@@ -45,6 +46,7 @@ const ExtraColumn = ({
             instructions={casmInstructions}
             codeType={codeType}
             activeIndexes={[activeCasmInstructionIndex]}
+            errorIndexes={[errorCasmInstructionIndex]}
             variables={{}}
           />
         ) : codeType === CodeType.Sierra ? (
@@ -52,6 +54,7 @@ const ExtraColumn = ({
             instructions={sierraStatements}
             codeType={codeType}
             activeIndexes={casmToSierraMap[activeCasmInstructionIndex] ?? []}
+            errorIndexes={casmToSierraMap[errorCasmInstructionIndex] ?? []}
             variables={currentSierraVariables || {}}
           />
         ) : (
