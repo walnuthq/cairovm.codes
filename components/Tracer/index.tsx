@@ -200,10 +200,10 @@ export const Tracer = () => {
             breakpoints={breakPoints}
             toogleBreakPoint={toogleBreakPoint}
             errorTraceEntry={
-                executionState === ProgramExecutionState.Error
-                  ? errorTraceEntry
-                  : null
-              }
+              executionState === ProgramExecutionState.Error
+                ? errorTraceEntry
+                : null
+            }
           />
         </div>
       )}
