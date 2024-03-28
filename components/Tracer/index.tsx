@@ -74,7 +74,10 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
-  const errorTraceEntry = tracerData?.trace.at(-1)
+  const errorTraceEntry =
+    executionState === ProgramExecutionState.Error
+      ? tracerData?.trace.at(-2)
+      : null
   const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
@@ -189,30 +192,28 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
           />
         </div>
         {tracerData && currentTraceEntry && trace && breakPoints && (
-          <>
-            <div
-              ref={tableRef}
-              className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: mainHeight }}
-            >
-              <InstructionsTable
-                memory={tracerData.memory}
-                pcInstMap={tracerData.pcInstMap}
-                currentTraceEntry={currentTraceEntry}
-                currentFocus={currentFocus.idx}
-                breakpoints={breakPoints}
-                toogleBreakPoint={toogleBreakPoint}
-                errorTraceEntry={
-                  executionState === ProgramExecutionState.Error
-                    ? errorTraceEntry
-                    : null
-                }
-              />
-            </div>
-          </>
+          <div
+            ref={tableRef}
+            className="overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
+            style={{ height: mainHeight }}
+          >
+            <InstructionsTable
+              memory={tracerData.memory}
+              pcInstMap={tracerData.pcInstMap}
+              currentTraceEntry={currentTraceEntry}
+              currentFocus={currentFocus.idx}
+              breakpoints={breakPoints}
+              toogleBreakPoint={toogleBreakPoint}
+              errorTraceEntry={
+                executionState === ProgramExecutionState.Error
+                  ? errorTraceEntry
+                  : null
+              }
+            />
+          </div>
         )}
       </div>
-      <div className="border-gray-200 border-t">
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button

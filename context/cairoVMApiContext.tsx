@@ -109,7 +109,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     tracerData?.pcToInstIndexesMap[(currentTraceEntry?.pc ?? 0).toString()] ?? 0
   const errorTraceEntry =
     executionState === ProgramExecutionState.Error
-      ? tracerData?.trace.at(-1)
+      ? tracerData?.trace.at(-2)
       : null
   const errorCasmInstructionIndex =
     tracerData?.pcToInstIndexesMap[(errorTraceEntry?.pc ?? 0).toString()] ?? -1
@@ -180,7 +180,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         setExecutionTraceStepNumber(
           data.is_execution_successful === true
             ? 0
-            : data.tracer_data.trace.length - 1,
+            : data.tracer_data.trace.length - 2,
         )
         setCasmCode(data.casm_program_code)
         setSierraCode(data.sierra_program_code)
