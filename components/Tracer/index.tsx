@@ -2,6 +2,7 @@ import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 
 import cn from 'classnames'
 
+import { AppUiContext } from 'context/appUiContext'
 import {
   CairoVMApiContext,
   BreakPoints,
@@ -11,8 +12,6 @@ import {
 import Console from '../Editor/Console'
 
 import ExecutionStatus from './ExecutionStatus'
-
-import { AppUiContext } from 'context/appUiContext'
 
 export interface Instruction {
   ap_update: string
@@ -52,11 +51,6 @@ export interface TracerData {
   entryToSierraVarsMap: { [key: string]: SierraVariables }
 }
 
-enum IConsoleTab {
-  Console = 'debug-console',
-  DebugInfo = 'output',
-}
-
 export const Tracer = () => {
   const {
     executionState,
@@ -75,10 +69,6 @@ export const Tracer = () => {
     executionState === ProgramExecutionState.Error
       ? tracerData?.trace.at(-2)
       : null
-
-  const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
-    IConsoleTab.Console,
-  )
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -173,17 +163,14 @@ export const Tracer = () => {
             }
           />
         </div>
-      )}     
+      )}
     </>
   )
 }
 
 export const DebugInfoConsole = () => {
   const { isThreeColumnLayout } = useContext(AppUiContext)
-  const {
-    tracerData,
-    executionTraceStepNumber,
-  } = useContext(CairoVMApiContext)
+  const { tracerData, executionTraceStepNumber } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
@@ -219,28 +206,38 @@ export const DebugInfoConsole = () => {
 
   const tableRef = useRef<HTMLDivElement>(null)
 
-  return <>
+  return (
+    <>
       <div className="border-gray-200 border-t dark:border-black-500 flex-none h-[22vh]">
         <div className=" h-full flex flex-col md:flex-row">
-          <div className={`h-full w-1/2 border-r border-gray-200 dark:border-black-500 p-4 overflow-auto pane pane-light ${isThreeColumnLayout? 'w-2/3' : 'w-1/2'}`}>
-            <div className='mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase text-2xs pl-4 overflow-auto'>Console</div>
+          <div
+            className={`h-full w-1/2 border-r border-gray-200 dark:border-black-500 p-4 overflow-auto pane pane-light ${
+              isThreeColumnLayout ? 'w-2/3' : 'w-1/2'
+            }`}
+          >
+            <div className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase text-2xs pl-4 overflow-auto">
+              Console
+            </div>
             <Console />
           </div>
 
-          <div className={`h-full p-4 overflow-auto pane pane-light ${isThreeColumnLayout? 'w-1/3' : 'w-1/2'}`}>
+          <div
+            className={`h-full p-4 overflow-auto pane pane-light ${
+              isThreeColumnLayout ? 'w-1/3' : 'w-1/2'
+            }`}
+          >
             <DebugInfoTab
-                trace={trace}
-                currentTraceEntry={currentTraceEntry}
-                executionTraceStepNumber={executionTraceStepNumber}
-                currentCallstackEntry={currentCallstackEntry}
-                handleRegisterPointerClick={handleRegisterPointerClick}
-              />
+              trace={trace}
+              currentTraceEntry={currentTraceEntry}
+              executionTraceStepNumber={executionTraceStepNumber}
+              currentCallstackEntry={currentCallstackEntry}
+              handleRegisterPointerClick={handleRegisterPointerClick}
+            />
           </div>
-            
-        
         </div>
       </div>
-  </>
+    </>
+  )
 }
 
 function DebugInfoTab({

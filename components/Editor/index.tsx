@@ -27,8 +27,7 @@ import { isArgumentStringValid } from 'util/compiler'
 import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import { Examples } from 'components/Editor/examples'
-import { Tracer } from 'components/Tracer'
-import { DebugInfoConsole } from 'components/Tracer'
+import { Tracer, DebugInfoConsole } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
@@ -70,7 +69,8 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
-  const { addToConsoleLog, isThreeColumnLayout, isFullScreen } = useContext(AppUiContext)
+  const { addToConsoleLog, isThreeColumnLayout, isFullScreen } =
+    useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
   const [exampleOption, setExampleOption] = useState<number>(0)
@@ -431,7 +431,7 @@ const Editor = ({ readOnly = false }: Props) => {
           </div>
         </div>
 
-        <DebugInfoConsole/>
+        <DebugInfoConsole />
 
         <EditorFooter />
       </div>
