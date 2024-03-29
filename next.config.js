@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
 module.exports = {
   reactStrictMode: true,
@@ -19,6 +20,13 @@ module.exports = {
         { loader: 'ts-loader', options: { transpileOnly: true } },
       ],
     })
+
+    config.plugins.push(
+      new MonacoWebpackPlugin({
+        languages: ['javascript', 'typescript', 'markdown'],
+        filename: 'static/[name].worker.js',
+      }),
+    )
 
     config.resolve.fallback = {
       fs: false,

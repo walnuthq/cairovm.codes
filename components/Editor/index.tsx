@@ -13,7 +13,6 @@ import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
 import { editor } from 'monaco-editor'
-import { registerCairoLanguageSupport } from 'monaco-language-cairo'
 import { useRouter } from 'next/router'
 
 import {
@@ -33,11 +32,12 @@ import { Tracer } from 'components/Tracer'
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
+import { registerCairoLanguageSupport } from './cairoLangConfig'
 import EditorControls from './EditorControls'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
-
+// @ts-ignore - Cairo is not part of the official highlightjs package
 type Props = {
   readOnly?: boolean
 }
@@ -72,60 +72,59 @@ const Editor = ({ readOnly = false }: Props) => {
   const [programArguments, setProgramArguments] = useState<string>('')
 
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
-
   const monaco = useMonaco()
-  const handleEditorDidMount = (
+  const handleEditorDidMount = async (
     editor: editor.IStandaloneCodeEditor,
     monaco: Monaco,
   ) => {
     editorRef.current = editor
-    registerCairoLanguageSupport(monaco)
-    monaco.languages.setLanguageConfiguration('python', {
-      comments: {
-        lineComment: '//',
-        blockComment: ['/*', '*/'],
-      },
-    })
+    registerCairoLanguageSupport(monaco as any)
   }
+
   const [decorations, setDecorations] = useState([])
+
   useEffect(() => {
-    const newDecorations =
-      casmToSierraMap[activeCasmInstructionIndex]?.map((item) => {
-        const index = +sierraStatements[item].name
-          .slice(sierraStatements[item].name.indexOf('//') + 2)
-          .trim()
-        let startLine, endLine, startCol, endCol
-        if (cairoLocation) {
-          startLine =
-            (cairoLocation[index]?.cairo_location?.start.line ?? 0) + 1
-          endLine = (cairoLocation[index]?.cairo_location?.end?.line ?? 0) + 1
-          startCol = (cairoLocation[index]?.cairo_location?.start.col ?? 0) + 1
-          endCol = (cairoLocation[index]?.cairo_location?.end?.col ?? 0) + 1
-        }
-
-        if (monaco) {
-          return {
-            range: new monaco.Range(
-              startLine ?? 1,
-              startCol ?? 1,
-              endLine ?? 1,
-              endCol ?? 1,
-            ),
-            options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
+    setTimeout(() => {
+      console.log(cairoLocation)
+      const newDecorations =
+        casmToSierraMap[activeCasmInstructionIndex]?.map((item) => {
+          const index = +sierraStatements[item].name
+            .slice(sierraStatements[item].name.indexOf('//') + 2)
+            .trim()
+          let startLine, endLine, startCol, endCol
+          if (cairoLocation) {
+            startLine =
+              (cairoLocation[index]?.cairo_location?.start.line ?? 0) + 1
+            endLine = (cairoLocation[index]?.cairo_location?.end?.line ?? 0) + 1
+            startCol =
+              (cairoLocation[index]?.cairo_location?.start.col ?? 0) + 1
+            endCol = (cairoLocation[index]?.cairo_location?.end?.col ?? 0) + 1
           }
-        }
-      }) || []
 
-    const editor = editorRef.current as any
-    if (editor) {
-      const newDecorationsIds = editor.deltaDecorations(
-        decorations,
-        newDecorations,
-      )
-      setDecorations(newDecorationsIds)
-    }
+          if (monaco) {
+            return {
+              range: new monaco.Range(
+                startLine ?? 1,
+                startCol ?? 1,
+                endLine ?? 1,
+                endCol ?? 1,
+              ),
+              options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
+            }
+          }
+        }) || []
+      const editor = editorRef.current as any
+      if (editor) {
+        const newDecorationsIds = editor.deltaDecorations(
+          decorations,
+          newDecorations,
+        )
+        setDecorations(newDecorationsIds)
+      }
+    })
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCasmInstructionIndex])
+  }, [activeCasmInstructionIndex, codeType])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
 
   useEffect(() => {
@@ -335,6 +334,7 @@ const Editor = ({ readOnly = false }: Props) => {
                 <div className="h-full overflow-auto pane pane-light">
                   <MonacoEditor
                     // @ts-ignore: SCEditor is not TS-friendly
+
                     onMount={handleEditorDidMount}
                     options={{
                       minimap: { enabled: false },
