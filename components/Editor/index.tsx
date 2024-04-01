@@ -43,8 +43,6 @@ type Props = {
   readOnly?: boolean
 }
 
-const cairoEditorHeight = 350
-
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
@@ -348,7 +346,7 @@ const Editor = ({ readOnly = false }: Props) => {
                     casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
                   }
                   errorIndexes={
-                    casmToSierraMap[errorCasmInstructionIndex] ?? []
+                    casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
                   }
                   variables={currentSierraVariables || {}}
                 />
@@ -397,7 +395,6 @@ const Editor = ({ readOnly = false }: Props) => {
           {isThreeColumnLayout && (
             <ExtraColumn
               cairoCode={cairoCode}
-              cairoEditorHeight={cairoEditorHeight}
               handleCairoCodeChange={handleCairoCodeChange}
               handleEditorDidMount={handleEditorDidMount}
               isBytecode={isBytecode}

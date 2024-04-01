@@ -62,8 +62,9 @@ const ExtraColumn = ({
             activeIndexes={
               casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
             }
-            activeIndexes={casmToSierraProgramMap[activeCasmInstructionIndex] ?? []}
-            errorIndexes={casmToSierraProgramMap[errorCasmInstructionIndex] ?? []}
+            errorIndexes={
+              casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
+            }
             variables={currentSierraVariables || {}}
           />
         ) : (
