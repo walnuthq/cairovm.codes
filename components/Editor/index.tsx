@@ -58,7 +58,8 @@ const Editor = ({ readOnly = false }: Props) => {
     casmInstructions,
     activeCasmInstructionIndex,
     sierraStatements,
-    casmToSierraMap,
+    casmToSierraProgramMap,
+    casmToSierraStatementsMap,
     currentSierraVariables,
     cairoLocation,
     logs: apiLogs,
@@ -67,6 +68,7 @@ const Editor = ({ readOnly = false }: Props) => {
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
+  const [compiledCairoCode, setCompiledCairoCode] = useState(cairoCode)
   const [exampleOption, setExampleOption] = useState<number>(0)
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
@@ -85,12 +87,9 @@ const Editor = ({ readOnly = false }: Props) => {
 
   useEffect(() => {
     setTimeout(() => {
-      console.log(cairoLocation)
       const newDecorations =
-        casmToSierraMap[activeCasmInstructionIndex]?.map((item) => {
-          const index = +sierraStatements[item].name
-            .slice(sierraStatements[item].name.indexOf('//') + 2)
-            .trim()
+        casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
+          const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
           let startLine, endLine, startCol, endCol
           if (cairoLocation) {
             startLine =
@@ -115,16 +114,21 @@ const Editor = ({ readOnly = false }: Props) => {
         }) || []
       const editor = editorRef.current as any
       if (editor) {
-        const newDecorationsIds = editor.deltaDecorations(
-          decorations,
-          newDecorations,
-        )
-        setDecorations(newDecorationsIds)
+        if (cairoCode === compiledCairoCode) {
+          const newDecorationsIds = editor.deltaDecorations(
+            decorations,
+            newDecorations,
+          )
+          setDecorations(newDecorationsIds)
+        } else {
+          const newDecorationsIds = editor.deltaDecorations(decorations, [])
+          setDecorations(newDecorationsIds)
+        }
       }
     })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCasmInstructionIndex, codeType])
+  }, [activeCasmInstructionIndex, codeType, cairoCode, compiledCairoCode])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
 
   useEffect(() => {
@@ -227,6 +231,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const handleCompileRun = useCallback(() => {
     compileCairoCode(cairoCode, removeExtraWhitespaces(programArguments))
+    setCompiledCairoCode(cairoCode)
   }, [cairoCode, programArguments, compileCairoCode])
 
   const handleCopyPermalink = useCallback(() => {
@@ -326,7 +331,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   instructions={sierraStatements}
                   codeType={codeType}
                   activeIndexes={
-                    casmToSierraMap[activeCasmInstructionIndex] ?? []
+                    casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
                   }
                   variables={currentSierraVariables || {}}
                 />

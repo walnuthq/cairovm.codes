@@ -53,7 +53,9 @@ type ContextProps = {
   executionTraceStepNumber: number
   activeCasmInstructionIndex: number
   sierraStatements: IInstruction[]
-  casmToSierraMap: CasmToSierraMap
+  casmToSierraStatementsMap: CasmToSierraMap
+  casmToSierraProgramMap: CasmToSierraMap
+
   currentTraceEntry?: TraceEntry
   currentSierraVariables?: SierraVariables
   breakPoints?: BreakPoints
@@ -79,9 +81,10 @@ export const CairoVMApiContext = createContext<ContextProps>({
   executionTraceStepNumber: 0,
   activeCasmInstructionIndex: 0,
   sierraStatements: [],
-  casmToSierraMap: {},
+  casmToSierraProgramMap: {},
   breakPoints: {},
   cairoLocation: {},
+  casmToSierraStatementsMap: {},
 
   compileCairoCode: noOp,
   onExecutionStepChange: noOp,
@@ -115,7 +118,10 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     useState<number>(0)
   const [sierraStatements, setSierraStatements] = useState<IInstruction[]>([])
   const [cairoLocation, setCairoLocation] = useState<CairoLocation>({})
-  const [casmToSierraMap, setCasmToSierraMap] = useState<CasmToSierraMap>({})
+  const [casmToSierraProgramMap, setCasmToSierraProgramMap] =
+    useState<CasmToSierraMap>({})
+  const [casmToSierraStatementsMap, setCasmToSierraStatementsMap] =
+    useState<CasmToSierraMap>({})
 
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const currentSierraVariables =
@@ -211,16 +217,17 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
           data.tracer_data.sierra_to_cairo_debug_info
             .sierra_statements_to_cairo_info,
         )
+        setCasmToSierraStatementsMap(data.casm_to_sierra_map)
         setCasmInstructions(
           parseStringInstructions(data.casm_formatted_instructions),
         )
-        const { sierraStatements, casmToSierraMap } =
+        const { sierraStatements, casmToSierraProgramMap } =
           parseSierraFormattedProgramAndCasmToSierraMap(
             data.sierra_formatted_program,
             data.casm_to_sierra_map,
           )
         setSierraStatements(sierraStatements)
-        setCasmToSierraMap(casmToSierraMap)
+        setCasmToSierraProgramMap(casmToSierraProgramMap)
       })
       .catch((error) => {
         console.log('error')
@@ -247,7 +254,8 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         currentSierraVariables,
         activeCasmInstructionIndex,
         sierraStatements,
-        casmToSierraMap,
+        casmToSierraProgramMap,
+        casmToSierraStatementsMap,
         breakPoints,
         cairoLocation,
 
@@ -283,7 +291,10 @@ const parseSierraFormattedProgramAndCasmToSierraMap = (
     funcs: string[]
   },
   casmToSierraMap: CasmToSierraMap,
-): { sierraStatements: IInstruction[]; casmToSierraMap: CasmToSierraMap } => {
+): {
+  sierraStatements: IInstruction[]
+  casmToSierraProgramMap: CasmToSierraMap
+} => {
   let statements: IInstruction[] = []
   let indexOffset = 0
   statements = statements.concat(
@@ -311,11 +322,18 @@ const parseSierraFormattedProgramAndCasmToSierraMap = (
     parseStringInstructions(['// funcs', ...program.funcs], indexOffset),
   )
 
+  const copiedCasmToSierraMap = JSON.parse(JSON.stringify(casmToSierraMap))
+
   const offset =
     program.type_declarations.length + program.libfunc_declarations.length + 3
-  Object.keys(casmToSierraMap).forEach((key) => {
-    casmToSierraMap[key] = casmToSierraMap[key].map((v) => v + offset)
+  Object.keys(copiedCasmToSierraMap).forEach((key) => {
+    copiedCasmToSierraMap[key] = copiedCasmToSierraMap[key].map(
+      (v: number) => v + offset,
+    )
   })
 
-  return { sierraStatements: statements, casmToSierraMap }
+  return {
+    sierraStatements: statements,
+    casmToSierraProgramMap: copiedCasmToSierraMap,
+  }
 }
