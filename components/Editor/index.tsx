@@ -1,5 +1,4 @@
 import React, {
-  RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -9,11 +8,12 @@ import React, {
 } from 'react'
 
 import { decode, encode } from '@kunigi/string-compression'
+import { Editor as MonacoEditor, useMonaco, Monaco } from '@monaco-editor/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
+import { editor } from 'monaco-editor'
 import { useRouter } from 'next/router'
-import SCEditor from 'react-simple-code-editor'
 
 import {
   CairoVMApiContext,
@@ -32,22 +32,15 @@ import { Tracer } from 'components/Tracer'
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
+import { registerCairoLanguageSupport } from './cairoLangConfig'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
-
+// @ts-ignore - Cairo is not part of the official highlightjs package
 type Props = {
   readOnly?: boolean
-}
-
-type SCEditorRef = {
-  _input: HTMLTextAreaElement
-} & RefObject<React.FC>
-
-function isCommentLine(input: string) {
-  return input.startsWith('// ')
 }
 
 const Editor = ({ readOnly = false }: Props) => {
@@ -64,21 +57,78 @@ const Editor = ({ readOnly = false }: Props) => {
     activeCasmInstructionIndex,
     errorCasmInstructionIndex,
     sierraStatements,
-    casmToSierraMap,
+    casmToSierraProgramMap,
+    casmToSierraStatementsMap,
     currentSierraVariables,
+    cairoLocation,
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
 
   const [cairoCode, setCairoCode] = useState('')
+  const [compiledCairoCode, setCompiledCairoCode] = useState(cairoCode)
   const [exampleOption, setExampleOption] = useState<number>(0)
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
 
-  const editorRef = useRef<SCEditorRef>()
+  const editorRef = useRef<editor.IStandaloneCodeEditor>()
+  const monaco = useMonaco()
+  const handleEditorDidMount = async (
+    editor: editor.IStandaloneCodeEditor,
+    monaco: Monaco,
+  ) => {
+    editorRef.current = editor
+    registerCairoLanguageSupport(monaco as any)
+  }
+
+  const [decorations, setDecorations] = useState([])
+
+  useEffect(() => {
+    setTimeout(() => {
+      const newDecorations =
+        casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
+          const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
+          let startLine, endLine, startCol, endCol
+          if (cairoLocation) {
+            startLine =
+              (cairoLocation[index]?.cairo_location?.start.line ?? 0) + 1
+            endLine = (cairoLocation[index]?.cairo_location?.end?.line ?? 0) + 1
+            startCol =
+              (cairoLocation[index]?.cairo_location?.start.col ?? 0) + 1
+            endCol = (cairoLocation[index]?.cairo_location?.end?.col ?? 0) + 1
+          }
+
+          if (monaco) {
+            return {
+              range: new monaco.Range(
+                startLine ?? 1,
+                startCol ?? 1,
+                endLine ?? 1,
+                endCol ?? 1,
+              ),
+              options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
+            }
+          }
+        }) || []
+      const editor = editorRef.current as any
+      if (editor) {
+        if (cairoCode === compiledCairoCode) {
+          const newDecorationsIds = editor.deltaDecorations(
+            decorations,
+            newDecorations,
+          )
+          setDecorations(newDecorationsIds)
+        } else {
+          const newDecorationsIds = editor.deltaDecorations(decorations, [])
+          setDecorations(newDecorationsIds)
+        }
+      }
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCasmInstructionIndex, codeType, cairoCode, compiledCairoCode])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const { isFullScreen } = useContext(AppUiContext)
 
@@ -141,8 +191,12 @@ const Editor = ({ readOnly = false }: Props) => {
     executionPanicMessage,
   ])
 
-  const handleCairoCodeChange = (value: string) => {
-    setCairoCode(value)
+  const handleCairoCodeChange = (value: string | undefined) => {
+    if (value) {
+      setCairoCode(value)
+    } else {
+      setCairoCode('')
+    }
   }
 
   const highlightCode = (value: string, codeType: string | undefined) => {
@@ -180,6 +234,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const handleCompileRun = useCallback(() => {
     compileCairoCode(cairoCode, removeExtraWhitespaces(programArguments))
+    setCompiledCairoCode(cairoCode)
   }, [cairoCode, programArguments, compileCairoCode])
 
   const handleCopyPermalink = useCallback(() => {
@@ -246,91 +301,6 @@ const Editor = ({ readOnly = false }: Props) => {
   ]
   useRegisterActions(actions, [highlightCode])
 
-  const handleCommentLine = useCallback(() => {
-    if (!editorRef.current) {
-      return
-    }
-    const textareaRef = editorRef.current._input
-    const selectionLineNumberStart = cairoCode
-      .substring(0, textareaRef.selectionStart)
-      .split('\n').length
-    const selectionLineNumberEnd = cairoCode
-      .substring(0, textareaRef.selectionEnd)
-      .split('\n').length
-
-    const selectionStart = textareaRef.selectionStart
-    const selectionEnd = textareaRef.selectionEnd
-    const lines = cairoCode.split('\n')
-    const linesToComment: number[] = []
-    for (let k = selectionLineNumberStart; k <= selectionLineNumberEnd; k++) {
-      linesToComment.push(k)
-    }
-
-    const isMultilineSelection = linesToComment.length > 1
-    let charOffsetStart = 0
-    let charOffsetEnd = 0
-    if (isMultilineSelection) {
-      for (const lineNumber of linesToComment) {
-        if (lines[lineNumber - 1] !== undefined) {
-          const line = lines[lineNumber - 1]
-          if (isCommentLine(line)) {
-            lines[lineNumber - 1] = line.substring(3)
-            charOffsetEnd -= 3
-          } else {
-            lines[lineNumber - 1] = '// ' + line
-            charOffsetEnd += 3
-          }
-        }
-      }
-    } else {
-      const lineNumber = linesToComment[0]
-      const line = lines[lineNumber - 1]
-      if (isCommentLine(line)) {
-        lines[lineNumber - 1] = line.substring(3)
-        charOffsetStart = -3
-        charOffsetEnd = -3
-      } else {
-        lines[lineNumber - 1] = '// ' + line
-        charOffsetStart = 3
-        charOffsetEnd = 3
-      }
-    }
-
-    setCairoCode(lines.join('\n'))
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-    timeoutRef.current = setTimeout(
-      () =>
-        textareaRef.setSelectionRange(
-          selectionStart + charOffsetStart,
-          selectionEnd + charOffsetEnd,
-        ),
-      0,
-    )
-  }, [cairoCode])
-
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === '/') {
-        event.preventDefault()
-        handleCommentLine()
-      }
-    }
-    document.addEventListener('keydown', handleKeyPress)
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [handleCommentLine, cairoCode])
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
-
   return (
     <>
       <div
@@ -373,26 +343,34 @@ const Editor = ({ readOnly = false }: Props) => {
                   instructions={sierraStatements}
                   codeType={codeType}
                   activeIndexes={
-                    casmToSierraMap[activeCasmInstructionIndex] ?? []
+                    casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
                   }
                   errorIndexes={
-                    casmToSierraMap[errorCasmInstructionIndex] ?? []
+                    casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
                   }
                   variables={currentSierraVariables || {}}
                 />
               ) : (
                 <div className="h-full overflow-auto pane pane-light">
-                  <SCEditor
+                  <MonacoEditor
                     // @ts-ignore: SCEditor is not TS-friendly
-                    ref={editorRef}
+
+                    onMount={handleEditorDidMount}
+                    options={{
+                      minimap: { enabled: false },
+                      wordBreak: 'keepAll',
+                      wordWrap: 'on',
+                      readOnly: readOnly,
+                    }}
                     value={codeType === CodeType.Cairo ? cairoCode : ''}
-                    readOnly={readOnly}
-                    onValueChange={handleCairoCodeChange}
-                    highlight={(value) => highlightCode(value, codeType)}
-                    tabSize={4}
-                    className={cn('code-editor', {
-                      'with-numbers': !isBytecode,
-                    })}
+                    onChange={handleCairoCodeChange}
+                    language={'cairo'}
+                    className={cn(
+                      'code-editor whitespace-pre-wrap overflow-hidden',
+                      {
+                        'with-numbers': !isBytecode,
+                      },
+                    )}
                   />
                 </div>
               )}
@@ -417,7 +395,8 @@ const Editor = ({ readOnly = false }: Props) => {
           {isThreeColumnLayout && (
             <ExtraColumn
               cairoCode={cairoCode}
-              highlightCode={highlightCode}
+              handleCairoCodeChange={handleCairoCodeChange}
+              handleEditorDidMount={handleEditorDidMount}
               isBytecode={isBytecode}
             />
           )}
