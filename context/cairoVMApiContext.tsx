@@ -322,18 +322,18 @@ const parseSierraFormattedProgramAndCasmToSierraMap = (
     parseStringInstructions(['// funcs', ...program.funcs], indexOffset),
   )
 
-  const copiedCasmToSierraMap = JSON.parse(JSON.stringify(casmToSierraMap))
+  const casmToSierraProgramMap: CasmToSierraMap = {}
 
   const offset =
     program.type_declarations.length + program.libfunc_declarations.length + 3
-  Object.keys(copiedCasmToSierraMap).forEach((key) => {
-    copiedCasmToSierraMap[key] = copiedCasmToSierraMap[key].map(
+  Object.keys(casmToSierraMap).forEach((key) => {
+    casmToSierraProgramMap[key] = casmToSierraMap[key].map(
       (v: number) => v + offset,
     )
   })
 
   return {
     sierraStatements: statements,
-    casmToSierraProgramMap: copiedCasmToSierraMap,
+    casmToSierraProgramMap: casmToSierraProgramMap,
   }
 }
