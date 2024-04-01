@@ -193,6 +193,8 @@ const Editor = ({ readOnly = false }: Props) => {
   const handleCairoCodeChange = (value: string | undefined) => {
     if (value) {
       setCairoCode(value)
+    } else {
+      setCairoCode('')
     }
   }
 
