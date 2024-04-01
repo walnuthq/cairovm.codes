@@ -3,7 +3,11 @@ import { useContext, useEffect, useState, useRef, useReducer } from 'react'
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 
-import { CairoVMApiContext, BreakPoints } from 'context/cairoVMApiContext'
+import {
+  CairoVMApiContext,
+  BreakPoints,
+  ProgramExecutionState,
+} from 'context/cairoVMApiContext'
 
 import Console from '../Editor/Console'
 
@@ -52,12 +56,9 @@ enum IConsoleTab {
   DebugInfo = 'output',
 }
 
-interface TracerProps {
-  mainHeight: number
-}
-
-export const Tracer = ({ mainHeight }: TracerProps) => {
+export const Tracer = () => {
   const {
+    executionState,
     tracerData,
     breakPoints,
     onExecutionStepChange,
@@ -69,13 +70,15 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   const trace = tracerData?.trace
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
+  const errorTraceEntry =
+    executionState === ProgramExecutionState.Error
+      ? tracerData?.trace.at(-2)
+      : null
   const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
 
   const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
     IConsoleTab.Console,
   )
-
-  const consoleHeight = 150
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -174,34 +177,38 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
 
   return (
     <>
-      <div className="flex-grow">
-        <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14">
-          <ExecutionStatus
-            onStepIn={stepIn}
-            onStepOut={stepOut}
-            onContinueExecution={continueExecution}
+      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
+        <ExecutionStatus
+          onStepIn={stepIn}
+          onStepOut={stepOut}
+          onContinueExecution={continueExecution}
+        />
+      </div>
+
+      {tracerData && currentTraceEntry && trace && breakPoints && (
+        <div
+          ref={tableRef}
+          className={
+            'overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
+          }
+        >
+          <InstructionsTable
+            memory={tracerData.memory}
+            pcInstMap={tracerData.pcInstMap}
+            currentTraceEntry={currentTraceEntry}
+            currentFocus={currentFocus.idx}
+            breakpoints={breakPoints}
+            toogleBreakPoint={toogleBreakPoint}
+            errorTraceEntry={
+              executionState === ProgramExecutionState.Error
+                ? errorTraceEntry
+                : null
+            }
           />
         </div>
-        {tracerData && currentTraceEntry && trace && breakPoints && (
-          <>
-            <div
-              ref={tableRef}
-              className="overflow-auto pane pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: mainHeight }}
-            >
-              <InstructionsTable
-                memory={tracerData.memory}
-                pcInstMap={tracerData.pcInstMap}
-                currentTraceEntry={currentTraceEntry}
-                currentFocus={currentFocus.idx}
-                breakpoints={breakPoints}
-                toogleBreakPoint={toogleBreakPoint}
-              />
-            </div>
-          </>
-        )}
-      </div>
-      <div className="border-gray-200 border-t">
+      )}
+
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
@@ -232,10 +239,7 @@ export const Tracer = ({ mainHeight }: TracerProps) => {
             </button>
           </nav>
         </div>
-        <div
-          className="pane pane-light overflow-auto"
-          style={{ height: consoleHeight }}
-        >
+        <div className="pane pane-light overflow-auto pb-4 grow h-[90%]">
           {selectedConsoleTab === IConsoleTab.Console && <Console />}
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (
@@ -361,6 +365,7 @@ function InstructionsTable({
   currentFocus,
   breakpoints,
   toogleBreakPoint,
+  errorTraceEntry,
 }: {
   memory: TracerData['memory']
   pcInstMap: TracerData['pcInstMap']
@@ -368,8 +373,10 @@ function InstructionsTable({
   currentFocus: number
   breakpoints: BreakPoints
   toogleBreakPoint: (addr: string) => void
+  errorTraceEntry?: TraceEntry | null
 }) {
   const { pc, ap, fp } = currentTraceEntry
+  const errorPc = errorTraceEntry?.pc || 0
 
   const [hoveredAddr, setHoveredAddr] = useState<string>('')
 
@@ -397,6 +404,7 @@ function InstructionsTable({
       <tbody>
         {Object.keys(memory).map((addr) => {
           const isCurrent = pc.toString() == addr
+          const isError = errorPc.toString() == addr
           const addrNum = Number(addr)
           const isFocus = currentFocus == addrNum
           const hasBreakpoint = breakpoints[addr]
@@ -404,11 +412,14 @@ function InstructionsTable({
             <tr
               key={addr}
               id={isFocus ? 'focus_row' : undefined}
-              className={`relative border-b border-gray-200 dark:border-black-500 ${
-                isCurrent
-                  ? 'text-gray-900 dark:text-gray-200'
-                  : 'text-gray-400 dark:text-gray-600'
-              }`}
+              className={cn(
+                'relative border-b border-gray-200 dark:border-black-500',
+                {
+                  'text-gray-900 dark:text-gray-200': isCurrent,
+                  'text-gray-400 dark:text-gray-600': !isCurrent,
+                  'bg-red-100 dark:bg-red-500/10': isError,
+                },
+              )}
               onMouseEnter={() => setHoveredAddr(addr)}
               onMouseLeave={() => setHoveredAddr('')}
             >

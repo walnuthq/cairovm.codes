@@ -34,6 +34,7 @@ import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
 import EditorControls from './EditorControls'
+import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
@@ -53,10 +54,10 @@ const Editor = ({ readOnly = false }: Props) => {
     executionState,
     executionPanicMessage,
     compileCairoCode,
-    cairoLangCompilerVersion,
     serializedOutput,
     casmInstructions,
     activeCasmInstructionIndex,
+    errorCasmInstructionIndex,
     sierraStatements,
     casmToSierraProgramMap,
     casmToSierraStatementsMap,
@@ -130,6 +131,8 @@ const Editor = ({ readOnly = false }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCasmInstructionIndex, codeType, cairoCode, compiledCairoCode])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
+
+  const { isFullScreen } = useContext(AppUiContext)
 
   useEffect(() => {
     const query = router.query
@@ -302,30 +305,39 @@ const Editor = ({ readOnly = false }: Props) => {
 
   return (
     <>
-      <div className="bg-gray-100 dark:bg-black-700 rounded-lg">
-        <div className="flex flex-col md:flex-row">
+      <div
+        className={cn(
+          'bg-gray-100 dark:bg-black-700 ',
+          !isFullScreen && 'rounded-lg',
+        )}
+      >
+        <div
+          className="flex flex-col md:flex-row"
+          style={{
+            height: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
+          }}
+        >
           <div
             className={cn(
               'w-full md:w-1/2 flex flex-col',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >
-            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r">
+            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none md:border-r justify-between">
               <Header
                 codeType={codeType}
                 onCodeTypeChange={({ value }) => setCodeType(value)}
+                withLogo={isFullScreen}
               />
             </div>
 
-            <div
-              className="relative pane grow pane-light md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500"
-              style={{ height: cairoEditorHeight }}
-            >
+            <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
               {codeType === CodeType.CASM ? (
                 <InstructionsTable
                   instructions={casmInstructions}
                   codeType={codeType}
                   activeIndexes={[activeCasmInstructionIndex]}
+                  errorIndexes={[errorCasmInstructionIndex]}
                   variables={{}}
                 />
               ) : codeType === CodeType.Sierra ? (
@@ -334,6 +346,9 @@ const Editor = ({ readOnly = false }: Props) => {
                   codeType={codeType}
                   activeIndexes={
                     casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
+                  }
+                  errorIndexes={
+                    casmToSierraMap[errorCasmInstructionIndex] ?? []
                   }
                   variables={currentSierraVariables || {}}
                 />
@@ -391,19 +406,15 @@ const Editor = ({ readOnly = false }: Props) => {
 
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col',
+              'w-full md:w-1/2 flex flex-col justify-between',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >
-            <Tracer mainHeight={cairoEditorHeight} />
+            <Tracer />
           </div>
         </div>
 
-        <div className="rounded-b-lg py-2 px-4 border-t bg-gray-800 dark:bg-black-700 border-black-900/25 text-gray-400 dark:text-gray-600 text-xs">
-          {cairoLangCompilerVersion !== ''
-            ? `Cairo Compiler v${cairoLangCompilerVersion}`
-            : ' '}
-        </div>
+        <EditorFooter />
       </div>
       <ArgumentsHelperModal
         showArgumentsHelper={showArgumentsHelper}

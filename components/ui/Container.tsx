@@ -15,8 +15,9 @@ export const Container: React.FC<Props> = ({
 }) => {
   return (
     <div
-      className={cn('mx-auto px-4 md:px-6', className, {
+      className={cn('mx-auto', className, {
         container: !fullWidth, // do not use "container" if full width is true
+        'px-4 md:px-6': !fullWidth,
       })}
     >
       {children}

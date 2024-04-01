@@ -13,11 +13,13 @@ const sierraVariableRe = /\[(\d+)\]/
 export const InstructionsTable = ({
   instructions,
   activeIndexes,
+  errorIndexes,
   variables,
   codeType,
 }: {
   instructions: IInstruction[]
   activeIndexes: number[]
+  errorIndexes: number[]
   variables: SierraVariables
   codeType: CodeType
 }) => {
@@ -126,15 +128,18 @@ export const InstructionsTable = ({
         <tbody>
           {instructions.map((instruction, index) => {
             const isActive = activeIndexes.includes(index)
+            const isError = errorIndexes.includes(index)
             return (
               <tr
                 ref={(el) => (rowRefs.current[index] = el)}
                 key={index}
                 className={cn(
                   'border-b border-gray-200 dark:border-black-500',
-                  isActive
-                    ? 'text-gray-900 dark:text-gray-200'
-                    : 'text-gray-400 dark:text-gray-600',
+                  {
+                    'text-gray-900 dark:text-gray-200': isActive,
+                    'text-gray-400 dark:text-gray-600': !isActive,
+                    'bg-red-100 dark:bg-red-500/10': isError,
+                  },
                 )}
               >
                 <td className={`pl-6 pr-1 px-2 whitespace-nowrap w-[1%]`}>
