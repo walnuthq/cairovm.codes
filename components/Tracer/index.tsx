@@ -209,9 +209,9 @@ export const DebugInfoConsole = () => {
   return (
     <>
       <div className="border-gray-200 border-t dark:border-black-500 flex-none h-[22vh]">
-        <div className=" h-full flex flex-col md:flex-row">
+        <div className=" h-full flex flex-col md:flex-row p-2">
           <div
-            className={`h-full w-1/2 border-r border-gray-200 dark:border-black-500 p-4 overflow-auto pane pane-light ${
+            className={`h-full w-1/2 border-r border-gray-200 dark:border-black-500 pt-3 overflow-auto pane pane-light ${
               isThreeColumnLayout ? 'w-2/3' : 'w-1/2'
             }`}
           >
@@ -222,7 +222,7 @@ export const DebugInfoConsole = () => {
           </div>
 
           <div
-            className={`h-full p-4 overflow-auto pane pane-light ${
+            className={`h-full overflow-auto pane pane-light pt-3 ${
               isThreeColumnLayout ? 'w-1/3' : 'w-1/2'
             }`}
           >
