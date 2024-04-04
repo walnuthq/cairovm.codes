@@ -1,7 +1,15 @@
-import { useContext, useEffect, useState, useRef, useReducer } from 'react'
+import {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useReducer,
+  memo,
+} from 'react'
 
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
+import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 
 import {
   CairoVMApiContext,
@@ -189,7 +197,7 @@ export const Tracer = () => {
         <div
           ref={tableRef}
           className={
-            'overflow-auto pane grow pane-light relative bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
+            'h-full w-full bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
           }
         >
           <InstructionsTable
@@ -375,97 +383,188 @@ function InstructionsTable({
   toogleBreakPoint: (addr: string) => void
   errorTraceEntry?: TraceEntry | null
 }) {
-  const { pc, ap, fp } = currentTraceEntry
+  // reference to the virtuoso instance
+  const virtuosoRef = useRef<TableVirtuosoHandle>(null)
+  // rederence to the range of items rendered in the dom by virtuoso
+  // to determine when to do smooth scroll and when to not
+  // Refer: https://virtuoso.dev/scroll-to-index/
+  const virtuosoVisibleRange = useRef({
+    startIndex: 0,
+    endIndex: 0,
+  })
+  const { pc } = currentTraceEntry
+
+  useEffect(() => {
+    if (virtuosoRef.current) {
+      const indexToScroll = currentFocus - 1
+      if (indexToScroll !== undefined) {
+        const { startIndex, endIndex } = virtuosoVisibleRange.current
+        // check if the index is between our virtuoso range
+        // if within the range we do smooth scroll or else jump scroll
+        // Why? because of performance reasons.
+
+        const behavior =
+          indexToScroll >= startIndex && indexToScroll <= endIndex
+            ? 'smooth'
+            : 'auto'
+
+        // scroll to the index
+        virtuosoRef.current.scrollToIndex({
+          index: indexToScroll,
+          align: 'center',
+          behavior: behavior,
+        })
+      }
+    }
+  }, [currentTraceEntry, currentFocus])
+
   const errorPc = errorTraceEntry?.pc || 0
 
-  const [hoveredAddr, setHoveredAddr] = useState<string>('')
-
   return (
-    <table className="w-full font-mono text-tiny">
-      <thead>
-        <tr className="sticky top-0 z-10 text-left bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
-          <th className="py-1"></th>
-          <th className="py-1"></th>
-          <th className="py-1"></th>
-          <th className="py-1 px-2 font-thin">memory</th>
-          <th className="py-1 px-2 font-thin">opcode</th>
-          <th className="py-1 px-2 font-thin">off0</th>
-          <th className="py-1 px-2 font-thin">off1</th>
-          <th className="py-1 px-2 font-thin">off2</th>
-          <th className="py-1 px-2 font-thin">dst</th>
-          <th className="py-1 px-2 font-thin">op0</th>
-          <th className="py-1 px-2 font-thin">op1</th>
-          <th className="py-1 px-2 font-thin">res</th>
-          <th className="py-1 px-2 font-thin">pc_update</th>
-          <th className="py-1 px-2 font-thin">ap_update</th>
-          <th className="py-1 px-2 font-thin">fp_update</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Object.keys(memory).map((addr) => {
-          const isCurrent = pc.toString() == addr
-          const isError = errorPc.toString() == addr
-          const addrNum = Number(addr)
-          const isFocus = currentFocus == addrNum
+    <>
+      <TableVirtuoso
+        ref={virtuosoRef}
+        style={{ height: '100%' }}
+        className="pane pane-light relative [&_thead]:!z-10"
+        data={Object.keys(memory)}
+        context={{ pc, errorPc }}
+        fixedHeaderContent={FixedHeader}
+        increaseViewportBy={{ top: 150, bottom: 150 }}
+        components={{ Table, TableRow }}
+        rangeChanged={(range) => (virtuosoVisibleRange.current = range)}
+        itemContent={(index, addr) => {
           const hasBreakpoint = breakpoints[addr]
+          // this should only return the content which should be inside <tr> tag of each row
+          // for <table> and <tr> tag refer Table and TableRow components at bottom of this file
           return (
-            <tr
-              key={addr}
-              id={isFocus ? 'focus_row' : undefined}
-              className={cn(
-                'relative border-b border-gray-200 dark:border-black-500',
-                {
-                  'text-gray-900 dark:text-gray-200': isCurrent,
-                  'text-gray-400 dark:text-gray-600': !isCurrent,
-                  'bg-red-100 dark:bg-red-500/10': isError,
-                },
-              )}
-              onMouseEnter={() => setHoveredAddr(addr)}
-              onMouseLeave={() => setHoveredAddr('')}
-            >
-              <td className="pl-4 pr-2">
-                <button
-                  onClick={() => toogleBreakPoint(addr)}
-                  className={cn(
-                    'absolute block top-2 left-2 w-2 h-2 z-10 rounded-full',
-                    {
-                      'bg-red-300': hoveredAddr === addr,
-                      'hover:bg-red-300': !hasBreakpoint,
-                      'bg-red-500': hasBreakpoint,
-                    },
-                  )}
-                />
-              </td>
-              <td className="pr-2">
-                {addrNum === pc && (
-                  <span className="text-fuchsia-700">[pc]</span>
-                )}
-                {addrNum === ap && (
-                  <span className="text-orange-700">[ap]</span>
-                )}
-                {addrNum === fp && <span className="text-green-700">[fp]</span>}
-              </td>
-              <td className="py-1 px-2 whitespace-nowrap">{addr}</td>
-              <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
-              {pcInstMap[addr] && (
-                <>
-                  <td className="py-1 px-2">{pcInstMap[addr].opcode}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].off0}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].off1}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].off2}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].dst_register}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].op0_register}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].op1_addr}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].res}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].pc_update}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].ap_update}</td>
-                  <td className="py-1 px-2">{pcInstMap[addr].fp_update}</td>
-                </>
-              )}
-            </tr>
+            <TableRowContent
+              addr={addr}
+              currentTraceEntry={currentTraceEntry}
+              hasBreakpoint={hasBreakpoint}
+              memory={memory}
+              pcInstMap={pcInstMap}
+              toogleBreakPoint={toogleBreakPoint}
+            />
           )
-        })}
-      </tbody>
-    </table>
+        }}
+      />
+    </>
+  )
+}
+
+const Table = (props: any) => {
+  return <table className="w-full font-mono text-tiny table-fixed" {...props} />
+}
+
+const TableRow = (props: any) => {
+  const { context, item: addr, ...rest } = props
+  const { pc, errorPc } = context
+  const isCurrent = pc.toString() == addr
+  const isError = errorPc.toString() == addr
+  return (
+    <tr
+      key={addr}
+      className={cn(
+        'group relative border-b border-gray-200 dark:border-black-500',
+        {
+          'text-gray-900 dark:text-gray-200': isCurrent,
+          'text-gray-400 dark:text-gray-600': !isCurrent,
+          'bg-red-100 dark:bg-red-500/10': isError,
+        },
+      )}
+      {...rest}
+    />
+  )
+}
+
+const TableRowContent = memo(
+  ({
+    memory,
+    pcInstMap,
+    toogleBreakPoint,
+    addr,
+    hasBreakpoint,
+    currentTraceEntry,
+  }: {
+    memory: TracerData['memory']
+    pcInstMap: TracerData['pcInstMap']
+    toogleBreakPoint: (addr: string) => void
+    addr: string
+    hasBreakpoint: boolean
+    currentTraceEntry: TraceEntry
+  }) => {
+    const addrNum = Number(addr)
+    const { pc, ap, fp } = currentTraceEntry
+    return (
+      <>
+        <td className="pl-4 pr-2">
+          <button
+            onClick={() => toogleBreakPoint(addr)}
+            className={cn(
+              'absolute block top-2 left-2 w-2 h-2 z-10 rounded-full group-hover:bg-red-300',
+              {
+                'hover:bg-red-300': !hasBreakpoint,
+                'bg-red-500': hasBreakpoint,
+              },
+            )}
+          />
+        </td>
+        <td className="pr-2">
+          {addrNum === pc && <span className="text-fuchsia-700">[pc]</span>}
+          {addrNum === ap && <span className="text-orange-700">[ap]</span>}
+          {addrNum === fp && <span className="text-green-700">[fp]</span>}
+        </td>
+        <td className="py-1 px-2 whitespace-nowrap">{addr}</td>
+        <td className="py-1 px-2 max-w-40 break-words">{memory[addr]}</td>
+        {pcInstMap[addr] && (
+          <>
+            <td className="py-1 px-2">{pcInstMap[addr].opcode}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].off0}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].off1}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].off2}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].dst_register}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].op0_register}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].op1_addr}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].res}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].pc_update}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].ap_update}</td>
+            <td className="py-1 px-2">{pcInstMap[addr].fp_update}</td>
+          </>
+        )}
+      </>
+    )
+  },
+)
+
+const FixedHeader = () => {
+  return (
+    //
+    // as default 'table-layout' property of our table element is set to default, it automatically
+    // sets the column width based on the maximum width of the content inside that column
+    // since we dont know what content will be inside the 'td' before hand
+    // table column widths were glitching while scrolling down as suddenly a big width content might come
+    // which used to change width of that whole column and resulting in a layout shift of the table
+    //
+    // Solution -
+    // added fixed width in each column
+    // set table-layout = 'fixed' css property in our table element check 'Table' component above
+    //
+    <tr className="text-left bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+      <th className="py-1 w-8"></th>
+      <th className="py-1 w-10"></th>
+      <th className="py-1 w-14"></th>
+      <th className="py-1 px-2 font-thin w-44">memory</th>
+      <th className="py-1 px-2 font-thin w-20">opcode</th>
+      <th className="py-1 px-2 font-thin w-12">off0</th>
+      <th className="py-1 px-2 font-thin w-12">off1</th>
+      <th className="py-1 px-2 font-thin w-12">off2</th>
+      <th className="py-1 px-2 font-thin w-12">dst</th>
+      <th className="py-1 px-2 font-thin w-12">op0</th>
+      <th className="py-1 px-2 font-thin w-12">op1</th>
+      <th className="py-1 px-2 font-thin w-32">res</th>
+      <th className="py-1 px-2 font-thin w-24">pc_update</th>
+      <th className="py-1 px-2 font-thin w-24">ap_update</th>
+      <th className="py-1 px-2 font-thin w-24">fp_update</th>
+    </tr>
   )
 }

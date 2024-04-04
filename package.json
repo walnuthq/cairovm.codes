@@ -47,6 +47,7 @@
     "react-table": "^7.8.0",
     "react-tooltip": "^4.2.21",
     "react-use-id": "^1.0.0",
+    "react-virtuoso": "^4.7.7",
     "vercel": "^33.2.0",
     "wrangler": "^3.24.0"
   },
