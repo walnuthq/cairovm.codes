@@ -26,7 +26,7 @@ export const InstructionsTable = ({
 }) => {
   // reference to the virtuoso instance
   const virtuosoRef = useRef<TableVirtuosoHandle>(null)
-  // rederence to the range of items rendered in the dom by virtuoso
+  // reference to the range of items rendered in the dom by virtuoso
   // to determine when to do smooth scroll and when to not
   // Refer: https://virtuoso.dev/scroll-to-index/
   const virtuosoVisibleRange = useRef({
