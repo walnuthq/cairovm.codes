@@ -59,10 +59,6 @@ export interface TracerData {
   entryToSierraVarsMap: { [key: string]: SierraVariables }
 }
 
-enum IConsoleTab {
-  Console = 'debug-console',
-  DebugInfo = 'output',
-}
 
 export const Tracer = () => {
   const {
@@ -84,9 +80,6 @@ export const Tracer = () => {
       : null
   const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
 
-  const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
-    IConsoleTab.Console,
-  )
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -154,35 +147,6 @@ export const Tracer = () => {
     }
   }
 
-  const actions = [
-    {
-      id: 'debugInfo',
-      name: 'Debug Info',
-      shortcut: ['d'],
-      keywords: 'Debug info',
-      section: 'Execution',
-      perform: () => {
-        setSelectedConsoleTab(IConsoleTab.DebugInfo)
-      },
-      subtitle: 'Switch to Debug Info',
-      priority: Priority.HIGH,
-    },
-    {
-      id: 'console',
-      name: 'Console',
-      shortcut: ['e'],
-      keywords: 'Console',
-      section: 'Execution',
-      perform: () => {
-        setSelectedConsoleTab(IConsoleTab.Console)
-      },
-      subtitle: 'Switch to Console',
-      priority: Priority.HIGH,
-    },
-  ]
-
-  useRegisterActions(actions, [setSelectedConsoleTab])
-
   return (
     <>
       <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
@@ -216,41 +180,8 @@ export const Tracer = () => {
         </div>
       )}
 
-      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
-        <div className="px-4">
-          <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
-            <button
-              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
-                {
-                  'border-indigo-600 text-gray-700':
-                    selectedConsoleTab === IConsoleTab.DebugInfo,
-                  'border-transparent text-gray-500':
-                    selectedConsoleTab !== IConsoleTab.DebugInfo,
-                },
-              )}`}
-              onClick={() => setSelectedConsoleTab(IConsoleTab.DebugInfo)}
-            >
-              Debug Info [d]
-            </button>
-            <button
-              onClick={() => setSelectedConsoleTab(IConsoleTab.Console)}
-              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
-                {
-                  'border-indigo-600 text-gray-700':
-                    selectedConsoleTab === IConsoleTab.Console,
-                  'border-transparent text-gray-500':
-                    selectedConsoleTab !== IConsoleTab.Console,
-                },
-              )}`}
-            >
-              Console [e]
-            </button>
-          </nav>
-        </div>
-        <div className="pane pane-light overflow-auto pb-4 grow h-[90%]">
-          {selectedConsoleTab === IConsoleTab.Console && <Console />}
-
-          {selectedConsoleTab === IConsoleTab.DebugInfo && (
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden h-[22vh]">
+        <div className="pane pane-light overflow-auto pb-4 grow h-full">        
             <DebugInfoTab
               trace={trace}
               currentTraceEntry={currentTraceEntry}
@@ -258,7 +189,6 @@ export const Tracer = () => {
               currentCallstackEntry={currentCallstackEntry}
               handleRegisterPointerClick={handleRegisterPointerClick}
             />
-          )}
         </div>
       </div>
     </>
@@ -279,7 +209,7 @@ function DebugInfoTab({
   handleRegisterPointerClick: (num: number) => void
 }) {
   return (
-    <div className="px-4 pb-4">
+    <div className="px-4 py-4">
       {trace === undefined ? (
         <p className="text-mono text-tiny text-gray-400 dark:text-gray-500">
           Run the app to get debug info
@@ -337,7 +267,7 @@ function DebugInfoTab({
             <dd className="font-mono mb-2">
               <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
                 <thead>
-                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
+                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500 z-10">
                     <th className="py-1 px-2 font-thin">FP</th>
                     <th className="py-1 px-2 font-thin">CALL PC</th>
                     <th className="py-1 px-2 font-thin">RET PC</th>

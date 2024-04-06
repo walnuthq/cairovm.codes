@@ -15,7 +15,7 @@ function EditorFooter() {
   return (
     <div
       className={cn(
-        'px-5 bg-gray-100 dark:bg-black-700 border-t border-gray-200 dark:border-black-500 text-xs h-[42px] items-center text-gray-600 ml-auto flex justify-between',
+        'px-4 bg-gray-100 dark:bg-black-700 border-t border-gray-200 dark:border-black-500 text-xs h-[42px] items-center text-gray-600 ml-auto flex justify-between',
         !isFullScreen && 'rounded-b-lg',
       )}
     >

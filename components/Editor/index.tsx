@@ -28,6 +28,7 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import { Examples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
+import Console from './Console'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
@@ -315,92 +316,102 @@ const Editor = ({ readOnly = false }: Props) => {
             height: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
           }}
         >
-          <div
-            className={cn(
-              'w-full md:w-1/2 flex flex-col',
-              isThreeColumnLayout && 'md:w-1/3',
+          <div className={cn(
+                'w-1/2 flex flex-col',
+                isThreeColumnLayout && 'md:w-2/3',
             )}
           >
-            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none md:border-r justify-between">
-              <Header
-                codeType={codeType}
-                onCodeTypeChange={({ value }) => setCodeType(value)}
-                withLogo={isFullScreen}
-              />
-            </div>
-
-            <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
-              {codeType === CodeType.CASM ? (
-                <InstructionsTable
-                  instructions={casmInstructions}
-                  codeType={codeType}
-                  activeIndexes={[activeCasmInstructionIndex]}
-                  errorIndexes={[errorCasmInstructionIndex]}
-                  variables={{}}
-                />
-              ) : codeType === CodeType.Sierra ? (
-                <InstructionsTable
-                  instructions={sierraStatements}
-                  codeType={codeType}
-                  activeIndexes={
-                    casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
-                  }
-                  errorIndexes={
-                    casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
-                  }
-                  variables={currentSierraVariables || {}}
-                />
-              ) : (
-                <div className="h-full overflow-auto pane pane-light">
-                  <MonacoEditor
-                    // @ts-ignore: SCEditor is not TS-friendly
-
-                    onMount={handleEditorDidMount}
-                    options={{
-                      minimap: { enabled: false },
-                      wordBreak: 'keepAll',
-                      wordWrap: 'on',
-                      readOnly: readOnly,
-                    }}
-                    value={codeType === CodeType.Cairo ? cairoCode : ''}
-                    onChange={handleCairoCodeChange}
-                    language={'cairo'}
-                    className={cn(
-                      'code-editor whitespace-pre-wrap overflow-hidden',
-                      {
-                        'with-numbers': !isBytecode,
-                      },
-                    )}
+            <div className='flex' style={{height: 'calc(100% - 22vh)'}}>
+              <div
+                className={cn(
+                  'w-full flex flex-col',
+                  isThreeColumnLayout && 'md:w-1/2',
+                )}
+              >
+                <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-2 h-14 flex-none md:border-r justify-between">
+                  <Header
+                    codeType={codeType}
+                    onCodeTypeChange={({ value }) => setCodeType(value)}
+                    withLogo={isFullScreen}
                   />
                 </div>
+
+                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
+                  {codeType === CodeType.CASM ? (
+                    <InstructionsTable
+                      instructions={casmInstructions}
+                      codeType={codeType}
+                      activeIndexes={[activeCasmInstructionIndex]}
+                      errorIndexes={[errorCasmInstructionIndex]}
+                      variables={{}}
+                    />
+                  ) : codeType === CodeType.Sierra ? (
+                    <InstructionsTable
+                      instructions={sierraStatements}
+                      codeType={codeType}
+                      activeIndexes={
+                        casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
+                      }
+                      errorIndexes={
+                        casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
+                      }
+                      variables={currentSierraVariables || {}}
+                    />
+                  ) : (
+                    <div className="h-full overflow-auto pane pane-light">
+                      <MonacoEditor
+                        // @ts-ignore: SCEditor is not TS-friendly
+
+                        onMount={handleEditorDidMount}
+                        options={{
+                          minimap: { enabled: false },
+                          wordBreak: 'keepAll',
+                          wordWrap: 'on',
+                          readOnly: readOnly,
+                        }}
+                        value={codeType === CodeType.Cairo ? cairoCode : ''}
+                        onChange={handleCairoCodeChange}
+                        language={'cairo'}
+                        className={cn(
+                          'code-editor whitespace-pre-wrap overflow-hidden',
+                          {
+                            'with-numbers': !isBytecode,
+                          },
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <EditorControls
+                  isCompileDisabled={isCompileDisabled}
+                  programArguments={programArguments}
+                  areProgramArgumentsValid={areProgramArgumentsValid}
+                  onCopyPermalink={handleCopyPermalink}
+                  onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
+                  onCompileRun={handleCompileRun}
+                  onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+                  handleChangeExampleOption={(newExample) =>
+                    newExample !== null
+                      ? setExampleOption(newExample.value)
+                      : setExampleOption(0)
+                  }
+                />
+              </div>
+
+              {isThreeColumnLayout && (
+                <ExtraColumn
+                  cairoCode={cairoCode}
+                  handleCairoCodeChange={handleCairoCodeChange}
+                  handleEditorDidMount={handleEditorDidMount}
+                  isBytecode={isBytecode}
+                />
               )}
             </div>
-
-            <EditorControls
-              isCompileDisabled={isCompileDisabled}
-              programArguments={programArguments}
-              areProgramArgumentsValid={areProgramArgumentsValid}
-              onCopyPermalink={handleCopyPermalink}
-              onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
-              onCompileRun={handleCompileRun}
-              onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
-              handleChangeExampleOption={(newExample) =>
-                newExample !== null
-                  ? setExampleOption(newExample.value)
-                  : setExampleOption(0)
-              }
-            />
+            <div className='h-[22vh] w-full overflow-auto border-t border-r border-gray-200 dark:border-black-500 pane pane-light'>
+              <Console/>
+            </div>
           </div>
-
-          {isThreeColumnLayout && (
-            <ExtraColumn
-              cairoCode={cairoCode}
-              handleCairoCodeChange={handleCairoCodeChange}
-              handleEditorDidMount={handleEditorDidMount}
-              isBytecode={isBytecode}
-            />
-          )}
-
           <div
             className={cn(
               'w-full md:w-1/2 flex flex-col justify-between',
