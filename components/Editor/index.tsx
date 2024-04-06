@@ -28,12 +28,12 @@ import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
 
 import { Examples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
-import Console from './Console'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
+import Console from './Console'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
@@ -316,12 +316,13 @@ const Editor = ({ readOnly = false }: Props) => {
             height: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
           }}
         >
-          <div className={cn(
-                'w-1/2 flex flex-col',
-                isThreeColumnLayout && 'md:w-2/3',
+          <div
+            className={cn(
+              'w-1/2 flex flex-col',
+              isThreeColumnLayout && 'md:w-2/3',
             )}
           >
-            <div className='flex' style={{height: 'calc(100% - 22vh)'}}>
+            <div className="flex" style={{ height: 'calc(100% - 22vh)' }}>
               <div
                 className={cn(
                   'w-full flex flex-col',
@@ -408,8 +409,8 @@ const Editor = ({ readOnly = false }: Props) => {
                 />
               )}
             </div>
-            <div className='h-[22vh] w-full overflow-auto border-t border-r border-gray-200 dark:border-black-500 pane pane-light'>
-              <Console/>
+            <div className="h-[22vh] w-full overflow-auto border-t border-r border-gray-200 dark:border-black-500 pane pane-light">
+              <Console />
             </div>
           </div>
           <div

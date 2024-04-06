@@ -1,14 +1,6 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  useReducer,
-  memo,
-} from 'react'
+import { useContext, useEffect, useRef, useReducer, memo } from 'react'
 
 import cn from 'classnames'
-import { Priority, useRegisterActions } from 'kbar'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 
 import {
@@ -16,8 +8,6 @@ import {
   BreakPoints,
   ProgramExecutionState,
 } from 'context/cairoVMApiContext'
-
-import Console from '../Editor/Console'
 
 import ExecutionStatus from './ExecutionStatus'
 
@@ -59,7 +49,6 @@ export interface TracerData {
   entryToSierraVarsMap: { [key: string]: SierraVariables }
 }
 
-
 export const Tracer = () => {
   const {
     executionState,
@@ -79,7 +68,6 @@ export const Tracer = () => {
       ? tracerData?.trace.at(-2)
       : null
   const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
-
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -181,14 +169,14 @@ export const Tracer = () => {
       )}
 
       <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden h-[22vh]">
-        <div className="pane pane-light overflow-auto pb-4 grow h-full">        
-            <DebugInfoTab
-              trace={trace}
-              currentTraceEntry={currentTraceEntry}
-              executionTraceStepNumber={executionTraceStepNumber}
-              currentCallstackEntry={currentCallstackEntry}
-              handleRegisterPointerClick={handleRegisterPointerClick}
-            />
+        <div className="pane pane-light overflow-auto pb-4 grow h-full">
+          <DebugInfoTab
+            trace={trace}
+            currentTraceEntry={currentTraceEntry}
+            executionTraceStepNumber={executionTraceStepNumber}
+            currentCallstackEntry={currentCallstackEntry}
+            handleRegisterPointerClick={handleRegisterPointerClick}
+          />
         </div>
       </div>
     </>
