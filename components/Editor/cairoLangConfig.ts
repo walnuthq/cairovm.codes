@@ -191,7 +191,7 @@ export function registerCairoLanguageSupport(_monaco: typeof MonacoEditor) {
       ],
     },
   })
-  _monaco.editor.defineTheme('myTheme', {
+  _monaco.editor.defineTheme('light-theme', {
     base: 'vs',
     inherit: true,
     rules: [
@@ -208,5 +208,18 @@ export function registerCairoLanguageSupport(_monaco: typeof MonacoEditor) {
       'editor.inactiveSelectionBackground': '#88000015',
     },
   })
-  _monaco.editor.setTheme('myTheme')
+  _monaco.editor.defineTheme('dark-theme', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      {
+        foreground: '#981B64',
+        token: 'variableinit',
+      },
+    ],
+    colors: {
+      'editor.background': '#141515',
+      'editor.lineHighlightBackground': '#1e1e1e',
+    },
+  })
 }

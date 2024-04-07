@@ -14,6 +14,7 @@ import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
 import { editor } from 'monaco-editor'
 import { useRouter } from 'next/router'
+import { useTheme } from 'next-themes'
 
 import {
   CairoVMApiContext,
@@ -66,6 +67,8 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
 
+  const { theme } = useTheme()
+
   const [cairoCode, setCairoCode] = useState('')
   const [compiledCairoCode, setCompiledCairoCode] = useState(cairoCode)
   const [exampleOption, setExampleOption] = useState<number>(0)
@@ -74,12 +77,28 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
   const monaco = useMonaco()
+
+  useEffect(() => {
+    // when theme is changed, we again set theme of editor
+    if (theme === 'dark') {
+      monaco?.editor.setTheme('dark-theme')
+    } else {
+      monaco?.editor.setTheme('light-theme')
+    }
+  }, [monaco?.editor, theme])
+
   const handleEditorDidMount = async (
     editor: editor.IStandaloneCodeEditor,
     monaco: Monaco,
   ) => {
     editorRef.current = editor
     registerCairoLanguageSupport(monaco as any)
+    // once the editor is mounted we set the user selected theme
+    if (theme === 'dark') {
+      monaco.editor.setTheme('dark-theme')
+    } else {
+      monaco.editor.setTheme('light-theme')
+    }
   }
 
   const [decorations, setDecorations] = useState([])
