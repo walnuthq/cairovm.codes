@@ -20,20 +20,18 @@ export enum ProgramExecutionState {
   Error,
 }
 
-type Position = {
+interface Position {
   line: number
   col: number
 }
 
-type Location = {
+interface Location {
   start: Position
   end: Position
 }
-
-type CairoLocation = {
+interface SierraStatementsToCairoInfo {
   [key: string]: {
     fn_name: string
-    cairo_location: Location | null
     cairo_locations: Location[]
   }
 }
@@ -63,7 +61,7 @@ type ContextProps = {
   currentTraceEntry?: TraceEntry
   currentSierraVariables?: SierraVariables
   breakPoints?: BreakPoints
-  cairoLocation?: CairoLocation
+  sierraStatementsToCairoInfo?: SierraStatementsToCairoInfo
 
   compileCairoCode: (cairoCode: string, programArguments: string) => void
   onExecutionStepChange: (step: number) => void
@@ -88,7 +86,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   sierraStatements: [],
   casmToSierraProgramMap: {},
   breakPoints: {},
-  cairoLocation: {},
+  sierraStatementsToCairoInfo: {},
   casmToSierraStatementsMap: {},
 
   compileCairoCode: noOp,
@@ -122,7 +120,8 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const [executionTraceStepNumber, setExecutionTraceStepNumber] =
     useState<number>(0)
   const [sierraStatements, setSierraStatements] = useState<IInstruction[]>([])
-  const [cairoLocation, setCairoLocation] = useState<CairoLocation>({})
+  const [sierraStatementsToCairoInfo, setSierraStatementsToCairoInfo] =
+    useState<SierraStatementsToCairoInfo>({})
   const [casmToSierraProgramMap, setCasmToSierraProgramMap] =
     useState<CasmToSierraMap>({})
   const [casmToSierraStatementsMap, setCasmToSierraStatementsMap] =
@@ -228,7 +227,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
             {},
           ),
         )
-        setCairoLocation(
+        setSierraStatementsToCairoInfo(
           data.tracer_data.sierra_to_cairo_debug_info
             .sierra_statements_to_cairo_info,
         )
@@ -273,7 +272,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         casmToSierraProgramMap,
         casmToSierraStatementsMap,
         breakPoints,
-        cairoLocation,
+        sierraStatementsToCairoInfo,
 
         compileCairoCode,
         onExecutionStepChange,

@@ -61,7 +61,7 @@ const Editor = ({ readOnly = false }: Props) => {
     casmToSierraProgramMap,
     casmToSierraStatementsMap,
     currentSierraVariables,
-    cairoLocation,
+    sierraStatementsToCairoInfo,
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
@@ -117,28 +117,21 @@ const Editor = ({ readOnly = false }: Props) => {
       casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
         const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
 
-        if (cairoLocation) {
-          cairoLocation[index]?.cairo_locations.map((cairoLocElem) => {
-            let startLine, endLine, startCol, endCol
-            if (cairoLocation) {
-              startLine = (cairoLocElem?.start.line ?? 0) + 1
-              endLine = (cairoLocElem?.end?.line ?? 0) + 1
-              startCol = (cairoLocElem?.start.col ?? 0) + 1
-              endCol = (cairoLocElem?.end?.col ?? 0) + 1
-            }
-
-            if (monaco) {
-              multiplieDecorations.push({
-                range: new monaco.Range(
-                  startLine ?? 1,
-                  startCol ?? 1,
-                  endLine ?? 1,
-                  endCol ?? 1,
-                ),
-                options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
-              })
-            }
-          })
+        if (sierraStatementsToCairoInfo) {
+          sierraStatementsToCairoInfo[index]?.cairo_locations.map(
+            (cairoLocElem) => {
+              const startLine: number = cairoLocElem.start.line + 1
+              const endLine: number = cairoLocElem.end.line + 1
+              const startCol: number = cairoLocElem.start.col + 1
+              const endCol: number = cairoLocElem.end.col + 1
+              if (monaco) {
+                multiplieDecorations.push({
+                  range: new monaco.Range(startLine, startCol, endLine, endCol),
+                  options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
+                })
+              }
+            },
+          )
         }
       }) || []
       const editor = editorRef.current as any
