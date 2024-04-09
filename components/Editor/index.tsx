@@ -61,7 +61,7 @@ const Editor = ({ readOnly = false }: Props) => {
     casmToSierraProgramMap,
     casmToSierraStatementsMap,
     currentSierraVariables,
-    cairoLocation,
+    sierraStatementsToCairoInfo,
     logs: apiLogs,
   } = useContext(CairoVMApiContext)
 
@@ -103,39 +103,43 @@ const Editor = ({ readOnly = false }: Props) => {
 
   const [decorations, setDecorations] = useState([])
 
+  interface DecorationOptions {
+    inlineClassName: string
+  }
+  interface Decoration {
+    range: {}
+    options: DecorationOptions
+  }
+
   useEffect(() => {
     setTimeout(() => {
-      const newDecorations =
-        casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
-          const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
-          let startLine, endLine, startCol, endCol
-          if (cairoLocation) {
-            startLine =
-              (cairoLocation[index]?.cairo_location?.start.line ?? 0) + 1
-            endLine = (cairoLocation[index]?.cairo_location?.end?.line ?? 0) + 1
-            startCol =
-              (cairoLocation[index]?.cairo_location?.start.col ?? 0) + 1
-            endCol = (cairoLocation[index]?.cairo_location?.end?.col ?? 0) + 1
-          }
+      const multiplieDecorations: Decoration[] = []
+      casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
+        const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
 
-          if (monaco) {
-            return {
-              range: new monaco.Range(
-                startLine ?? 1,
-                startCol ?? 1,
-                endLine ?? 1,
-                endCol ?? 1,
-              ),
-              options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
-            }
-          }
-        }) || []
+        if (sierraStatementsToCairoInfo) {
+          sierraStatementsToCairoInfo[index]?.cairo_locations.map(
+            (cairoLocElem) => {
+              const startLine: number = cairoLocElem.start.line + 1
+              const endLine: number = cairoLocElem.end.line + 1
+              const startCol: number = cairoLocElem.start.col + 1
+              const endCol: number = cairoLocElem.end.col + 1
+              if (monaco) {
+                multiplieDecorations.push({
+                  range: new monaco.Range(startLine, startCol, endLine, endCol),
+                  options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
+                })
+              }
+            },
+          )
+        }
+      }) || []
       const editor = editorRef.current as any
       if (editor) {
         if (cairoCode === compiledCairoCode) {
           const newDecorationsIds = editor.deltaDecorations(
             decorations,
-            newDecorations,
+            multiplieDecorations,
           )
           setDecorations(newDecorationsIds)
         } else {
