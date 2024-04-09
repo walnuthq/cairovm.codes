@@ -19,19 +19,22 @@ export enum ProgramExecutionState {
   Success,
   Error,
 }
+
+type Position = {
+  line: number
+  col: number
+}
+
+type Location = {
+  start: Position
+  end: Position
+}
+
 type CairoLocation = {
   [key: string]: {
     fn_name: string
-    cairo_location: {
-      start: {
-        line: number
-        col: number
-      }
-      end: {
-        line: number
-        col: number
-      } | null
-    } | null
+    cairo_location: Location | null
+    cairo_locations: Location[]
   }
 }
 type CasmToSierraMap = { [key: string]: number[] }
