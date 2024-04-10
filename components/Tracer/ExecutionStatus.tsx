@@ -21,7 +21,6 @@ const ExecutionStatus = ({
   trace: TraceEntry[] | undefined
   executionTraceStepNumber: number
 }) => {
-  console.log(trace, executionTraceStepNumber)
   const actions = [
     {
       id: 'stepnext',
