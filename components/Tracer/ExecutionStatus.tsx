@@ -21,6 +21,7 @@ const ExecutionStatus = ({
   trace: TraceEntry[] | undefined
   executionTraceStepNumber: number
 }) => {
+  console.log(trace, executionTraceStepNumber)
   const actions = [
     {
       id: 'stepnext',
@@ -87,7 +88,7 @@ const ExecutionStatus = ({
           padded={false}
           tooltip="Step next [n]"
           tooltipId="step2"
-          disabled={executionTraceStepNumber + 1 === trace?.length}
+          disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
         >
           <RiArrowGoForwardLine size={16} className="text-indigo-500" />
         </Button>
@@ -97,7 +98,7 @@ const ExecutionStatus = ({
           padded={false}
           tooltip="Continue execution [c]"
           tooltipId="continue-execution"
-          disabled={executionTraceStepNumber + 1 === trace?.length}
+          disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
         >
           <RiPlayCircleLine size={16} className="text-indigo-500" />
         </Button>
