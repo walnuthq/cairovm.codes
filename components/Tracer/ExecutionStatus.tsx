@@ -6,15 +6,20 @@ import {
 import { Priority, useRegisterActions } from 'kbar'
 
 import { Button } from 'components/ui'
+import { TraceEntry } from '.'
 
 const ExecutionStatus = ({
   onStepIn,
   onStepOut,
   onContinueExecution,
+  trace,
+  executionTraceStepNumber,
 }: {
   onStepIn: () => void
   onStepOut: () => void
   onContinueExecution: () => void
+  trace: TraceEntry[] | undefined
+  executionTraceStepNumber: number
 }) => {
   const actions = [
     {
@@ -72,6 +77,7 @@ const ExecutionStatus = ({
           padded={false}
           tooltip="Step back [b]"
           tooltipId="step1"
+          disabled={executionTraceStepNumber === 0}
         >
           <RiArrowGoBackLine size={16} className="text-indigo-500" />
         </Button>
@@ -81,6 +87,7 @@ const ExecutionStatus = ({
           padded={false}
           tooltip="Step next [n]"
           tooltipId="step2"
+          disabled={executionTraceStepNumber + 1 === trace?.length}
         >
           <RiArrowGoForwardLine size={16} className="text-indigo-500" />
         </Button>
@@ -90,6 +97,7 @@ const ExecutionStatus = ({
           padded={false}
           tooltip="Continue execution [c]"
           tooltipId="continue-execution"
+          disabled={executionTraceStepNumber + 1 === trace?.length}
         >
           <RiPlayCircleLine size={16} className="text-indigo-500" />
         </Button>
