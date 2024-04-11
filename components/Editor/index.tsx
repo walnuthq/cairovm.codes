@@ -12,7 +12,7 @@ import { Editor as MonacoEditor, useMonaco, Monaco } from '@monaco-editor/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
-import { editor } from 'monaco-editor'
+import { editor, IRange } from 'monaco-editor'
 import { useRouter } from 'next/router'
 import { useTheme } from 'next-themes'
 
@@ -125,6 +125,18 @@ const Editor = ({ readOnly = false }: Props) => {
               const startCol: number = cairoLocElem.start.col + 1
               const endCol: number = cairoLocElem.end.col + 1
               if (monaco) {
+                let isHighlightOnScreen = false
+                multiplieDecorations.forEach((decoration) => {
+                  if (isRangeVisible(decoration.range as IRange)) {
+                    isHighlightOnScreen = true
+                    return
+                  }
+                })
+                if (!isHighlightOnScreen) {
+                  editorRef.current?.revealRangeInCenter(
+                    new monaco.Range(startLine, startCol, endLine, endCol),
+                  )
+                }
                 multiplieDecorations.push({
                   range: new monaco.Range(startLine, startCol, endLine, endCol),
                   options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
@@ -213,6 +225,19 @@ const Editor = ({ readOnly = false }: Props) => {
     apiLogs,
     executionPanicMessage,
   ])
+
+  const isRangeVisible = (range: IRange) => {
+    const editor = editorRef.current
+    if (editor) {
+      const visibleRanges = editor.getVisibleRanges()
+      return visibleRanges.some(
+        (visibleRange) =>
+          visibleRange.startLineNumber <= range.endLineNumber &&
+          visibleRange.endLineNumber >= range.startLineNumber,
+      )
+    }
+    return false
+  }
 
   const handleCairoCodeChange = (value: string | undefined) => {
     if (value) {
