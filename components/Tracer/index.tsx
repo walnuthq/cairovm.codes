@@ -343,8 +343,12 @@ function DebugInfoTab({
                 <thead>
                   <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
                     <th className="py-1 px-2 font-thin">FP</th>
-                    <th className="py-1 px-2 font-thin">CALL PC</th>
-                    <th className="py-1 px-2 font-thin">RET PC</th>
+                    <th className="py-1 px-2 font-thin  whitespace-nowrap">
+                      CALL PC
+                    </th>
+                    <th className="py-1 px-2 font-thin whitespace-nowrap">
+                      RET PC
+                    </th>
                     <th className="py-1 px-2 font-thin">FN NAME</th>
                     <th className="py-1 px-2 font-thin">PARAMETERS</th>
                   </tr>
