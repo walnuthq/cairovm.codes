@@ -9,6 +9,7 @@ import {
 
 import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
+import ReactTooltip from 'react-tooltip'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 
 import {
@@ -46,6 +47,7 @@ export interface CallstackEntry {
   call_pc: number | null
   ret_pc: number | null
   fn_name: string | null
+  params: [] | null
 }
 
 export type SierraVariables = { [key: string]: Array<string> }
@@ -344,6 +346,7 @@ function DebugInfoTab({
                     <th className="py-1 px-2 font-thin">CALL PC</th>
                     <th className="py-1 px-2 font-thin">RET PC</th>
                     <th className="py-1 px-2 font-thin">FN NAME</th>
+                    <th className="py-1 px-2 font-thin">PARAMETERS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -356,6 +359,33 @@ function DebugInfoTab({
                       <td className="py-1 px-2">{callstackEntry.call_pc}</td>
                       <td className="py-1 px-2">{callstackEntry.ret_pc}</td>
                       <td className="py-1 px-2">{callstackEntry.fn_name}</td>
+                      <td className="py-1 px-2">
+                        {callstackEntry?.params?.map(
+                          (
+                            param: { type_name: string; value: number[] },
+                            index,
+                            array,
+                          ) => (
+                            <div
+                              data-tip={param.type_name}
+                              data-for={param.type_name}
+                              className="inline-block cursor-pointer"
+                              key={index}
+                            >
+                              {param.value.length > 1
+                                ? `[${param.value.join(', ')}]`
+                                : param.value[0]}
+                              {index < array.length - 1 ? ',\u00A0' : ''}
+                              <ReactTooltip
+                                className="tooltip"
+                                id={param.type_name}
+                                effect="solid"
+                                uuid="buttonTooltip"
+                              />
+                            </div>
+                          ),
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
