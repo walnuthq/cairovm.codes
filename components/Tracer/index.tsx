@@ -190,6 +190,8 @@ export const Tracer = () => {
           onStepIn={stepIn}
           onStepOut={stepOut}
           onContinueExecution={continueExecution}
+          trace={trace}
+          executionTraceStepNumber={executionTraceStepNumber}
         />
       </div>
 
