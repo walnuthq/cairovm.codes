@@ -1,7 +1,8 @@
 import React from 'react'
 
-import cn from 'classnames'
 import ReactTooltip from 'react-tooltip'
+
+import { cn } from '../../util/styles'
 
 type Props = {
   children: React.ReactNode | string

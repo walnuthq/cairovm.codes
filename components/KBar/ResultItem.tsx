@@ -1,7 +1,8 @@
 import { forwardRef } from 'react'
 
-import cn from 'classnames'
 import { Action } from 'kbar'
+
+import { cn } from '../../util/styles'
 
 type Props = {
   action: Action

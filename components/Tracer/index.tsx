@@ -1,22 +1,22 @@
 import {
+  memo,
   useContext,
   useEffect,
-  useState,
-  useRef,
   useReducer,
-  memo,
+  useRef,
+  useState,
 } from 'react'
 
-import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 
 import {
-  CairoVMApiContext,
   BreakPoints,
+  CairoVMApiContext,
   ProgramExecutionState,
 } from 'context/cairoVMApiContext'
 
+import { cn } from '../../util/styles'
 import Console from '../Editor/Console'
 
 import ExecutionStatus from './ExecutionStatus'
@@ -222,28 +222,30 @@ export const Tracer = () => {
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
-              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
+              className={cn(
+                'hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
                 {
                   'border-indigo-600 text-gray-700':
                     selectedConsoleTab === IConsoleTab.DebugInfo,
                   'border-transparent text-gray-500':
                     selectedConsoleTab !== IConsoleTab.DebugInfo,
                 },
-              )}`}
+              )}
               onClick={() => setSelectedConsoleTab(IConsoleTab.DebugInfo)}
             >
               Debug Info [d]
             </button>
             <button
               onClick={() => setSelectedConsoleTab(IConsoleTab.Console)}
-              className={`hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin ${cn(
+              className={cn(
+                'hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
                 {
                   'border-indigo-600 text-gray-700':
                     selectedConsoleTab === IConsoleTab.Console,
                   'border-transparent text-gray-500':
                     selectedConsoleTab !== IConsoleTab.Console,
                 },
-              )}`}
+              )}
             >
               Console [e]
             </button>

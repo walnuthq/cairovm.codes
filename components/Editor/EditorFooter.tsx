@@ -1,9 +1,8 @@
 import { useContext } from 'react'
 
-import cn from 'classnames'
-
 import { AppUiContext } from '../../context/appUiContext'
 import { CairoVMApiContext } from '../../context/cairoVMApiContext'
+import { cn } from '../../util/styles'
 import KBarButton from '../KBar/Button'
 import ThemeSelector from '../ThemeSelector'
 import ToggleFullScreen from '../ToggleFullScreen'

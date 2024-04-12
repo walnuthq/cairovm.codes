@@ -1,6 +1,6 @@
-import React, { useState, ForwardedRef, forwardRef } from 'react'
+import React, { ForwardedRef, forwardRef, useState } from 'react'
 
-import cn from 'classnames'
+import { cn } from '../../util/styles'
 
 type Props = {
   searchable?: boolean

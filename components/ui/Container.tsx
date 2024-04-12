@@ -1,6 +1,6 @@
 import React from 'react'
 
-import cn from 'classnames'
+import { cn } from '../../util/styles'
 
 type Props = {
   children: React.ReactNode

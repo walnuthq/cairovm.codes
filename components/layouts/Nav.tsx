@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import Link from 'next/link'
 
 import { GITHUB_REPO_URL } from 'util/constants'
@@ -9,6 +8,8 @@ import ThemeSelector from 'components/ThemeSelector'
 import ToggleFullScreen from 'components/ToggleFullScreen'
 import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
 import { Container, Logo } from 'components/ui'
+
+import { cn } from '../../util/styles'
 
 const Nav = () => {
   return (

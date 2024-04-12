@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useEffect,
@@ -8,8 +8,7 @@ import React, {
 } from 'react'
 
 import { decode, encode } from '@kunigi/string-compression'
-import { Editor as MonacoEditor, useMonaco, Monaco } from '@monaco-editor/react'
-import cn from 'classnames'
+import { Editor as MonacoEditor, Monaco, useMonaco } from '@monaco-editor/react'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
 import { editor } from 'monaco-editor'
@@ -31,6 +30,7 @@ import { Examples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
+import { cn } from '../../util/styles'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'

@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useEffect, useRef } from 'react'
 
-import cn from 'classnames'
 import ReactTooltip from 'react-tooltip'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 import { IInstruction } from 'types'
@@ -8,6 +7,8 @@ import { IInstruction } from 'types'
 import { CodeType } from 'context/appUiContext'
 
 import { SierraVariables } from 'components/Tracer'
+
+import { cn } from '../../util/styles'
 
 const sierraVariableRe = /\[(\d+)\]/
 
