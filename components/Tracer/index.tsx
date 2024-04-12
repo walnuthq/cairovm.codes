@@ -370,22 +370,26 @@ function DebugInfoTab({
                             index,
                             array,
                           ) => (
-                            <div
-                              data-tip={param.type_name}
-                              data-for={param.type_name}
-                              className="inline-block cursor-pointer"
-                              key={index}
-                            >
-                              {param.value.length > 1
-                                ? `[${param.value.join(', ')}]`
-                                : param.value[0]}
-                              {index < array.length - 1 ? ',\u00A0' : ''}
-                              <ReactTooltip
-                                className="tooltip"
-                                id={param.type_name}
-                                effect="solid"
-                                uuid="buttonTooltip"
-                              />
+                            <div key={index} className="inline-block">
+                              <div
+                                data-tip={param.type_name}
+                                data-for={param.type_name}
+                                className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0"
+                              >
+                                {param.value.length > 1
+                                  ? `[${param.value.join(', ')}]`
+                                  : param.value[0]}
+
+                                <ReactTooltip
+                                  className="tooltip"
+                                  id={param.type_name}
+                                  effect="solid"
+                                  uuid="buttonTooltip"
+                                />
+                              </div>
+                              <span>
+                                {index < array.length - 1 ? ',\u00A0' : ''}
+                              </span>
                             </div>
                           ),
                         )}
