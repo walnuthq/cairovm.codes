@@ -1,8 +1,7 @@
-import { useState, forwardRef, ForwardedRef, useCallback } from 'react'
-
-import cn from 'classnames'
+import { ForwardedRef, forwardRef, useCallback, useState } from 'react'
 
 import { toHex } from '../../util/string'
+import { cn } from '../../util/styles'
 
 type RowProps = {
   instructionId: number

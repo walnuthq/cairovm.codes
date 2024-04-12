@@ -1,7 +1,8 @@
 import React from 'react'
 
-import cn from 'classnames'
 import Link from 'next/link'
+
+import { cn } from '../../util/styles'
 
 // The mark identifying an empty table cell, in order to avoid applying styles
 const EMPTY_MARK = '*'

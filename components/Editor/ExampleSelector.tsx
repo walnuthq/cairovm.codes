@@ -1,17 +1,17 @@
-import React, { useId } from 'react'
+import { useId } from 'react'
 
 import { RiFileCodeLine } from '@remixicon/react'
-import cn from 'classnames'
 import Select, {
   components,
   DropdownIndicatorProps,
-  StylesConfig,
   GroupBase,
+  StylesConfig,
 } from 'react-select'
 
+import { cn } from '../../util/styles'
 import { Button } from '../ui'
 
-import { Examples, CairoExampleNames } from './examples'
+import { CairoExampleNames, Examples } from './examples'
 
 type SelectOption = {
   value: number

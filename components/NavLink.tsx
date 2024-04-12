@@ -1,7 +1,8 @@
 import React from 'react'
 
-import cn from 'classnames'
 import Link from 'next/link'
+
+import { cn } from '../util/styles'
 
 type Props = {
   href: string

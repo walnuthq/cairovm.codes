@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 
-import cn from 'classnames'
+import { cn } from '../../util/styles'
 
 type Props = {
   type: 'success' | 'warning' | 'error'

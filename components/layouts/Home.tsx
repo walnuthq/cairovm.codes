@@ -1,13 +1,14 @@
-import { useContext, PropsWithChildren } from 'react'
+import { PropsWithChildren, useContext } from 'react'
 
 import { GoogleAnalytics } from '@next/third-parties/google'
-import cn from 'classnames'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 
 import { AppUiContext } from 'context/appUiContext'
 
 import { getAbsoluteURL } from 'util/browser'
+
+import { cn } from '../../util/styles'
 
 import Footer from './Footer'
 import Nav from './Nav'

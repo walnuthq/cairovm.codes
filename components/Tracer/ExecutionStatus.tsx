@@ -6,6 +6,7 @@ import {
 import { Priority, useRegisterActions } from 'kbar'
 
 import { Button } from 'components/ui'
+
 import { TraceEntry } from '.'
 
 const ExecutionStatus = ({

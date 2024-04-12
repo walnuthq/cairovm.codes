@@ -1,11 +1,12 @@
 import { useRef } from 'react'
 
 import { RiLinksLine, RiQuestionLine } from '@remixicon/react'
-import cn from 'classnames'
 import { Priority, useRegisterActions } from 'kbar'
 import { OnChangeValue } from 'react-select'
 
 import { Button, Input } from 'components/ui'
+
+import { cn } from '../../util/styles'
 
 import ExampleSelector from './ExampleSelector'
 
