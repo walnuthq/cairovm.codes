@@ -195,6 +195,20 @@ fn main() {
     foo_receives_ref(ref another_arr);
     foo_receives_ref(ref another_arr); // no compilation issue, main still owns another_arr 
 }`,
+    `use core::felt252;
+
+fn main() -> felt252 {
+    let n = 10;
+    let result = fib(1, 1, n);
+    result
+}
+
+fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
+    match n {
+        0 => a,
+        _ => fib(b, a + b, n - 1),
+    }
+}`,
   ],
   Sierra: [
     `type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
@@ -419,4 +433,5 @@ export const CairoExampleNames = [
   'Arrays',
   'Dictionaries',
   'Ownership',
+  'Fibonacci',
 ]

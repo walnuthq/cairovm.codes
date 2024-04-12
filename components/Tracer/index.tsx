@@ -47,7 +47,7 @@ export interface CallstackEntry {
   call_pc: number | null
   ret_pc: number | null
   fn_name: string | null
-  params: [] | null
+  params: { type_name: string; value: number[] }[] | null
 }
 
 export type SierraVariables = { [key: string]: Array<string> }
@@ -342,15 +342,19 @@ function DebugInfoTab({
               <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
                 <thead>
                   <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
-                    <th className="py-1 px-2 font-thin">FP</th>
-                    <th className="py-1 px-2 font-thin  whitespace-nowrap">
+                    <th className="py-1 px-2 font-thin min-w-16">FP</th>
+                    <th className="py-1 px-2 font-thin  whitespace-nowrap w-16">
                       CALL PC
                     </th>
-                    <th className="py-1 px-2 font-thin whitespace-nowrap">
+                    <th className="py-1 px-2 font-thin whitespace-nowrap w-16">
                       RET PC
                     </th>
-                    <th className="py-1 px-2 font-thin">FN NAME</th>
-                    <th className="py-1 px-2 font-thin">PARAMETERS</th>
+                    <th className="py-1 px-2 font-thin text-left min-w-64">
+                      FN NAME
+                    </th>
+                    <th className="py-1 px-2 font-thin text-left min-w-full">
+                      PARAMETERS
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -359,11 +363,19 @@ function DebugInfoTab({
                       key={index}
                       className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
                     >
-                      <td className="py-1 px-2">{callstackEntry.fp}</td>
-                      <td className="py-1 px-2">{callstackEntry.call_pc}</td>
-                      <td className="py-1 px-2">{callstackEntry.ret_pc}</td>
-                      <td className="py-1 px-2">{callstackEntry.fn_name}</td>
-                      <td className="py-1 px-2">
+                      <td className="py-1 px-2 min-w-16">
+                        {callstackEntry.fp}
+                      </td>
+                      <td className="py-1 px-2 w-16">
+                        {callstackEntry.call_pc}
+                      </td>
+                      <td className="py-1 px-2 w-16">
+                        {callstackEntry.ret_pc}
+                      </td>
+                      <td className="py-1 px-2 text-left w-64 break-all">
+                        {callstackEntry.fn_name}
+                      </td>
+                      <td className="py-1 px-2 text-left w-full">
                         {callstackEntry?.params?.map(
                           (
                             param: { type_name: string; value: number[] },
@@ -590,7 +602,7 @@ const FixedHeader = () => {
     // set table-layout = 'fixed' css property in our table element check 'Table' component above
     //
     <tr className="text-left bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
-      <th className="py-1 w-8"></th>
+      <th className="py-1 w-12"></th>
       <th className="py-1 w-10"></th>
       <th className="py-1 w-14"></th>
       <th className="py-1 px-2 font-thin w-44">memory</th>
