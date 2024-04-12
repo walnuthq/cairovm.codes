@@ -386,7 +386,7 @@ function DebugInfoTab({
                               <div
                                 data-tip={param.type_name}
                                 data-for={param.type_name}
-                                className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0"
+                                className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0 break-normal"
                               >
                                 {param.value.length > 1
                                   ? `[${param.value.join(', ')}]`
