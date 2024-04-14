@@ -12,7 +12,7 @@ import { Editor as MonacoEditor, useMonaco, Monaco } from '@monaco-editor/react'
 import cn from 'classnames'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
-import { editor, IRange } from 'monaco-editor'
+import { editor } from 'monaco-editor'
 import { useRouter } from 'next/router'
 import { useTheme } from 'next-themes'
 
@@ -107,36 +107,35 @@ const Editor = ({ readOnly = false }: Props) => {
     inlineClassName: string
   }
   interface Decoration {
-    range: {}
+    range: {
+      startLineNumber: number
+      startColumn: number
+      endLineNumber: number
+      endColumn: number
+    }
     options: DecorationOptions
   }
 
   useEffect(() => {
     setTimeout(() => {
       const multiplieDecorations: Decoration[] = []
+      let isHighlightOnScreen = false
       casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
         const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
 
         if (sierraStatementsToCairoInfo) {
           sierraStatementsToCairoInfo[index]?.cairo_locations.map(
             (cairoLocElem) => {
+              if (
+                isRangeVisible(cairoLocElem.start.line, cairoLocElem.end.line)
+              ) {
+                isHighlightOnScreen = true
+              }
               const startLine: number = cairoLocElem.start.line + 1
               const endLine: number = cairoLocElem.end.line + 1
               const startCol: number = cairoLocElem.start.col + 1
               const endCol: number = cairoLocElem.end.col + 1
               if (monaco) {
-                let isHighlightOnScreen = false
-                multiplieDecorations.forEach((decoration) => {
-                  if (isRangeVisible(decoration.range as IRange)) {
-                    isHighlightOnScreen = true
-                    return
-                  }
-                })
-                if (!isHighlightOnScreen) {
-                  editorRef.current?.revealRangeInCenter(
-                    new monaco.Range(startLine, startCol, endLine, endCol),
-                  )
-                }
                 multiplieDecorations.push({
                   range: new monaco.Range(startLine, startCol, endLine, endCol),
                   options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
@@ -144,6 +143,17 @@ const Editor = ({ readOnly = false }: Props) => {
               }
             },
           )
+
+          if (!isHighlightOnScreen && multiplieDecorations[0] && monaco) {
+            editorRef.current?.revealRangeInCenter(
+              new monaco.Range(
+                multiplieDecorations[0].range.startLineNumber,
+                multiplieDecorations[0].range.startColumn,
+                multiplieDecorations[0].range.endLineNumber,
+                multiplieDecorations[0].range.endColumn,
+              ),
+            )
+          }
         }
       }) || []
       const editor = editorRef.current as any
@@ -226,14 +236,14 @@ const Editor = ({ readOnly = false }: Props) => {
     executionPanicMessage,
   ])
 
-  const isRangeVisible = (range: IRange) => {
+  const isRangeVisible = (startLine: number, endLine: number) => {
     const editor = editorRef.current
     if (editor) {
       const visibleRanges = editor.getVisibleRanges()
       return visibleRanges.some(
         (visibleRange) =>
-          visibleRange.startLineNumber <= range.endLineNumber &&
-          visibleRange.endLineNumber >= range.startLineNumber,
+          visibleRange.startLineNumber <= endLine &&
+          visibleRange.endLineNumber >= startLine,
       )
     }
     return false
