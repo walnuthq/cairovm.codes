@@ -368,14 +368,16 @@ const Editor = ({ readOnly = false }: Props) => {
         )}
       >
         <div
-          className="flex flex-col md:flex-row"
-          style={{
-            height: isFullScreen ? 'calc(100vh - 42px)' : '70vh',
-          }}
+          className={cn(
+            'flex flex-col md:flex-row',
+            isFullScreen
+              ? 'md:h-[calc(100vh_-_42px)]'
+              : 'md:h-[70vh] border-t border-l border-r rounded-t-lg border-gray-200 dark:border-black-500',
+          )}
         >
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col',
+              'w-full md:w-1/2 flex flex-col h-[50vh] md:h-auto',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >
@@ -461,7 +463,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col justify-between',
+              'w-full md:w-1/2 flex flex-col justify-between h-[50vh] md:h-auto',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >

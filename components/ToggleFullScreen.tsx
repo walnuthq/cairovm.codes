@@ -54,6 +54,7 @@ const ToggleFullScreen = () => {
       onClick={handleToggleFullScreen}
       tooltip={`${isFullScreen ? 'Exit' : 'Enter'} Full Screen`}
       tooltipId="toggle-fullscreen"
+      className="px-2 md:px-4"
     >
       <FullScreenIcon
         size={16}

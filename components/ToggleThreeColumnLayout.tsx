@@ -47,6 +47,7 @@ const ToggleThreeColumnLayout = () => {
         isThreeColumnLayout ? 'Disable' : 'Enable'
       } Three Column Layout`}
       tooltipId="toggle-threeColumnLayout"
+      className="hidden md:block"
     >
       <ColumnLayoutIcon
         size={16}

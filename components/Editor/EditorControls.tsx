@@ -107,11 +107,11 @@ const EditorControls = ({
           readOnly={isCompileDisabled}
           value={programArguments}
           placeholder={`Program arguments`}
-          className={cn('max-w-64 border bg-gray-200 dark:bg-gray-800 ', {
+          className={cn('max-w-64 border bg-gray-200 dark:bg-gray-800', {
             'dark:border-gray-800 border-gray-200': areProgramArgumentsValid,
             'border-red-500': !areProgramArgumentsValid,
           })}
-          inputClassName={cn({
+          inputClassName={cn('text-xs md:text-sm', {
             'text-red-500': !areProgramArgumentsValid,
           })}
         />
