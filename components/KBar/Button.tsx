@@ -23,7 +23,7 @@ const KBarButton = () => {
     <Button
       size="xs"
       onClick={query.toggle}
-      className="mx-4 py-1 px-2 font-medium"
+      className="mx-2 md:mx-4 py-1 px-2 font-medium"
       transparent
       outline
       padded={false}

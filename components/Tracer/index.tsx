@@ -343,7 +343,7 @@ function DebugInfoTab({
             <dd className="font-mono mb-2">
               <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
                 <thead>
-                  <tr className="text-left sticky top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
+                  <tr className="text-left sticky z-[1] top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
                     <th className="py-1 px-2 font-thin min-w-16">FP</th>
                     <th className="py-1 px-2 font-thin  whitespace-nowrap w-16">
                       CALL PC

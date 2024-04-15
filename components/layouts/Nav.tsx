@@ -34,7 +34,7 @@ const Nav = () => {
 
           <div className="items-center ml-auto flex">
             <KBarButton />
-            <NavLink href={GITHUB_REPO_URL} external>
+            <NavLink href={GITHUB_REPO_URL} external className="mx-2 md:mx-4">
               GitHub
             </NavLink>
             <ToggleFullScreen />

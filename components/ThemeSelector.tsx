@@ -59,7 +59,7 @@ const ThemeSelector = () => {
   }
 
   return (
-    <Button transparent onClick={handleThemChange}>
+    <Button transparent onClick={handleThemChange} className="px-2 md:px-4">
       <Contrast2Icon
         size={16}
         className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
