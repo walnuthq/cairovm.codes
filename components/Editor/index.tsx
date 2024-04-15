@@ -107,19 +107,30 @@ const Editor = ({ readOnly = false }: Props) => {
     inlineClassName: string
   }
   interface Decoration {
-    range: {}
+    range: {
+      startLineNumber: number
+      startColumn: number
+      endLineNumber: number
+      endColumn: number
+    }
     options: DecorationOptions
   }
 
   useEffect(() => {
     setTimeout(() => {
       const multiplieDecorations: Decoration[] = []
+      let isHighlightOnScreen = false
       casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
         const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
 
         if (sierraStatementsToCairoInfo) {
           sierraStatementsToCairoInfo[index]?.cairo_locations.map(
             (cairoLocElem) => {
+              if (
+                isRangeVisible(cairoLocElem.start.line, cairoLocElem.end.line)
+              ) {
+                isHighlightOnScreen = true
+              }
               const startLine: number = cairoLocElem.start.line + 1
               const endLine: number = cairoLocElem.end.line + 1
               const startCol: number = cairoLocElem.start.col + 1
@@ -132,6 +143,17 @@ const Editor = ({ readOnly = false }: Props) => {
               }
             },
           )
+
+          if (!isHighlightOnScreen && multiplieDecorations[0] && monaco) {
+            editorRef.current?.revealRangeInCenter(
+              new monaco.Range(
+                multiplieDecorations[0].range.startLineNumber,
+                multiplieDecorations[0].range.startColumn,
+                multiplieDecorations[0].range.endLineNumber,
+                multiplieDecorations[0].range.endColumn,
+              ),
+            )
+          }
         }
       }) || []
       const editor = editorRef.current as any
@@ -213,6 +235,19 @@ const Editor = ({ readOnly = false }: Props) => {
     apiLogs,
     executionPanicMessage,
   ])
+
+  const isRangeVisible = (startLine: number, endLine: number) => {
+    const editor = editorRef.current
+    if (editor) {
+      const visibleRanges = editor.getVisibleRanges()
+      return visibleRanges.some(
+        (visibleRange) =>
+          visibleRange.startLineNumber <= endLine &&
+          visibleRange.endLineNumber >= startLine,
+      )
+    }
+    return false
+  }
 
   const handleCairoCodeChange = (value: string | undefined) => {
     if (value) {
