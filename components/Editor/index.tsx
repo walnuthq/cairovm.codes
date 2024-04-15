@@ -205,12 +205,15 @@ const Editor = ({ readOnly = false }: Props) => {
       if (serializedOutput) {
         addToConsoleLog(`Execution output: ${serializedOutput}`)
       }
+
+      if (executionState === ProgramExecutionState.Error) {
+        addToConsoleLog(
+          'Runtime error: ' + executionPanicMessage,
+          LogType.Error,
+        )
+      }
     } else if (compilationState === ProgramCompilationState.CompilationErr) {
       addToConsoleLog('Compilation failed', LogType.Error)
-    }
-
-    if (executionState === ProgramExecutionState.Error) {
-      addToConsoleLog('Runtime error: ' + executionPanicMessage, LogType.Error)
     }
 
     // Compilation finished, log the API logs, if any

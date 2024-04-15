@@ -196,6 +196,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
             ? ProgramCompilationState.CompilationSuccess
             : ProgramCompilationState.CompilationErr,
         )
+        setLogs(data.logs)
         setExecutionState(
           data.is_execution_successful === true
             ? ProgramExecutionState.Success
@@ -211,7 +212,6 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         setSierraCode(data.sierra_program_code)
         setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
         setSerializedOutput(data.serialized_output)
-        setLogs(data.logs)
         setExecutionPanicMessage(data.execution_panic_message)
         setTracerData({
           memory: data.tracer_data.memory,
