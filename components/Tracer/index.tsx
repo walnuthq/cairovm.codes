@@ -220,7 +220,7 @@ export const Tracer = () => {
         </div>
       )}
 
-      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden mb-[10px] h-[22vh]">
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden h-[22vh]">
         <div className="px-4">
           <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
             <button
