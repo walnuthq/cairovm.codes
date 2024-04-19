@@ -1,13 +1,30 @@
+import { useContext, useId, useMemo } from 'react'
+
 import {
   RiArrowGoForwardLine,
   RiArrowGoBackLine,
   RiPlayCircleLine,
 } from '@remixicon/react'
 import { Priority, useRegisterActions } from 'kbar'
+import Select from 'react-select'
+
+import { CairoVMApiContext, ProgramDebugMode } from 'context/cairoVMApiContext'
 
 import { Button } from 'components/ui'
 
 import { TraceEntry } from '.'
+
+type DebugModeOption = {
+  value: ProgramDebugMode
+  label: ProgramDebugMode
+}
+
+const debugModeOptions: DebugModeOption[] = (
+  Object.keys(ProgramDebugMode) as Array<keyof typeof ProgramDebugMode>
+).map((mode) => ({
+  value: ProgramDebugMode[mode],
+  label: ProgramDebugMode[mode],
+}))
 
 const ExecutionStatus = ({
   onStepIn,
@@ -22,6 +39,16 @@ const ExecutionStatus = ({
   trace: TraceEntry[] | undefined
   executionTraceStepNumber: number
 }) => {
+  const { debugMode, setDebugMode } = useContext(CairoVMApiContext)
+
+  const debugModeValue: DebugModeOption = useMemo(
+    () => ({
+      value: debugMode,
+      label: debugMode,
+    }),
+    [debugMode],
+  )
+
   const actions = [
     {
       id: 'stepnext',
@@ -61,14 +88,27 @@ const ExecutionStatus = ({
     },
   ]
 
+  const onChangeDebugMode = (option: DebugModeOption | null) => {
+    if (option) {
+      setDebugMode(option.value)
+    }
+  }
+
   useRegisterActions(actions, [onStepIn, onStepOut, onContinueExecution])
 
   return (
     <div className="flex flex-grow justify-between items-center text-sm">
-      <div>
-        <span className="text-gray-600 dark:text-gray-400 text-sm">
-          Execution Trace
-        </span>
+      <div className="flex items-center">
+        <Select
+          onChange={onChangeDebugMode}
+          options={debugModeOptions}
+          value={debugModeValue}
+          isSearchable={false}
+          classNamePrefix="select"
+          className="[&_.select\_\_menu]:w-56 [&_.select\_\_menu]:z-20"
+          menuPlacement="auto"
+          instanceId={useId()}
+        />
       </div>
 
       <div className="flex flex-row items-center gap-4">

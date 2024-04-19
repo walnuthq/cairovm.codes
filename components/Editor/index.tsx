@@ -18,6 +18,7 @@ import { useTheme } from 'next-themes'
 import {
   CairoVMApiContext,
   ProgramCompilationState,
+  ProgramDebugMode,
   ProgramExecutionState,
 } from 'context/cairoVMApiContext'
 import { Setting, SettingsContext } from 'context/settingsContext'
@@ -63,6 +64,8 @@ const Editor = ({ readOnly = false }: Props) => {
     currentSierraVariables,
     sierraStatementsToCairoInfo,
     logs: apiLogs,
+    sierraSubStepNumber,
+    debugMode,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -406,7 +409,11 @@ const Editor = ({ readOnly = false }: Props) => {
                   instructions={sierraStatements}
                   codeType={codeType}
                   activeIndexes={
-                    casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
+                    debugMode === ProgramDebugMode.Sierra
+                      ? sierraSubStepNumber !== undefined
+                        ? [sierraSubStepNumber]
+                        : []
+                      : casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
                   }
                   errorIndexes={
                     casmToSierraProgramMap[errorCasmInstructionIndex] ?? []

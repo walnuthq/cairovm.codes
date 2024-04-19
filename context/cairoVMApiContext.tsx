@@ -1,4 +1,10 @@
-import React, { PropsWithChildren, createContext, useState } from 'react'
+import React, {
+  PropsWithChildren,
+  createContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react'
 
 import { IInstruction, ILogEntry } from 'types'
 
@@ -18,6 +24,11 @@ export enum ProgramExecutionState {
   Executing,
   Success,
   Error,
+}
+
+export enum ProgramDebugMode {
+  Execution = 'Debug VM Execution Trace',
+  Sierra = 'Debug Sierra',
 }
 
 interface Position {
@@ -41,6 +52,7 @@ export type BreakPoints = { [key: string]: boolean }
 const noOp = () => undefined
 
 type ContextProps = {
+  debugMode: ProgramDebugMode
   sierraCode: string
   casmCode: string
   compilationState: ProgramCompilationState
@@ -52,6 +64,7 @@ type ContextProps = {
   logs: ILogEntry[]
   tracerData?: TracerData
   executionTraceStepNumber: number
+  sierraSubStepNumber: number | undefined
   activeCasmInstructionIndex: number
   errorCasmInstructionIndex: number
   sierraStatements: IInstruction[]
@@ -63,14 +76,16 @@ type ContextProps = {
   breakPoints?: BreakPoints
   sierraStatementsToCairoInfo?: SierraStatementsToCairoInfo
 
+  setDebugMode: (debugMode: ProgramDebugMode) => void
   compileCairoCode: (cairoCode: string, programArguments: string) => void
-  onExecutionStepChange: (step: number) => void
+  onExecutionStepChange: (action: 'increase' | 'decrease') => void
   onContinueExecution: () => void
   addBreakPoint: (addr: string) => void
   removeBreakPoint: (addr: string) => void
 }
 
 export const CairoVMApiContext = createContext<ContextProps>({
+  debugMode: ProgramDebugMode.Execution,
   sierraCode: '',
   casmCode: '',
   casmInstructions: [],
@@ -81,6 +96,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   executionState: ProgramExecutionState.Idle,
   executionPanicMessage: '',
   executionTraceStepNumber: 0,
+  sierraSubStepNumber: undefined,
   activeCasmInstructionIndex: 0,
   errorCasmInstructionIndex: 0,
   sierraStatements: [],
@@ -94,11 +110,15 @@ export const CairoVMApiContext = createContext<ContextProps>({
   onContinueExecution: noOp,
   addBreakPoint: noOp,
   removeBreakPoint: noOp,
+  setDebugMode: noOp,
 })
 
 export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
+  const [debugMode, setDebugMode] = useState<ProgramDebugMode>(
+    ProgramDebugMode.Execution,
+  )
   const [sierraCode, setSierraCode] = useState<string>('')
   const [casmCode, setCasmCode] = useState<string>('')
   const [casmInstructions, setCasmInstructions] = useState<IInstruction[]>([])
@@ -119,6 +139,9 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const [breakPoints, setBreakPoints] = useState<BreakPoints>({})
   const [executionTraceStepNumber, setExecutionTraceStepNumber] =
     useState<number>(0)
+  const [sierraSubStepNumber, setSierraSubStepNumber] = useState<
+    number | undefined
+  >(undefined)
   const [sierraStatements, setSierraStatements] = useState<IInstruction[]>([])
   const [sierraStatementsToCairoInfo, setSierraStatementsToCairoInfo] =
     useState<SierraStatementsToCairoInfo>({})
@@ -139,8 +162,68 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const errorCasmInstructionIndex =
     tracerData?.pcToInstIndexesMap[(errorTraceEntry?.pc ?? 0).toString()] ?? -1
 
-  function onExecutionStepChange(stepNumber: number) {
-    setExecutionTraceStepNumber(stepNumber)
+  const sierraActiveIndexes = casmToSierraProgramMap[activeCasmInstructionIndex]
+  const prevAction = useRef<'increase' | 'decrease'>()
+
+  useEffect(() => {
+    if (
+      debugMode === ProgramDebugMode.Sierra &&
+      sierraActiveIndexes &&
+      sierraActiveIndexes.length > 0
+    ) {
+      if (prevAction.current === 'increase') {
+        setSierraSubStepNumber(sierraActiveIndexes[0])
+      } else {
+        setSierraSubStepNumber(
+          sierraActiveIndexes[sierraActiveIndexes.length - 1],
+        )
+      }
+    }
+  }, [debugMode, sierraActiveIndexes])
+
+  const onExecutionStepChange = (action: 'increase' | 'decrease') => {
+    // check if sierraActiveIndexes exist and is Sierra debug mode.
+    if (sierraActiveIndexes && debugMode === ProgramDebugMode.Sierra) {
+      // Check if there are active sub-steps for the current execution step
+      if (sierraSubStepNumber !== undefined) {
+        // Determine the index of the current sub-step in sierraActiveIndexes array
+        const currentSubStepIndex =
+          sierraActiveIndexes.indexOf(sierraSubStepNumber)
+
+        if (action === 'increase') {
+          // Move to the next sub-step
+          if (currentSubStepIndex < sierraActiveIndexes.length - 1) {
+            setSierraSubStepNumber(sierraActiveIndexes[currentSubStepIndex + 1])
+          } else {
+            // No more sub-steps, move to the next trace step
+            setExecutionTraceStepNumber((prev) => prev + 1)
+            // Reset sub-step since we're changing steps
+            setSierraSubStepNumber(undefined)
+          }
+        } else if (action === 'decrease') {
+          // Move to the previous sub-step
+          if (currentSubStepIndex > 0) {
+            setSierraSubStepNumber(sierraActiveIndexes[currentSubStepIndex - 1])
+          } else {
+            // No more sub-steps, move to the previous trace step
+            setExecutionTraceStepNumber((prev) => prev - 1)
+            // Reset sub-step since we're changing steps
+            setSierraSubStepNumber(undefined)
+          }
+        }
+      }
+    } else {
+      // If no sierraActiveIndexes, just change the execution trace step number
+      setExecutionTraceStepNumber((prev) =>
+        action === 'increase' ? prev + 1 : prev - 1,
+      )
+      // once executionTraceStepNumber is updated, sierraActiveIndexes updates
+      // so to know whether to initialize sub step with first or last element of sierraActiveIndexes
+      // we save the action in ref which we will use in useEffect hook with dependency of sierraActiveIndexes
+      prevAction.current = action
+      // Reset sub-step since we're changing steps
+      setSierraSubStepNumber(undefined)
+    }
   }
 
   function onContinueExecution() {
@@ -196,6 +279,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
             ? ProgramCompilationState.CompilationSuccess
             : ProgramCompilationState.CompilationErr,
         )
+        setSierraSubStepNumber(undefined)
         setLogs(data.logs)
         setExecutionState(
           data.is_execution_successful === true
@@ -253,6 +337,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   return (
     <CairoVMApiContext.Provider
       value={{
+        debugMode,
         sierraCode,
         casmCode,
         compilationState,
@@ -264,6 +349,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         tracerData,
         casmInstructions,
         executionTraceStepNumber,
+        sierraSubStepNumber,
         currentTraceEntry,
         currentSierraVariables,
         activeCasmInstructionIndex,
@@ -273,7 +359,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         casmToSierraStatementsMap,
         breakPoints,
         sierraStatementsToCairoInfo,
-
+        setDebugMode,
         compileCairoCode,
         onExecutionStepChange,
         onContinueExecution,
