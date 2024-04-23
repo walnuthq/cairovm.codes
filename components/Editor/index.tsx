@@ -32,6 +32,8 @@ import { Tracer } from 'components/Tracer'
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 import { cn } from '../../util/styles'
 
+import Console from './Console'
+
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
 import EditorControls from './EditorControls'
@@ -478,10 +480,23 @@ const Editor = ({ readOnly = false }: Props) => {
                 </div>
               )}
             </div>
-            <div className={cn('h-[22vh] border-r border-t bg-red-300')}>
-              {/* <div className=" border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none md:border-r justify-between"> */}
-              Console
-              {/* </div> */}
+            <div
+              className={cn(
+                'h-[22vh] border-r border-t pane pane-light overflow-auto pb-4',
+              )}
+            >
+              <div className="px-4">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                  <div
+                    className={cn(
+                      'text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
+                    )}
+                  >
+                    Console
+                  </div>
+                </nav>
+              </div>
+              <Console />
             </div>
           </div>
 
