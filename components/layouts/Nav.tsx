@@ -33,7 +33,10 @@ const Nav = () => {
           ></ul>
 
           <div className="items-center ml-auto flex">
-            <KBarButton />
+            <div className="md:block hidden">
+              <KBarButton />
+            </div>
+
             <NavLink href={GITHUB_REPO_URL} external className="mx-2 md:mx-4">
               GitHub
             </NavLink>
