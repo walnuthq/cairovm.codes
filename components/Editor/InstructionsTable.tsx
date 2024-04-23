@@ -201,7 +201,7 @@ const TableRow = (props: any) => {
   const isError = errorIndexes.includes(rest?.['data-item-index'])
   return (
     <tr
-      className={cn('border-b border-gray-200 dark:border-black-500', {
+      className={cn('border-b border-gray-200 dark:border-black-500 w-full', {
         'text-gray-900 dark:text-gray-200': isActive,
         'text-gray-400 dark:text-gray-600': !isActive,
         'bg-red-100 dark:bg-red-500/10': isError,
@@ -231,10 +231,13 @@ const TableRowContent = memo(
   }) => {
     return (
       <>
-        <td className={`pl-6 pr-1 px-2 whitespace-nowrap w-[1%]`}>
+        <td className={`pl-6 pr-1 whitespace-nowrap`} style={{ width: '3rem' }}>
           {index + 1}
         </td>
-        <td className="py-1 px-2 max-w-40 break-words">
+        <td
+          className="py-1 px-2 break-normal sm:break-all lg:break-normal"
+          style={{ maxWidth: '10rem' }}
+        >
           {isActive && codeType === CodeType.Sierra
             ? addVariableToolTipToSierraInstruction(instruction.name)
             : splitInLines(instruction.name)}
