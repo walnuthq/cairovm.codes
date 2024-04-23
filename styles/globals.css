@@ -10,6 +10,7 @@ html {
  * Code editor
  */
 .code-editor {
+  max-height: 100% !important;
   @apply font-mono text-base md:text-tiny leading-4;
 }
 

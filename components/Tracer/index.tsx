@@ -1,13 +1,5 @@
-import {
-  memo,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
+import { memo, useContext, useEffect, useReducer, useRef } from 'react'
 
-import { Priority, useRegisterActions } from 'kbar'
 import ReactTooltip from 'react-tooltip'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 
@@ -18,7 +10,6 @@ import {
 } from 'context/cairoVMApiContext'
 
 import { cn } from '../../util/styles'
-import Console from '../Editor/Console'
 
 import ExecutionStatus from './ExecutionStatus'
 
@@ -61,11 +52,6 @@ export interface TracerData {
   entryToSierraVarsMap: { [key: string]: SierraVariables }
 }
 
-enum IConsoleTab {
-  Console = 'debug-console',
-  DebugInfo = 'output',
-}
-
 export const Tracer = () => {
   const {
     executionState,
@@ -85,10 +71,6 @@ export const Tracer = () => {
       ? tracerData?.trace.at(-2)
       : null
   const currentCallstackEntry = tracerData?.callstack[executionTraceStepNumber]
-
-  const [selectedConsoleTab, setSelectedConsoleTab] = useState<IConsoleTab>(
-    IConsoleTab.Console,
-  )
 
   const [currentFocus, setCurrentFocus] = useReducer(
     (state: any, newIdx: number) => {
@@ -156,35 +138,6 @@ export const Tracer = () => {
     }
   }
 
-  const actions = [
-    {
-      id: 'debugInfo',
-      name: 'Debug Info',
-      shortcut: ['d'],
-      keywords: 'Debug info',
-      section: 'Execution',
-      perform: () => {
-        setSelectedConsoleTab(IConsoleTab.DebugInfo)
-      },
-      subtitle: 'Switch to Debug Info',
-      priority: Priority.HIGH,
-    },
-    {
-      id: 'console',
-      name: 'Console',
-      shortcut: ['e'],
-      keywords: 'Console',
-      section: 'Execution',
-      perform: () => {
-        setSelectedConsoleTab(IConsoleTab.Console)
-      },
-      subtitle: 'Switch to Console',
-      priority: Priority.HIGH,
-    },
-  ]
-
-  useRegisterActions(actions, [setSelectedConsoleTab])
-
   return (
     <>
       <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
@@ -220,52 +173,25 @@ export const Tracer = () => {
         </div>
       )}
 
-      <div className="border-gray-200 border-t dark:border-black-500 flex-none overflow-hidden h-[22vh]">
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none pane pane-light overflow-auto pb-4 h-[22vh]">
         <div className="px-4">
-          <nav className="-mb-px uppercase flex space-x-8" aria-label="Tabs">
-            <button
+          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <div
               className={cn(
-                'hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
-                {
-                  'border-indigo-600 text-gray-700':
-                    selectedConsoleTab === IConsoleTab.DebugInfo,
-                  'border-transparent text-gray-500':
-                    selectedConsoleTab !== IConsoleTab.DebugInfo,
-                },
-              )}
-              onClick={() => setSelectedConsoleTab(IConsoleTab.DebugInfo)}
-            >
-              Debug Info [d]
-            </button>
-            <button
-              onClick={() => setSelectedConsoleTab(IConsoleTab.Console)}
-              className={cn(
-                'hover:text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
-                {
-                  'border-indigo-600 text-gray-700':
-                    selectedConsoleTab === IConsoleTab.Console,
-                  'border-transparent text-gray-500':
-                    selectedConsoleTab !== IConsoleTab.Console,
-                },
+                'text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
               )}
             >
-              Console [e]
-            </button>
+              Debug Info
+            </div>
           </nav>
         </div>
-        <div className="pane pane-light overflow-auto pb-4 grow h-[calc(100%_-_38px)]">
-          {selectedConsoleTab === IConsoleTab.Console && <Console />}
-
-          {selectedConsoleTab === IConsoleTab.DebugInfo && (
-            <DebugInfoTab
-              trace={trace}
-              currentTraceEntry={currentTraceEntry}
-              executionTraceStepNumber={executionTraceStepNumber}
-              currentCallstackEntry={currentCallstackEntry}
-              handleRegisterPointerClick={handleRegisterPointerClick}
-            />
-          )}
-        </div>
+        <DebugInfoTab
+          trace={trace}
+          currentTraceEntry={currentTraceEntry}
+          executionTraceStepNumber={executionTraceStepNumber}
+          currentCallstackEntry={currentCallstackEntry}
+          handleRegisterPointerClick={handleRegisterPointerClick}
+        />
       </div>
     </>
   )
