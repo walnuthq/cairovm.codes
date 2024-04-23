@@ -438,7 +438,7 @@ const Editor = ({ readOnly = false }: Props) => {
                         onChange={handleCairoCodeChange}
                         language={'cairo'}
                         className={cn(
-                          'code-editor whitespace-pre-wrap overflow-hidden',
+                          'code-editor whitespace-pre-wrap overflow-hidden p-0 m-0 w-full h-full absolute top-0 left-0',
                           {
                             'with-numbers': !isBytecode,
                           },
