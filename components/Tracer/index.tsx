@@ -83,10 +83,9 @@ export const Tracer = () => {
     debugMode,
     sierraStatements,
     casmToSierraProgramMap,
-    activeCasmInstructionIndex,
     errorCasmInstructionIndex,
     currentSierraVariables,
-    sierraSubStepIndex,
+    activeSierraIndexes,
   } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
@@ -225,19 +224,7 @@ export const Tracer = () => {
         <SierraInstructionTable
           instructions={sierraStatements}
           codeType={CodeType.Sierra}
-          activeIndexes={
-            casmToSierraProgramMap[activeCasmInstructionIndex]
-              ? debugMode === ProgramDebugMode.Sierra
-                ? sierraSubStepIndex !== undefined
-                  ? [
-                      casmToSierraProgramMap[activeCasmInstructionIndex][
-                        sierraSubStepIndex
-                      ],
-                    ]
-                  : []
-                : casmToSierraProgramMap[activeCasmInstructionIndex]
-              : []
-          }
+          activeIndexes={activeSierraIndexes}
           errorIndexes={casmToSierraProgramMap[errorCasmInstructionIndex] ?? []}
           variables={currentSierraVariables || {}}
         />

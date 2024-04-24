@@ -38,8 +38,7 @@ const ExtraColumn = ({
     sierraStatements,
     casmToSierraProgramMap,
     currentSierraVariables,
-    debugMode,
-    sierraSubStepIndex,
+    activeSierraIndexes,
   } = useContext(CairoVMApiContext)
 
   return (
@@ -64,19 +63,7 @@ const ExtraColumn = ({
           <InstructionsTable
             instructions={sierraStatements}
             codeType={codeType}
-            activeIndexes={
-              casmToSierraProgramMap[activeCasmInstructionIndex]
-                ? debugMode === ProgramDebugMode.Sierra
-                  ? sierraSubStepIndex !== undefined
-                    ? [
-                        casmToSierraProgramMap[activeCasmInstructionIndex][
-                          sierraSubStepIndex
-                        ],
-                      ]
-                    : []
-                  : casmToSierraProgramMap[activeCasmInstructionIndex]
-                : []
-            }
+            activeIndexes={activeSierraIndexes}
             errorIndexes={
               casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
             }

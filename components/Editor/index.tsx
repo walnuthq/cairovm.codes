@@ -79,6 +79,7 @@ const Editor = ({ readOnly = false }: Props) => {
     logs: apiLogs,
     sierraSubStepIndex,
     debugMode,
+    activeSierraIndexes,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -432,19 +433,7 @@ const Editor = ({ readOnly = false }: Props) => {
                 <InstructionsTable
                   instructions={sierraStatements}
                   codeType={codeType}
-                  activeIndexes={
-                    casmToSierraProgramMap[activeCasmInstructionIndex]
-                      ? debugMode === ProgramDebugMode.Sierra
-                        ? sierraSubStepIndex !== undefined
-                          ? [
-                              casmToSierraProgramMap[
-                                activeCasmInstructionIndex
-                              ][sierraSubStepIndex],
-                            ]
-                          : []
-                        : casmToSierraProgramMap[activeCasmInstructionIndex]
-                      : []
-                  }
+                  activeIndexes={activeSierraIndexes}
                   errorIndexes={
                     casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
                   }

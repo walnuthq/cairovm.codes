@@ -66,6 +66,7 @@ type ContextProps = {
   executionTraceStepNumber: number
   sierraSubStepIndex: number | undefined
   activeCasmInstructionIndex: number
+  activeSierraIndexes: number[]
   errorCasmInstructionIndex: number
   sierraStatements: IInstruction[]
   casmToSierraStatementsMap: CasmToSierraMap
@@ -98,6 +99,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   executionTraceStepNumber: 0,
   sierraSubStepIndex: undefined,
   activeCasmInstructionIndex: 0,
+  activeSierraIndexes: [],
   errorCasmInstructionIndex: 0,
   sierraStatements: [],
   casmToSierraProgramMap: {},
@@ -162,20 +164,42 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const errorCasmInstructionIndex =
     tracerData?.pcToInstIndexesMap[(errorTraceEntry?.pc ?? 0).toString()] ?? -1
 
-  const sierraActiveIndexes = casmToSierraProgramMap[activeCasmInstructionIndex]
+  // array of sierra indexes for the current activeCasmInstructionIndex
+  const currentSierraIndexes =
+    casmToSierraProgramMap[activeCasmInstructionIndex]
+
+  // array of active sierra indexes (based on debug mode - sierra or vm execution trace)
+  let activeSierraIndexes: number[] = []
+
+  // If Sierra indexes for the current step exist
+  if (currentSierraIndexes) {
+    // if its sierra debug mode
+    if (debugMode === ProgramDebugMode.Sierra) {
+      // If sierra sub step index exists
+      // then we assign activeSierraIndexes with the corresponding sierraIndex
+      if (sierraSubStepIndex !== undefined) {
+        activeSierraIndexes = [currentSierraIndexes[sierraSubStepIndex]]
+      }
+      // Otherwise, leave activeSierraIndexes as an empty array
+    } else if (debugMode === ProgramDebugMode.Execution) {
+      // In execution trace mode, use all Sierra indexes
+      activeSierraIndexes = currentSierraIndexes
+    }
+  } // If no Sierra indexes for the current step exist, activeSierraIndexes remains an empty array
+
   const prevAction = useRef<'increase' | 'decrease'>()
   const traceLength = tracerData?.trace?.length
 
   useEffect(() => {
     // only if program is in sierra debug mode
     if (debugMode === ProgramDebugMode.Sierra) {
-      if (sierraActiveIndexes && sierraActiveIndexes.length > 0) {
+      if (currentSierraIndexes && currentSierraIndexes.length > 0) {
         // if sierraActiveIndexes exist then we initialise it with last index or 0 index
         // based on the button action (increase / decrease)
         if (prevAction.current === 'increase') {
           setSierraSubStepIndex(0)
         } else {
-          setSierraSubStepIndex(sierraActiveIndexes.length - 1)
+          setSierraSubStepIndex(currentSierraIndexes.length - 1)
         }
       }
       // when no sierraActiveIndexes exist
@@ -205,7 +229,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         }
       }
     }
-  }, [debugMode, sierraActiveIndexes, executionTraceStepNumber, traceLength])
+  }, [debugMode, currentSierraIndexes, executionTraceStepNumber, traceLength])
 
   const onExecutionStepChange = (action: 'increase' | 'decrease') => {
     // once executionTraceStepNumber is updated, sierraActiveIndexes updates
@@ -219,7 +243,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
       if (sierraSubStepIndex !== undefined) {
         if (action === 'increase') {
           // Move to the next sub-step
-          if (sierraSubStepIndex < sierraActiveIndexes.length - 1) {
+          if (sierraSubStepIndex < currentSierraIndexes.length - 1) {
             setSierraSubStepIndex(sierraSubStepIndex + 1)
           } else {
             // No more sub-steps, move to the next trace step
@@ -377,6 +401,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         currentTraceEntry,
         currentSierraVariables,
         activeCasmInstructionIndex,
+        activeSierraIndexes,
         errorCasmInstructionIndex,
         sierraStatements,
         casmToSierraProgramMap,
