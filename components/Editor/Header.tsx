@@ -49,6 +49,7 @@ const EditorHeader = ({
 
         <div className="flex items-center ">
           <Select
+            className="z-50"
             onChange={onCodeTypeChange}
             options={codeLangOptions}
             value={codeTypeValue}
