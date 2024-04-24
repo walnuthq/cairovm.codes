@@ -18,8 +18,10 @@ const Console = () => {
   }, [consoleLog])
 
   return (
-    <div className='p-4'>
-      <p className='text-gray-500 dark:text-gray-400 font-medium uppercase text-2xs'>Console</p>
+    <div className="p-4">
+      <p className="text-gray-500 dark:text-gray-400 font-medium uppercase text-2xs">
+        Console
+      </p>
       <div
         ref={container}
         className="leading-5 font-mono text-tiny text-gray-400 dark:text-gray-500"

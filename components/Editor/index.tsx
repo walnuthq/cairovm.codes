@@ -32,10 +32,9 @@ import { Tracer } from 'components/Tracer'
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
 import { cn } from '../../util/styles'
 
-import Console from './Console'
-
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
+import Console from './Console'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
