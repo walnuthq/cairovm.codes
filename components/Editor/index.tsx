@@ -393,7 +393,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   isThreeColumnLayout && 'md:w-1/2',
                 )}
               >
-                <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none md:border-r justify-between">
+                <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-2 h-14 flex-none md:border-r justify-between">
                   <Header
                     codeType={codeType}
                     onCodeTypeChange={({ value }) => setCodeType(value)}
@@ -482,20 +482,9 @@ const Editor = ({ readOnly = false }: Props) => {
             </div>
             <div
               className={cn(
-                'h-[22vh] border-r border-t pane pane-light overflow-auto pb-4',
+                'h-[22vh] border-r border-t pane pane-light overflow-auto border-gray-200 dark:border-black-500',
               )}
             >
-              <div className="px-4">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-                  <div
-                    className={cn(
-                      'text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
-                    )}
-                  >
-                    Console
-                  </div>
-                </nav>
-              </div>
               <Console />
             </div>
           </div>

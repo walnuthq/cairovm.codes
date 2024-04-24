@@ -140,7 +140,7 @@ export const Tracer = () => {
 
   return (
     <>
-      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-6 h-14 flex-none">
+      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-4 h-14 flex-none">
         <ExecutionStatus
           onStepIn={stepIn}
           onStepOut={stepOut}
@@ -173,18 +173,7 @@ export const Tracer = () => {
         </div>
       )}
 
-      <div className="border-gray-200 border-t dark:border-black-500 flex-none pane pane-light overflow-auto pb-4 h-[22vh]">
-        <div className="px-4">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            <div
-              className={cn(
-                'text-gray-700 whitespace-nowrap border-b py-1 mt-2 mb-4 text-xs font-thin',
-              )}
-            >
-              Debug Info
-            </div>
-          </nav>
-        </div>
+      <div className="border-gray-200 border-t dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
         <DebugInfoTab
           trace={trace}
           currentTraceEntry={currentTraceEntry}
@@ -211,7 +200,7 @@ function DebugInfoTab({
   handleRegisterPointerClick: (num: number) => void
 }) {
   return (
-    <div className="px-4 pb-4">
+    <div className="p-4">
       {trace === undefined ? (
         <p className="text-mono text-tiny text-gray-400 dark:text-gray-500">
           Run the app to get debug info
