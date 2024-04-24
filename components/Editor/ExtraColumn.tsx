@@ -4,7 +4,10 @@ import { Editor as MonacoEditor, Monaco } from '@monaco-editor/react'
 import { editor } from 'monaco-editor'
 
 import { CodeType } from '../../context/appUiContext'
-import { CairoVMApiContext } from '../../context/cairoVMApiContext'
+import {
+  CairoVMApiContext,
+  ProgramDebugMode,
+} from '../../context/cairoVMApiContext'
 import { cn } from '../../util/styles'
 
 import Header from './Header'
@@ -35,6 +38,8 @@ const ExtraColumn = ({
     sierraStatements,
     casmToSierraProgramMap,
     currentSierraVariables,
+    debugMode,
+    sierraSubStepIndex,
   } = useContext(CairoVMApiContext)
 
   return (
@@ -60,7 +65,17 @@ const ExtraColumn = ({
             instructions={sierraStatements}
             codeType={codeType}
             activeIndexes={
-              casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
+              casmToSierraProgramMap[activeCasmInstructionIndex]
+                ? debugMode === ProgramDebugMode.Sierra
+                  ? sierraSubStepIndex !== undefined
+                    ? [
+                        casmToSierraProgramMap[activeCasmInstructionIndex][
+                          sierraSubStepIndex
+                        ],
+                      ]
+                    : []
+                  : casmToSierraProgramMap[activeCasmInstructionIndex]
+                : []
             }
             errorIndexes={
               casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
