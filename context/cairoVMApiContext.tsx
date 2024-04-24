@@ -64,7 +64,7 @@ type ContextProps = {
   logs: ILogEntry[]
   tracerData?: TracerData
   executionTraceStepNumber: number
-  sierraSubStepNumber: number | undefined
+  sierraSubStepIndex: number | undefined
   activeCasmInstructionIndex: number
   errorCasmInstructionIndex: number
   sierraStatements: IInstruction[]
@@ -96,7 +96,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   executionState: ProgramExecutionState.Idle,
   executionPanicMessage: '',
   executionTraceStepNumber: 0,
-  sierraSubStepNumber: undefined,
+  sierraSubStepIndex: undefined,
   activeCasmInstructionIndex: 0,
   errorCasmInstructionIndex: 0,
   sierraStatements: [],
@@ -139,7 +139,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const [breakPoints, setBreakPoints] = useState<BreakPoints>({})
   const [executionTraceStepNumber, setExecutionTraceStepNumber] =
     useState<number>(0)
-  const [sierraSubStepNumber, setSierraSubStepNumber] = useState<
+  const [sierraSubStepIndex, setSierraSubStepIndex] = useState<
     number | undefined
   >(undefined)
   const [sierraStatements, setSierraStatements] = useState<IInstruction[]>([])
@@ -164,65 +164,91 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
 
   const sierraActiveIndexes = casmToSierraProgramMap[activeCasmInstructionIndex]
   const prevAction = useRef<'increase' | 'decrease'>()
+  const traceLength = tracerData?.trace?.length
 
   useEffect(() => {
-    if (
-      debugMode === ProgramDebugMode.Sierra &&
-      sierraActiveIndexes &&
-      sierraActiveIndexes.length > 0
-    ) {
-      if (prevAction.current === 'increase') {
-        setSierraSubStepNumber(sierraActiveIndexes[0])
-      } else {
-        setSierraSubStepNumber(
-          sierraActiveIndexes[sierraActiveIndexes.length - 1],
-        )
+    // only if program is in sierra debug mode
+    if (debugMode === ProgramDebugMode.Sierra) {
+      if (sierraActiveIndexes && sierraActiveIndexes.length > 0) {
+        // if sierraActiveIndexes exist then we initialise it with last index or 0 index
+        // based on the button action (increase / decrease)
+        if (prevAction.current === 'increase') {
+          setSierraSubStepIndex(0)
+        } else {
+          setSierraSubStepIndex(sierraActiveIndexes.length - 1)
+        }
+      }
+      // when no sierraActiveIndexes exist
+      else if (prevAction.current !== undefined) {
+        // !!!Important Note!!!:
+        // due to the dependency of executionTraceStepNumber
+        // this will be called recursively until
+        // we find a step with some sierraActiveIndexes or trace step is at the end or the start
+        // This helps in skipping all trace steps without sierra statements
+
+        // if action was of increase then we increase step number
+        // with checks if its less than tracelength
+        if (
+          prevAction.current === 'increase' &&
+          traceLength &&
+          executionTraceStepNumber + 1 < traceLength
+        ) {
+          setExecutionTraceStepNumber((prev) => prev + 1)
+        }
+        // if action was of decrease then we decrease step number
+        // with checks if its more than 0
+        else if (
+          prevAction.current === 'decrease' &&
+          executionTraceStepNumber > 0
+        ) {
+          setExecutionTraceStepNumber((prev) => prev - 1)
+        }
       }
     }
-  }, [debugMode, sierraActiveIndexes])
+  }, [debugMode, sierraActiveIndexes, executionTraceStepNumber, traceLength])
 
   const onExecutionStepChange = (action: 'increase' | 'decrease') => {
-    // check if sierraActiveIndexes exist and is Sierra debug mode.
-    if (sierraActiveIndexes && debugMode === ProgramDebugMode.Sierra) {
-      // Check if there are active sub-steps for the current execution step
-      if (sierraSubStepNumber !== undefined) {
-        // Determine the index of the current sub-step in sierraActiveIndexes array
-        const currentSubStepIndex =
-          sierraActiveIndexes.indexOf(sierraSubStepNumber)
+    // once executionTraceStepNumber is updated, sierraActiveIndexes updates
+    // so to know whether to initialize sub step with first or last element of sierraActiveIndexes
+    // we save the action in ref which we use in useEffect hook above
+    prevAction.current = action
 
+    // check if it's Sierra debug mode.
+    if (debugMode === ProgramDebugMode.Sierra) {
+      // Check if there are active sub-steps for the current execution step
+      if (sierraSubStepIndex !== undefined) {
         if (action === 'increase') {
           // Move to the next sub-step
-          if (currentSubStepIndex < sierraActiveIndexes.length - 1) {
-            setSierraSubStepNumber(sierraActiveIndexes[currentSubStepIndex + 1])
+          if (sierraSubStepIndex < sierraActiveIndexes.length - 1) {
+            setSierraSubStepIndex(sierraSubStepIndex + 1)
           } else {
             // No more sub-steps, move to the next trace step
             setExecutionTraceStepNumber((prev) => prev + 1)
             // Reset sub-step since we're changing steps
-            setSierraSubStepNumber(undefined)
+            setSierraSubStepIndex(undefined)
           }
         } else if (action === 'decrease') {
           // Move to the previous sub-step
-          if (currentSubStepIndex > 0) {
-            setSierraSubStepNumber(sierraActiveIndexes[currentSubStepIndex - 1])
+          if (sierraSubStepIndex > 0) {
+            setSierraSubStepIndex(sierraSubStepIndex - 1)
           } else {
             // No more sub-steps, move to the previous trace step
             setExecutionTraceStepNumber((prev) => prev - 1)
             // Reset sub-step since we're changing steps
-            setSierraSubStepNumber(undefined)
+            setSierraSubStepIndex(undefined)
           }
         }
+      } else {
+        // if no substep then we simply increase executionTraceStepNumber
+        setExecutionTraceStepNumber((prev) =>
+          action === 'increase' ? prev + 1 : prev - 1,
+        )
       }
     } else {
-      // If no sierraActiveIndexes, just change the execution trace step number
+      // default behaviour for vm execution trace
       setExecutionTraceStepNumber((prev) =>
         action === 'increase' ? prev + 1 : prev - 1,
       )
-      // once executionTraceStepNumber is updated, sierraActiveIndexes updates
-      // so to know whether to initialize sub step with first or last element of sierraActiveIndexes
-      // we save the action in ref which we will use in useEffect hook with dependency of sierraActiveIndexes
-      prevAction.current = action
-      // Reset sub-step since we're changing steps
-      setSierraSubStepNumber(undefined)
     }
   }
 
@@ -239,7 +265,6 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     ) {
       nextStep += 1
     }
-
     // move to the next breakpoint or to the end of the program
     setExecutionTraceStepNumber(
       nextStep < tracerData.trace.length
@@ -279,14 +304,13 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
             ? ProgramCompilationState.CompilationSuccess
             : ProgramCompilationState.CompilationErr,
         )
-        setSierraSubStepNumber(undefined)
+        setSierraSubStepIndex(undefined)
         setLogs(data.logs)
         setExecutionState(
           data.is_execution_successful === true
             ? ProgramExecutionState.Success
             : ProgramExecutionState.Error,
         )
-
         setExecutionTraceStepNumber(
           data.is_execution_successful === true
             ? 0
@@ -349,7 +373,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         tracerData,
         casmInstructions,
         executionTraceStepNumber,
-        sierraSubStepNumber,
+        sierraSubStepIndex,
         currentTraceEntry,
         currentSierraVariables,
         activeCasmInstructionIndex,

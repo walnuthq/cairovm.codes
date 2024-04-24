@@ -45,6 +45,19 @@ type Props = {
   readOnly?: boolean
 }
 
+interface DecorationOptions {
+  inlineClassName: string
+}
+interface Decoration {
+  range: {
+    startLineNumber: number
+    startColumn: number
+    endLineNumber: number
+    endColumn: number
+  }
+  options: DecorationOptions
+}
+
 const Editor = ({ readOnly = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
@@ -64,7 +77,7 @@ const Editor = ({ readOnly = false }: Props) => {
     currentSierraVariables,
     sierraStatementsToCairoInfo,
     logs: apiLogs,
-    sierraSubStepNumber,
+    sierraSubStepIndex,
     debugMode,
   } = useContext(CairoVMApiContext)
 
@@ -77,7 +90,8 @@ const Editor = ({ readOnly = false }: Props) => {
   const [exampleOption, setExampleOption] = useState<number>(0)
   const [codeType, setCodeType] = useState<string | undefined>()
   const [programArguments, setProgramArguments] = useState<string>('')
-
+  const [editorDecorations, setEditorDecorations] =
+    useState<editor.IEditorDecorationsCollection | null>(null)
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
   const monaco = useMonaco()
 
@@ -104,34 +118,48 @@ const Editor = ({ readOnly = false }: Props) => {
     }
   }
 
-  const [decorations, setDecorations] = useState([])
-
-  interface DecorationOptions {
-    inlineClassName: string
-  }
-  interface Decoration {
-    range: {
-      startLineNumber: number
-      startColumn: number
-      endLineNumber: number
-      endColumn: number
+  function highLightEditor(decorations: Decoration[]) {
+    const editor = editorRef.current
+    if (editor) {
+      // we clear previous decorations
+      editorDecorations?.clear()
+      // add editor decorations
+      const editor_decorations = editor.createDecorationsCollection(decorations)
+      // update new decorations
+      setEditorDecorations(editor_decorations)
     }
-    options: DecorationOptions
   }
 
   useEffect(() => {
     setTimeout(() => {
-      const multiplieDecorations: Decoration[] = []
+      const multipleDecorations: Decoration[] = []
       let isHighlightOnScreen = false
-      casmToSierraProgramMap[activeCasmInstructionIndex]?.map((item, i) => {
-        const index = casmToSierraStatementsMap[activeCasmInstructionIndex][i]
+      const isSierraDebugMode = debugMode === ProgramDebugMode.Sierra
 
-        if (sierraStatementsToCairoInfo) {
-          sierraStatementsToCairoInfo[index]?.cairo_locations.map(
+      casmToSierraProgramMap[activeCasmInstructionIndex]?.forEach((item, i) => {
+        const index = isSierraDebugMode
+          ? sierraSubStepIndex !== undefined
+            ? casmToSierraStatementsMap[activeCasmInstructionIndex][
+                sierraSubStepIndex
+              ]
+            : undefined
+          : casmToSierraStatementsMap[activeCasmInstructionIndex][i]
+
+        // if in sierra debugmode we dont need to add decorations for
+        // all sierra statements in current activeCasmInstructionIndex
+        // we need to add decorations just for the current substep sierra statement
+        if (isSierraDebugMode && i > 0) {
+          return
+        }
+
+        if (sierraStatementsToCairoInfo && index !== undefined) {
+          sierraStatementsToCairoInfo[index]?.cairo_locations.forEach(
             (cairoLocElem) => {
-              if (
-                isRangeVisible(cairoLocElem.start.line, cairoLocElem.end.line)
-              ) {
+              const isInsideVisibleRange = isRangeVisible(
+                cairoLocElem.start.line,
+                cairoLocElem.end.line,
+              )
+              if (isInsideVisibleRange) {
                 isHighlightOnScreen = true
               }
               const startLine: number = cairoLocElem.start.line + 1
@@ -139,7 +167,7 @@ const Editor = ({ readOnly = false }: Props) => {
               const startCol: number = cairoLocElem.start.col + 1
               const endCol: number = cairoLocElem.end.col + 1
               if (monaco) {
-                multiplieDecorations.push({
+                multipleDecorations.push({
                   range: new monaco.Range(startLine, startCol, endLine, endCol),
                   options: { inlineClassName: 'bg-yellow-300 bg-opacity-40' },
                 })
@@ -147,35 +175,31 @@ const Editor = ({ readOnly = false }: Props) => {
             },
           )
 
-          if (!isHighlightOnScreen && multiplieDecorations[0] && monaco) {
+          if (!isHighlightOnScreen && multipleDecorations[0] && monaco) {
             editorRef.current?.revealRangeInCenter(
               new monaco.Range(
-                multiplieDecorations[0].range.startLineNumber,
-                multiplieDecorations[0].range.startColumn,
-                multiplieDecorations[0].range.endLineNumber,
-                multiplieDecorations[0].range.endColumn,
+                multipleDecorations[0].range.startLineNumber,
+                multipleDecorations[0].range.startColumn,
+                multipleDecorations[0].range.endLineNumber,
+                multipleDecorations[0].range.endColumn,
               ),
             )
           }
         }
-      }) || []
-      const editor = editorRef.current as any
-      if (editor) {
-        if (cairoCode === compiledCairoCode) {
-          const newDecorationsIds = editor.deltaDecorations(
-            decorations,
-            multiplieDecorations,
-          )
-          setDecorations(newDecorationsIds)
-        } else {
-          const newDecorationsIds = editor.deltaDecorations(decorations, [])
-          setDecorations(newDecorationsIds)
-        }
-      }
+      })
+
+      highLightEditor(multipleDecorations)
     })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCasmInstructionIndex, codeType, cairoCode, compiledCairoCode])
+  }, [
+    activeCasmInstructionIndex,
+    codeType,
+    cairoCode,
+    compiledCairoCode,
+    debugMode,
+    sierraSubStepIndex,
+  ])
   const [showArgumentsHelper, setShowArgumentsHelper] = useState(false)
 
   const { isFullScreen } = useContext(AppUiContext)
@@ -409,11 +433,17 @@ const Editor = ({ readOnly = false }: Props) => {
                   instructions={sierraStatements}
                   codeType={codeType}
                   activeIndexes={
-                    debugMode === ProgramDebugMode.Sierra
-                      ? sierraSubStepNumber !== undefined
-                        ? [sierraSubStepNumber]
-                        : []
-                      : casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
+                    casmToSierraProgramMap[activeCasmInstructionIndex]
+                      ? debugMode === ProgramDebugMode.Sierra
+                        ? sierraSubStepIndex !== undefined
+                          ? [
+                              casmToSierraProgramMap[
+                                activeCasmInstructionIndex
+                              ][sierraSubStepIndex],
+                            ]
+                          : []
+                        : casmToSierraProgramMap[activeCasmInstructionIndex]
+                      : []
                   }
                   errorIndexes={
                     casmToSierraProgramMap[errorCasmInstructionIndex] ?? []

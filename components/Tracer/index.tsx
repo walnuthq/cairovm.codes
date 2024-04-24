@@ -86,7 +86,7 @@ export const Tracer = () => {
     activeCasmInstructionIndex,
     errorCasmInstructionIndex,
     currentSierraVariables,
-    sierraSubStepNumber,
+    sierraSubStepIndex,
   } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
@@ -118,8 +118,8 @@ export const Tracer = () => {
   }
 
   useEffect(() => {
-    setCurrentFocus(tracerData?.trace[executionTraceStepNumber].pc || 0)
-  }, [debugMode, executionTraceStepNumber, tracerData?.trace])
+    setCurrentFocus(tracerData?.trace[executionTraceStepNumber]?.pc || 0)
+  }, [executionTraceStepNumber, tracerData?.trace])
 
   function stepIn() {
     if (
@@ -226,11 +226,17 @@ export const Tracer = () => {
           instructions={sierraStatements}
           codeType={CodeType.Sierra}
           activeIndexes={
-            debugMode === ProgramDebugMode.Sierra
-              ? sierraSubStepNumber !== undefined
-                ? [sierraSubStepNumber]
-                : []
-              : casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
+            casmToSierraProgramMap[activeCasmInstructionIndex]
+              ? debugMode === ProgramDebugMode.Sierra
+                ? sierraSubStepIndex !== undefined
+                  ? [
+                      casmToSierraProgramMap[activeCasmInstructionIndex][
+                        sierraSubStepIndex
+                      ],
+                    ]
+                  : []
+                : casmToSierraProgramMap[activeCasmInstructionIndex]
+              : []
           }
           errorIndexes={casmToSierraProgramMap[errorCasmInstructionIndex] ?? []}
           variables={currentSierraVariables || {}}
