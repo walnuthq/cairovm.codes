@@ -4,10 +4,7 @@ import { Editor as MonacoEditor, Monaco } from '@monaco-editor/react'
 import { editor } from 'monaco-editor'
 
 import { CodeType } from '../../context/appUiContext'
-import {
-  CairoVMApiContext,
-  ProgramDebugMode,
-} from '../../context/cairoVMApiContext'
+import { CairoVMApiContext } from '../../context/cairoVMApiContext'
 import { cn } from '../../util/styles'
 
 import Header from './Header'
