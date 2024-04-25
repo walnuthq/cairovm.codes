@@ -428,29 +428,29 @@ const Editor = ({ readOnly = false }: Props) => {
                   />
                 </div>
 
-            <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
-              {codeType === CodeType.CASM ? (
-                <InstructionsTable
-                  instructions={casmInstructions}
-                  codeType={codeType}
-                  activeIndexes={[activeCasmInstructionIndex]}
-                  errorIndexes={[errorCasmInstructionIndex]}
-                  variables={{}}
-                />
-              ) : codeType === CodeType.Sierra ? (
-                <InstructionsTable
-                  instructions={sierraStatements}
-                  codeType={codeType}
-                  activeIndexes={activeSierraIndexes}
-                  errorIndexes={
-                    casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
-                  }
-                  variables={currentSierraVariables || {}}
-                />
-              ) : (
-                <div className="h-full overflow-auto pane pane-light">
-                  <MonacoEditor
-                    // @ts-ignore: SCEditor is not TS-friendly
+                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
+                  {codeType === CodeType.CASM ? (
+                    <InstructionsTable
+                      instructions={casmInstructions}
+                      codeType={codeType}
+                      activeIndexes={[activeCasmInstructionIndex]}
+                      errorIndexes={[errorCasmInstructionIndex]}
+                      variables={{}}
+                    />
+                  ) : codeType === CodeType.Sierra ? (
+                    <InstructionsTable
+                      instructions={sierraStatements}
+                      codeType={codeType}
+                      activeIndexes={activeSierraIndexes}
+                      errorIndexes={
+                        casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
+                      }
+                      variables={currentSierraVariables || {}}
+                    />
+                  ) : (
+                    <div className="h-full overflow-auto pane pane-light">
+                      <MonacoEditor
+                        // @ts-ignore: SCEditor is not TS-friendly
 
                         onMount={handleEditorDidMount}
                         options={{
