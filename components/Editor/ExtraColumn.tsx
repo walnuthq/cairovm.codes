@@ -35,6 +35,7 @@ const ExtraColumn = ({
     sierraStatements,
     casmToSierraProgramMap,
     currentSierraVariables,
+    activeSierraIndexes,
   } = useContext(CairoVMApiContext)
 
   return (
@@ -59,9 +60,7 @@ const ExtraColumn = ({
           <InstructionsTable
             instructions={sierraStatements}
             codeType={codeType}
-            activeIndexes={
-              casmToSierraProgramMap[activeCasmInstructionIndex] ?? []
-            }
+            activeIndexes={activeSierraIndexes}
             errorIndexes={
               casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
             }

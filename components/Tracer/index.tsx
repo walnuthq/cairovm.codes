@@ -11,11 +11,15 @@ import { Priority, useRegisterActions } from 'kbar'
 import ReactTooltip from 'react-tooltip'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 
+import { CodeType } from 'context/appUiContext'
 import {
   BreakPoints,
   CairoVMApiContext,
+  ProgramDebugMode,
   ProgramExecutionState,
 } from 'context/cairoVMApiContext'
+
+import { InstructionsTable as SierraInstructionTable } from 'components/Editor/InstructionsTable'
 
 import { cn } from '../../util/styles'
 import Console from '../Editor/Console'
@@ -76,6 +80,12 @@ export const Tracer = () => {
     executionTraceStepNumber,
     addBreakPoint,
     removeBreakPoint,
+    debugMode,
+    sierraStatements,
+    casmToSierraProgramMap,
+    errorCasmInstructionIndex,
+    currentSierraVariables,
+    activeSierraIndexes,
   } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
@@ -107,18 +117,8 @@ export const Tracer = () => {
   }
 
   useEffect(() => {
-    const element = tableRef.current?.querySelector(
-      '#focus_row',
-    ) as HTMLElement | null
-    if (tableRef.current && element?.offsetTop) {
-      tableRef.current.scrollTo({
-        top: element.offsetTop - 58,
-        behavior: 'smooth',
-      })
-    }
-  }, [currentTraceEntry, currentFocus])
-
-  const tableRef = useRef<HTMLDivElement>(null)
+    setCurrentFocus(tracerData?.trace[executionTraceStepNumber]?.pc || 0)
+  }, [executionTraceStepNumber, tracerData?.trace])
 
   function stepIn() {
     if (
@@ -128,16 +128,14 @@ export const Tracer = () => {
     ) {
       return
     }
-    onExecutionStepChange(executionTraceStepNumber + 1)
-    setCurrentFocus(tracerData?.trace[executionTraceStepNumber + 1].pc || 0)
+    onExecutionStepChange('increase')
   }
 
   function stepOut() {
     if (!trace || trace.length === 0 || executionTraceStepNumber === 0) {
       return
     }
-    onExecutionStepChange(executionTraceStepNumber - 1)
-    setCurrentFocus(tracerData?.trace[executionTraceStepNumber - 1].pc || 0)
+    onExecutionStepChange('decrease')
   }
 
   function continueExecution() {
@@ -197,27 +195,39 @@ export const Tracer = () => {
         />
       </div>
 
-      {tracerData && currentTraceEntry && trace && breakPoints && (
-        <div
-          ref={tableRef}
-          className={
-            'h-full w-full bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
-          }
-        >
-          <InstructionsTable
-            memory={tracerData.memory}
-            pcInstMap={tracerData.pcInstMap}
-            currentTraceEntry={currentTraceEntry}
-            currentFocus={currentFocus.idx}
-            breakpoints={breakPoints}
-            toogleBreakPoint={toogleBreakPoint}
-            errorTraceEntry={
-              executionState === ProgramExecutionState.Error
-                ? errorTraceEntry
-                : null
+      {debugMode === ProgramDebugMode.Execution ? (
+        tracerData &&
+        currentTraceEntry &&
+        trace &&
+        breakPoints && (
+          <div
+            className={
+              'h-full w-full bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
             }
-          />
-        </div>
+          >
+            <InstructionsTable
+              memory={tracerData.memory}
+              pcInstMap={tracerData.pcInstMap}
+              currentTraceEntry={currentTraceEntry}
+              currentFocus={currentFocus.idx}
+              breakpoints={breakPoints}
+              toogleBreakPoint={toogleBreakPoint}
+              errorTraceEntry={
+                executionState === ProgramExecutionState.Error
+                  ? errorTraceEntry
+                  : null
+              }
+            />
+          </div>
+        )
+      ) : (
+        <SierraInstructionTable
+          instructions={sierraStatements}
+          codeType={CodeType.Sierra}
+          activeIndexes={activeSierraIndexes}
+          errorIndexes={casmToSierraProgramMap[errorCasmInstructionIndex] ?? []}
+          variables={currentSierraVariables || {}}
+        />
       )}
 
       <div className="border-gray-200 border-t dark:border-black-500 flex-none mb-[10px] h-[22vh]">
@@ -258,6 +268,7 @@ export const Tracer = () => {
 
           {selectedConsoleTab === IConsoleTab.DebugInfo && (
             <DebugInfoTab
+              debugMode={debugMode}
               trace={trace}
               currentTraceEntry={currentTraceEntry}
               executionTraceStepNumber={executionTraceStepNumber}
@@ -277,12 +288,14 @@ function DebugInfoTab({
   currentCallstackEntry,
   executionTraceStepNumber,
   handleRegisterPointerClick,
+  debugMode,
 }: {
   trace: TraceEntry[] | undefined
   currentTraceEntry: TraceEntry | undefined
   currentCallstackEntry?: CallstackEntry[]
   executionTraceStepNumber: number
   handleRegisterPointerClick: (num: number) => void
+  debugMode: ProgramDebugMode
 }) {
   return (
     <div className="px-4 pb-4">
@@ -292,50 +305,58 @@ function DebugInfoTab({
         </p>
       ) : (
         <dl className="text-2xs">
-          <div className="flex flex-col lg:flex-row justify-between">
-            <div>
-              <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
-                Registers
-              </dt>
-              <dd className="font-mono mb-2 flex gap-1">
-                <button
-                  onClick={() => {
-                    handleRegisterPointerClick(currentTraceEntry?.pc as number)
-                  }}
-                  className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
-                >
-                  PC: {currentTraceEntry?.pc}
-                </button>
-                <button
-                  onClick={() => {
-                    handleRegisterPointerClick(currentTraceEntry?.fp as number)
-                  }}
-                  className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-green-700 hover:border-green-700"
-                >
-                  FP: {currentTraceEntry?.fp}
-                </button>
-                <button
-                  onClick={() => {
-                    handleRegisterPointerClick(currentTraceEntry?.ap as number)
-                  }}
-                  className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-orange-700 hover:border-orange-700"
-                >
-                  AP: {currentTraceEntry?.ap}
-                </button>
-              </dd>
+          {debugMode === ProgramDebugMode.Execution && (
+            <div className="flex flex-col lg:flex-row justify-between">
+              <div>
+                <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                  Registers
+                </dt>
+                <dd className="font-mono mb-2 flex gap-1">
+                  <button
+                    onClick={() => {
+                      handleRegisterPointerClick(
+                        currentTraceEntry?.pc as number,
+                      )
+                    }}
+                    className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
+                  >
+                    PC: {currentTraceEntry?.pc}
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleRegisterPointerClick(
+                        currentTraceEntry?.fp as number,
+                      )
+                    }}
+                    className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-green-700 hover:border-green-700"
+                  >
+                    FP: {currentTraceEntry?.fp}
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleRegisterPointerClick(
+                        currentTraceEntry?.ap as number,
+                      )
+                    }}
+                    className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-orange-700 hover:border-orange-700"
+                  >
+                    AP: {currentTraceEntry?.ap}
+                  </button>
+                </dd>
+              </div>
+              <div>
+                <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                  Execution steps
+                </dt>
+                <dd className="font-mono mb-2">
+                  <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                    Current: {executionTraceStepNumber + 1}, Total:{' '}
+                    {trace?.length}
+                  </div>
+                </dd>
+              </div>
             </div>
-            <div>
-              <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
-                Execution steps
-              </dt>
-              <dd className="font-mono mb-2">
-                <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
-                  Current: {executionTraceStepNumber + 1}, Total:{' '}
-                  {trace?.length}
-                </div>
-              </dd>
-            </div>
-          </div>
+          )}
           <div>
             <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
               Callstack
@@ -344,13 +365,17 @@ function DebugInfoTab({
               <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
                 <thead>
                   <tr className="text-left sticky z-[1] top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
-                    <th className="py-1 px-2 font-thin min-w-16">FP</th>
-                    <th className="py-1 px-2 font-thin  whitespace-nowrap w-16">
-                      CALL PC
-                    </th>
-                    <th className="py-1 px-2 font-thin whitespace-nowrap w-16">
-                      RET PC
-                    </th>
+                    {debugMode === ProgramDebugMode.Execution && (
+                      <>
+                        <th className="py-1 px-2 font-thin min-w-16">FP</th>
+                        <th className="py-1 px-2 font-thin  whitespace-nowrap w-16">
+                          CALL PC
+                        </th>
+                        <th className="py-1 px-2 font-thin whitespace-nowrap w-16">
+                          RET PC
+                        </th>
+                      </>
+                    )}
                     <th className="py-1 px-2 font-thin text-left min-w-64">
                       FN NAME
                     </th>
@@ -365,15 +390,19 @@ function DebugInfoTab({
                       key={index}
                       className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
                     >
-                      <td className="py-1 px-2 min-w-16">
-                        {callstackEntry.fp}
-                      </td>
-                      <td className="py-1 px-2 w-16">
-                        {callstackEntry.call_pc}
-                      </td>
-                      <td className="py-1 px-2 w-16">
-                        {callstackEntry.ret_pc}
-                      </td>
+                      {debugMode === ProgramDebugMode.Execution && (
+                        <>
+                          <td className="py-1 px-2 min-w-16">
+                            {callstackEntry.fp}
+                          </td>
+                          <td className="py-1 px-2 w-16">
+                            {callstackEntry.call_pc}
+                          </td>
+                          <td className="py-1 px-2 w-16">
+                            {callstackEntry.ret_pc}
+                          </td>
+                        </>
+                      )}
                       <td className="py-1 px-2 text-left w-64 break-all">
                         {callstackEntry.fn_name}
                       </td>
