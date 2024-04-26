@@ -416,7 +416,7 @@ const Editor = ({ readOnly = false }: Props) => {
             <div className={cn('flex flex-row grow')}>
               <div
                 className={cn(
-                  'w-full flex flex-col justify-between grow h-[50vh] md:h-auto',
+                  'w-full flex flex-col justify-between grow h-[50vh] md:h-auto ',
                   isThreeColumnLayout && 'md:w-1/2',
                 )}
               >
@@ -492,7 +492,7 @@ const Editor = ({ readOnly = false }: Props) => {
               {isThreeColumnLayout && (
                 <div
                   className={cn(
-                    'w-full flex flex-col justify-between grow h-[50vh] md:h-auto',
+                    'w-full flex flex-col justify-between grow h-[50vh] md:h-auto md:block hidden border-r border-gray-200 dark:border-black-500',
                     isThreeColumnLayout && 'md:w-1/2',
                   )}
                 >

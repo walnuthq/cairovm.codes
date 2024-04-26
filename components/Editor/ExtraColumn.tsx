@@ -40,7 +40,7 @@ const ExtraColumn = ({
 
   return (
     <>
-      <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 md:border-r flex-none">
+      <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none">
         <Header
           codeType={codeType}
           onCodeTypeChange={({ value }) => setCodeType(value)}
