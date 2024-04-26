@@ -184,7 +184,7 @@ export const Tracer = () => {
       )}
 
       <div className="border-gray-200 border-t dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
-      <DebugInfoTab
+        <DebugInfoTab
           debugMode={debugMode}
           trace={trace}
           currentTraceEntry={currentTraceEntry}
