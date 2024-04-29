@@ -25,7 +25,7 @@
     "@remixicon/react": "^4.2.0",
     "@types/bn.js": "^5.1.5",
     "assert": "^2.0.0",
-    "babel-preset-es2020": "^1.0.2",
+    "babel-preset-es2020": "^1.0.1",
     "bn.js": "^5.2.1",
     "clsx": "^2.1.0",
     "copy-to-clipboard": "^3.3.1",
@@ -49,7 +49,7 @@
     "react-use-id": "^1.0.0",
     "react-virtuoso": "^4.7.7",
     "tailwind-merge": "^2.2.2",
-    "vercel": "^33.2.0",
+    "vercel": "^32.3.0",
     "wrangler": "^3.24.0"
   },
   "devDependencies": {
@@ -84,7 +84,7 @@
     "sort-package-json": "^1.52.0",
     "swc-loader": "^0.2.3",
     "tailwindcss": "^3.1.2",
-    "tinyify": "^4.0.0",
+    "tinyify": "^3.1.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.4.4",
     "webpack": "^5.81.0"

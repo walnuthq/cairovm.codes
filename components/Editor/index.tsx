@@ -35,6 +35,7 @@ import { cn } from '../../util/styles'
 
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
+import Console from './Console'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
@@ -408,87 +409,110 @@ const Editor = ({ readOnly = false }: Props) => {
         >
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col h-[50vh] md:h-auto',
-              isThreeColumnLayout && 'md:w-1/3',
+              'w-full md:w-1/2 flex flex-col',
+              isThreeColumnLayout && 'md:w-2/3',
             )}
           >
-            <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-6 pr-2 h-14 flex-none md:border-r justify-between">
-              <Header
-                codeType={codeType}
-                onCodeTypeChange={({ value }) => setCodeType(value)}
-                withLogo={isFullScreen}
-              />
-            </div>
+            <div className={cn('flex flex-row grow')}>
+              <div
+                className={cn(
+                  'w-full flex flex-col justify-between grow h-[50vh] md:h-auto',
+                  isThreeColumnLayout && 'md:w-1/2',
+                )}
+              >
+                <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-2 h-14 flex-none md:border-r justify-between">
+                  <Header
+                    codeType={codeType}
+                    onCodeTypeChange={({ value }) => setCodeType(value)}
+                    withLogo={isFullScreen}
+                  />
+                </div>
 
-            <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
-              {codeType === CodeType.CASM ? (
-                <InstructionsTable
-                  instructions={casmInstructions}
-                  codeType={codeType}
-                  activeIndexes={[activeCasmInstructionIndex]}
-                  errorIndexes={[errorCasmInstructionIndex]}
-                  variables={{}}
-                />
-              ) : codeType === CodeType.Sierra ? (
-                <InstructionsTable
-                  instructions={sierraStatements}
-                  codeType={codeType}
-                  activeIndexes={activeSierraIndexes}
-                  errorIndexes={
-                    casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
+                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
+                  {codeType === CodeType.CASM ? (
+                    <InstructionsTable
+                      instructions={casmInstructions}
+                      codeType={codeType}
+                      activeIndexes={[activeCasmInstructionIndex]}
+                      errorIndexes={[errorCasmInstructionIndex]}
+                      variables={{}}
+                    />
+                  ) : codeType === CodeType.Sierra ? (
+                    <InstructionsTable
+                      instructions={sierraStatements}
+                      codeType={codeType}
+                      activeIndexes={activeSierraIndexes}
+                      errorIndexes={
+                        casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
+                      }
+                      variables={currentSierraVariables || {}}
+                    />
+                  ) : (
+                    <div className="h-full overflow-auto pane pane-light">
+                      <MonacoEditor
+                        // @ts-ignore: SCEditor is not TS-friendly
+
+                        onMount={handleEditorDidMount}
+                        options={{
+                          minimap: { enabled: false },
+                          wordBreak: 'keepAll',
+                          wordWrap: 'on',
+                          readOnly: readOnly,
+                        }}
+                        value={codeType === CodeType.Cairo ? cairoCode : ''}
+                        onChange={handleCairoCodeChange}
+                        language={'cairo'}
+                        className={cn(
+                          'code-editor whitespace-pre-wrap overflow-hidden p-0 m-0 w-full h-full absolute top-0 left-0',
+                          {
+                            'with-numbers': !isBytecode,
+                          },
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <EditorControls
+                  isCompileDisabled={isCompileDisabled}
+                  programArguments={programArguments}
+                  areProgramArgumentsValid={areProgramArgumentsValid}
+                  onCopyPermalink={handleCopyPermalink}
+                  onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
+                  onCompileRun={handleCompileRun}
+                  onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
+                  handleChangeExampleOption={(newExample) =>
+                    newExample !== null
+                      ? setExampleOption(newExample.value)
+                      : setExampleOption(0)
                   }
-                  variables={currentSierraVariables || {}}
                 />
-              ) : (
-                <div className="h-full overflow-auto pane pane-light">
-                  <MonacoEditor
-                    // @ts-ignore: SCEditor is not TS-friendly
+              </div>
 
-                    onMount={handleEditorDidMount}
-                    options={{
-                      minimap: { enabled: false },
-                      wordBreak: 'keepAll',
-                      wordWrap: 'on',
-                      readOnly: readOnly,
-                    }}
-                    value={codeType === CodeType.Cairo ? cairoCode : ''}
-                    onChange={handleCairoCodeChange}
-                    language={'cairo'}
-                    className={cn(
-                      'code-editor whitespace-pre-wrap overflow-hidden',
-                      {
-                        'with-numbers': !isBytecode,
-                      },
-                    )}
+              {isThreeColumnLayout && (
+                <div
+                  className={cn(
+                    'w-full flex-col justify-between grow h-[50vh] md:h-auto md:flex hidden',
+                    isThreeColumnLayout && 'md:w-1/2',
+                  )}
+                >
+                  <ExtraColumn
+                    cairoCode={cairoCode}
+                    handleCairoCodeChange={handleCairoCodeChange}
+                    handleEditorDidMount={handleEditorDidMount}
+                    isBytecode={isBytecode}
                   />
                 </div>
               )}
             </div>
-
-            <EditorControls
-              isCompileDisabled={isCompileDisabled}
-              programArguments={programArguments}
-              areProgramArgumentsValid={areProgramArgumentsValid}
-              onCopyPermalink={handleCopyPermalink}
-              onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
-              onCompileRun={handleCompileRun}
-              onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
-              handleChangeExampleOption={(newExample) =>
-                newExample !== null
-                  ? setExampleOption(newExample.value)
-                  : setExampleOption(0)
-              }
-            />
+            <div
+              className={cn(
+                'h-[22vh] border-r border-t pane pane-light overflow-auto border-gray-200 dark:border-black-500',
+              )}
+            >
+              <Console />
+            </div>
           </div>
-
-          {isThreeColumnLayout && (
-            <ExtraColumn
-              cairoCode={cairoCode}
-              handleCairoCodeChange={handleCairoCodeChange}
-              handleEditorDidMount={handleEditorDidMount}
-              isBytecode={isBytecode}
-            />
-          )}
 
           <div
             className={cn(
