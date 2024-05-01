@@ -300,60 +300,67 @@ function DebugInfoTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {currentCallstackEntry?.map((callstackEntry, index) => (
-                    <tr
-                      key={index}
-                      className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
-                    >
-                      {debugMode === ProgramDebugMode.Execution && (
-                        <>
-                          <td className="py-1 px-2 min-w-16">
-                            {callstackEntry.fp}
+                  {currentCallstackEntry?.map((callstackEntry, index) => {
+                    if (
+                      callstackEntry.fn_name ||
+                      debugMode === ProgramDebugMode.Execution
+                    ) {
+                      return (
+                        <tr
+                          key={index}
+                          className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
+                        >
+                          {debugMode === ProgramDebugMode.Execution && (
+                            <>
+                              <td className="py-1 px-2 min-w-16">
+                                {callstackEntry.fp}
+                              </td>
+                              <td className="py-1 px-2 w-16">
+                                {callstackEntry.call_pc}
+                              </td>
+                              <td className="py-1 px-2 w-16">
+                                {callstackEntry.ret_pc}
+                              </td>
+                            </>
+                          )}
+                          <td className="py-1 px-2 text-left w-64 break-all">
+                            {callstackEntry.fn_name}
                           </td>
-                          <td className="py-1 px-2 w-16">
-                            {callstackEntry.call_pc}
-                          </td>
-                          <td className="py-1 px-2 w-16">
-                            {callstackEntry.ret_pc}
-                          </td>
-                        </>
-                      )}
-                      <td className="py-1 px-2 text-left w-64 break-all">
-                        {callstackEntry.fn_name}
-                      </td>
-                      <td className="py-1 px-2 text-left w-full">
-                        {callstackEntry?.params?.map(
-                          (
-                            param: { type_name: string; value: number[] },
-                            index,
-                            array,
-                          ) => (
-                            <div key={index} className="inline-block">
-                              <div
-                                data-tip={param.type_name}
-                                data-for={param.type_name}
-                                className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0 break-normal"
-                              >
-                                {param.value.length > 1
-                                  ? `[${param.value.join(', ')}]`
-                                  : param.value[0]}
+                          <td className="py-1 px-2 text-left w-full">
+                            {callstackEntry?.params?.map(
+                              (
+                                param: { type_name: string; value: number[] },
+                                index,
+                                array,
+                              ) => (
+                                <div key={index} className="inline-block">
+                                  <div
+                                    data-tip={param.type_name}
+                                    data-for={param.type_name}
+                                    className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0 break-normal"
+                                  >
+                                    {param.value.length > 1
+                                      ? `[${param.value.join(', ')}]`
+                                      : param.value[0]}
 
-                                <ReactTooltip
-                                  className="tooltip"
-                                  id={param.type_name}
-                                  effect="solid"
-                                  uuid="buttonTooltip"
-                                />
-                              </div>
-                              <span>
-                                {index < array.length - 1 ? ',\u00A0' : ''}
-                              </span>
-                            </div>
-                          ),
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                                    <ReactTooltip
+                                      className="tooltip"
+                                      id={param.type_name}
+                                      effect="solid"
+                                      uuid="buttonTooltip"
+                                    />
+                                  </div>
+                                  <span>
+                                    {index < array.length - 1 ? ',\u00A0' : ''}
+                                  </span>
+                                </div>
+                              ),
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    }
+                  })}
                 </tbody>
               </table>
             </dd>
