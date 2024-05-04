@@ -14,7 +14,7 @@ import { cn } from '../../util/styles'
 const Nav = () => {
   return (
     <nav
-      className={'sticky z-40 top-0 inset-x-0 py-2 bg-white dark:bg-black-800'}
+      className={'sticky z-50 top-0 inset-x-0 py-2 bg-white dark:bg-black-800'}
     >
       <Container>
         <div className="h-10 flex items-center justify-between">
