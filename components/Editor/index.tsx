@@ -7,10 +7,10 @@ import {
   useState,
 } from 'react'
 
-import { decode, encode } from '@kunigi/string-compression'
 import { Editor as MonacoEditor, Monaco, useMonaco } from '@monaco-editor/react'
 import copy from 'copy-to-clipboard'
 import { Priority, useRegisterActions } from 'kbar'
+import LZString from 'lz-string'
 import { editor } from 'monaco-editor'
 import { useRouter } from 'next/router'
 import { useTheme } from 'next-themes'
@@ -81,6 +81,7 @@ const Editor = ({ readOnly = false }: Props) => {
     sierraSubStepIndex,
     debugMode,
     activeSierraIndexes,
+    setDebugMode,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -211,7 +212,15 @@ const Editor = ({ readOnly = false }: Props) => {
 
     if ('codeType' in query && 'code' in query) {
       setCodeType(query.codeType as string)
-      setCairoCode(JSON.parse('{"a":' + decode(query.code as string) + '}').a)
+      setCairoCode(
+        JSON.parse(
+          LZString.decompressFromEncodedURIComponent(query.code as string),
+        ),
+      )
+      if ('debugMode' in query) {
+        const debugModeValue = query.debugMode as ProgramDebugMode
+        setDebugMode(debugModeValue)
+      }
     } else {
       const initialCodeType: CodeType =
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
@@ -330,12 +339,13 @@ const Editor = ({ readOnly = false }: Props) => {
   const handleCopyPermalink = useCallback(() => {
     const params = {
       codeType,
-      code: encodeURIComponent(encode(JSON.stringify(cairoCode))),
+      debugMode: encodeURIComponent(debugMode),
+      code: LZString.compressToEncodedURIComponent(JSON.stringify(cairoCode)),
     }
 
     copy(`${getAbsoluteURL('/')}?${objToQueryString(params)}`)
     addToConsoleLog('Link with current Cairo code copied to clipboard')
-  }, [cairoCode, codeType, addToConsoleLog])
+  }, [cairoCode, codeType, addToConsoleLog, debugMode])
 
   const areProgramArgumentsValid = useMemo(() => {
     const sanitizedArguments = removeExtraWhitespaces(programArguments)
