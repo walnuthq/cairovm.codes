@@ -221,6 +221,7 @@ const Editor = ({ readOnly = false }: Props) => {
         const debugModeValue = query.debugMode as ProgramDebugMode
         setDebugMode(debugModeValue)
       }
+      router.push('/')
     } else {
       const initialCodeType: CodeType =
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
