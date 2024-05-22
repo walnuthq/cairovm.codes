@@ -1,6 +1,6 @@
 # Architecture
 
-evm.codes is a [NextJS](https://nextjs.org/) and [TailwindCSS](https://tailwindcss.com/) backed React application. Currently, it does not have any backend, so everything runs in the browser. It's written in TypeScript and uses the latest ES6 language features.
+evm.codes is a [NextJS](https://nextjs.org/) and [TailwindCSS](https://tailwindcss.com/) backed React application. It communicates with a backend that is currently closed source. It's written in TypeScript and uses the latest ES6 language features.
 
 Below is the structure of the app:
 
