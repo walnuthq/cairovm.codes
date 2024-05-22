@@ -77,9 +77,9 @@ Sort the `package.json`:
 
 ## Roadmap
 - [x] Web app to compile & present Cairo > Sierra > CASM
-- [ ] Step-by-step execution of CASM
-- [ ] Step-by-step execution of Sierra
-- [ ] Step-by-step execution of Cairo
+- [x] Step-by-step execution of CASM
+- [x] Step-by-step execution of Sierra
+- [x] Step-by-step execution of Cairo
 - [ ] Visual gas metering
 
 ## Architecture
