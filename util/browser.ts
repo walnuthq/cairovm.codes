@@ -5,8 +5,8 @@ export const isMac =
 
 export const getAbsoluteURL = (path = '') => {
   const baseURL =
-    typeof window !== 'undefined'
-      ? window.location.origin
+    process.env.NODE_ENV === 'production'
+      ? 'https://cairovm.codes'
       : 'http://localhost:3000'
   return baseURL + path
 }
