@@ -9,6 +9,7 @@ module.exports = {
       serif: ['Inter', 'sans-serif'],
       sans: ['Inter', 'sans-serif'],
       mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;',
+      'ibm-plex-sans': ['IBM Plex Sans', 'sans-serif'],
     },
     extend: {
       fontSize: {
@@ -24,6 +25,12 @@ module.exports = {
           600: '#141515',
           500: '#1B1B1B',
           400: '#2F2F2F',
+        },
+        darkMode: {
+          primary: '#0F0E0F',
+          secondary: '#1C1E22',
+          icons: '#CACBD4',
+          text: '#EEEEEE',
         },
       },
     },

@@ -46,7 +46,7 @@ html {
  */
 .pane::-webkit-scrollbar,
 .select__menu-list::-webkit-scrollbar {
-  @apply w-2 h-2;
+  @apply w-1 h-1 dark:bg-[#2E3035];
 }
 
 .pane::-webkit-scrollbar-thumb,
@@ -56,11 +56,15 @@ html {
 
 .pane.pane-light::-webkit-scrollbar-thumb,
 .select__menu-list::-webkit-scrollbar-thumb {
-  @apply bg-gray-200/50 hover:bg-gray-300/75 dark:bg-black-500/50 dark:hover:bg-black-400/75;
+  @apply bg-gray-200/50 hover:!bg-gray-300/75 dark:bg-[#6A6C72];
 }
 
 .pane.pane-dark::-webkit-scrollbar-thumb {
-  @apply bg-gray-700/50 hover:bg-gray-600/75 dark:bg-black-600/50 dark:hover:bg-black-500/75;
+  @apply bg-gray-700/50 hover:!bg-gray-600/75 dark:bg-[#6A6C72];
+}
+
+*::-webkit-scrollbar-corner {
+  @apply dark:bg-darkMode-primary;
 }
 
 .pane::-webkit-scrollbar-track,
@@ -107,11 +111,11 @@ html {
 }
 
 .select__single-value {
-  @apply p-0 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white !important;
+  @apply p-0 text-gray-600 hover:text-gray-900 dark:text-darkMode-text dark:hover:text-gray-400 !important;
 }
 
 .select__dropdown-indicator {
-  @apply text-gray-200 dark:text-gray-700 p-0 pr-1 !important;
+  @apply text-gray-200 dark:text-darkMode-text p-0 pr-1 !important;
 }
 
 .select__control--is-focused .select__dropdown-indicator {

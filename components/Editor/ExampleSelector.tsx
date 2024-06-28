@@ -76,7 +76,7 @@ const DropdownIndicator = (props: DropdownIndicatorProps<SelectOption>) => {
         tooltip="Cairo Examples"
         tooltipId="cairo-examples"
         className={cn(
-          'p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none',
+          'p-2 text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278] focus:outline-none',
           props.selectProps.menuIsOpen ? 'bg-black-900/5 dark:bg-white/5' : '',
         )}
       >

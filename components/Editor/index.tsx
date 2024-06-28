@@ -406,7 +406,7 @@ const Editor = ({ readOnly = false }: Props) => {
     <>
       <div
         className={cn(
-          'bg-gray-100 dark:bg-black-700 ',
+          'bg-gray-100 dark:bg-darkMode-secondary font-ibm-plex-sans font-normal',
           !isFullScreen && 'rounded-lg',
         )}
       >
@@ -431,7 +431,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   isThreeColumnLayout && 'md:w-1/2',
                 )}
               >
-                <div className="border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-2 h-14 flex-none md:border-r justify-between">
+                <div className="border-b border-gray-200 dark:border-darkMode-primary flex items-center pl-4 pr-2 h-14 flex-none md:border-r justify-between">
                   <Header
                     codeType={codeType}
                     onCodeTypeChange={({ value }) => setCodeType(value)}
@@ -439,7 +439,7 @@ const Editor = ({ readOnly = false }: Props) => {
                   />
                 </div>
 
-                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
+                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-darkMode-primary">
                   {codeType === CodeType.CASM ? (
                     <InstructionsTable
                       instructions={casmInstructions}
@@ -469,6 +469,10 @@ const Editor = ({ readOnly = false }: Props) => {
                           wordBreak: 'keepAll',
                           wordWrap: 'on',
                           readOnly: readOnly,
+                          scrollbar: {
+                            verticalSliderSize: 5,
+                            verticalScrollbarSize: 5,
+                          },
                         }}
                         value={codeType === CodeType.Cairo ? cairoCode : ''}
                         onChange={handleCairoCodeChange}
@@ -518,7 +522,7 @@ const Editor = ({ readOnly = false }: Props) => {
             </div>
             <div
               className={cn(
-                'h-[22vh] border-r border-t pane pane-light overflow-auto border-gray-200 dark:border-black-500',
+                'h-[22vh] border-r border-t pane pane-light overflow-auto border-gray-200 dark:border-darkMode-primary',
               )}
             >
               <Console />
@@ -527,7 +531,7 @@ const Editor = ({ readOnly = false }: Props) => {
 
           <div
             className={cn(
-              'w-full md:w-1/2 flex flex-col justify-between h-[50vh] md:h-auto',
+              'w-full md:w-1/2 flex flex-col justify-between rounded-r-[inherit] dark:bg-darkMode-primary h-[50vh] md:h-auto',
               isThreeColumnLayout && 'md:w-1/3',
             )}
           >

@@ -138,7 +138,7 @@ export const Tracer = () => {
 
   return (
     <>
-      <div className="border-t md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-4 h-14 flex-none">
+      <div className="border-t dark:bg-darkMode-secondary rounded-r-[inherit] md:border-t-0 border-b border-gray-200 dark:border-black-500 flex items-center pl-4 pr-4 h-14 flex-none">
         <ExecutionStatus
           onStepIn={stepIn}
           onStepOut={stepOut}
@@ -155,7 +155,7 @@ export const Tracer = () => {
         breakPoints && (
           <div
             className={
-              'h-full w-full bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500'
+              'h-full w-full bg-gray-50 dark:bg-darkMode-primary border-gray-200 dark:border-black-500'
             }
           >
             <InstructionsTable
@@ -183,7 +183,7 @@ export const Tracer = () => {
         />
       )}
 
-      <div className="border-gray-200 border-t dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
+      <div className="border-gray-200 border-t dark:bg-darkMode-secondary dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
         <DebugInfoTab
           debugMode={debugMode}
           trace={trace}
@@ -223,17 +223,17 @@ function DebugInfoTab({
           {debugMode === ProgramDebugMode.Execution && (
             <div className="flex flex-col lg:flex-row justify-between">
               <div>
-                <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
                   Registers
                 </dt>
-                <dd className="font-mono mb-2 flex gap-1">
+                <dd className="mb-2 flex gap-1">
                   <button
                     onClick={() => {
                       handleRegisterPointerClick(
                         currentTraceEntry?.pc as number,
                       )
                     }}
-                    className="font-mono inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-fuchsia-700 hover:border-fuchsia-700"
+                    className=" inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-fuchsia-700 hover:!border-fuchsia-700"
                   >
                     PC: {currentTraceEntry?.pc}
                   </button>
@@ -243,7 +243,7 @@ function DebugInfoTab({
                         currentTraceEntry?.fp as number,
                       )
                     }}
-                    className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-green-700 hover:border-green-700"
+                    className=" inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-green-700 hover:!border-green-700"
                   >
                     FP: {currentTraceEntry?.fp}
                   </button>
@@ -253,18 +253,18 @@ function DebugInfoTab({
                         currentTraceEntry?.ap as number,
                       )
                     }}
-                    className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-gray-700 text-gray-500 hover:text-orange-700 hover:border-orange-700"
+                    className="inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-orange-700 hover:!border-orange-700"
                   >
                     AP: {currentTraceEntry?.ap}
                   </button>
                 </dd>
               </div>
               <div>
-                <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+                <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
                   Execution steps
                 </dt>
-                <dd className="font-mono mb-2">
-                  <div className="font-mono inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-gray-700 text-gray-500">
+                <dd className="mb-2">
+                  <div className="inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD]">
                     Current: {executionTraceStepNumber + 1}, Total:{' '}
                     {trace?.length}
                   </div>
@@ -273,7 +273,7 @@ function DebugInfoTab({
             </div>
           )}
           <div>
-            <dt className="mb-1 text-gray-500 dark:text-gray-400 font-medium uppercase">
+            <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
               Callstack
             </dt>
             <dd className="font-mono mb-2">
@@ -554,7 +554,7 @@ const FixedHeader = () => {
     // added fixed width in each column
     // set table-layout = 'fixed' css property in our table element check 'Table' component above
     //
-    <tr className="text-left bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
+    <tr className="text-left bg-gray-50 dark:bg-darkMode-primary text-gray-400 dark:text-gray-600 border-b border-gray-200 dark:border-black-500">
       <th className="py-1 w-12"></th>
       <th className="py-1 w-10"></th>
       <th className="py-1 w-14"></th>

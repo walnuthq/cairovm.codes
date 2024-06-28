@@ -120,7 +120,10 @@ const ExecutionStatus = ({
           tooltipId="step1"
           disabled={executionTraceStepNumber === 0}
         >
-          <RiArrowGoBackLine size={16} className="text-indigo-500" />
+          <RiArrowGoBackLine
+            size={16}
+            className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
+          />
         </Button>
         <Button
           transparent
@@ -130,7 +133,10 @@ const ExecutionStatus = ({
           tooltipId="step2"
           disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
         >
-          <RiArrowGoForwardLine size={16} className="text-indigo-500" />
+          <RiArrowGoForwardLine
+            size={16}
+            className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
+          />
         </Button>
         <Button
           transparent
@@ -140,7 +146,10 @@ const ExecutionStatus = ({
           tooltipId="continue-execution"
           disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
         >
-          <RiPlayCircleLine size={16} className="text-indigo-500" />
+          <RiPlayCircleLine
+            size={16}
+            className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
+          />
         </Button>
       </div>
     </div>

@@ -19,12 +19,12 @@ const Console = () => {
 
   return (
     <div ref={container} className="p-4">
-      <p className="text-gray-500 dark:text-gray-400 font-medium uppercase text-2xs">
+      <p className="text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
         Console
       </p>
-      <div className="leading-5 font-mono text-tiny text-gray-400 dark:text-gray-500">
+      <div className="leading-6 text-[16px] text-gray-400 dark:text-darkMode-text">
         {consoleLog.map((log, index) => (
-          <pre key={toKeyIndex('line', index)}>
+          <pre key={toKeyIndex('line', index)} className=" font-ibm-plex-sans">
             {log.type === LogType.Error && (
               <span className="text-red-500">[Error] </span>
             )}

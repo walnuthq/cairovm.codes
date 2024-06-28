@@ -74,7 +74,7 @@ const EditorControls = ({
   }
 
   return (
-    <div className="flex flex-row items-center justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
+    <div className="flex dark:bg-darkMode-primary flex-row items-center justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
       <div className="flex flex-row">
         <Button
           onClick={onCopyPermalink}
@@ -82,7 +82,7 @@ const EditorControls = ({
           padded={false}
           tooltip="Share permalink [p]"
           tooltipId="share-permalink"
-          className="p-2 text-indigo-500 hover:text-indigo-600 focus:outline-none"
+          className="p-2 text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278] focus:outline-none"
         >
           <RiLinksLine size={16} />
         </Button>
@@ -107,10 +107,13 @@ const EditorControls = ({
           readOnly={isCompileDisabled}
           value={programArguments}
           placeholder={`Program arguments`}
-          className={cn('max-w-64 border bg-gray-200 dark:bg-gray-800', {
-            'dark:border-gray-800 border-gray-200': areProgramArgumentsValid,
-            'border-red-500': !areProgramArgumentsValid,
-          })}
+          className={cn(
+            'max-w-64 border bg-gray-200 dark:bg-darkMode-primary',
+            {
+              'dark:border-[#46373A]': areProgramArgumentsValid,
+              'border-red-500': !areProgramArgumentsValid,
+            },
+          )}
           inputClassName={cn('text-xs md:text-sm', {
             'text-red-500': !areProgramArgumentsValid,
           })}
