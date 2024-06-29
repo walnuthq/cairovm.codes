@@ -277,9 +277,9 @@ function DebugInfoTab({
               Callstack
             </dt>
             <dd className="font-mono mb-2">
-              <table className="w-full font-mono text-tiny border border-gray-300 dark:border-black-500">
+              <table className="w-full font-mono text-tiny border border-gray-300 dark:border-[#46373A]">
                 <thead>
-                  <tr className="text-left sticky z-[1] top-0 bg-gray-50 dark:bg-black-600 text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-black-500">
+                  <tr className="text-left sticky z-[1] top-0 bg-gray-50 dark:bg-darkMode-secondary text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-[#46373A]">
                     {debugMode === ProgramDebugMode.Execution && (
                       <>
                         <th className="py-1 px-2 font-thin min-w-16">FP</th>
@@ -308,7 +308,7 @@ function DebugInfoTab({
                       return (
                         <tr
                           key={index}
-                          className="relative border-b border-gray-300 dark:border-black-500 text-gray-400 dark:text-gray-600"
+                          className="relative border-b border-gray-300 dark:border-[#46373A] text-gray-400 dark:text-gray-600"
                         >
                           {debugMode === ProgramDebugMode.Execution && (
                             <>

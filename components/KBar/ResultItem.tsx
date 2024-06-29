@@ -17,7 +17,7 @@ const ResultItem = forwardRef(
         className={cn(
           'flex items-center justify-between cursor-pointer py-3 px-4 border-l-2',
           {
-            'bg-gray-50 dark:bg-black-500 border-indigo-500': active,
+            'bg-gray-50 dark:bg-black-500 border-icons': active,
             'bg-white dark:bg-black-600 border-transparent': !active,
           },
         )}
@@ -39,7 +39,7 @@ const ResultItem = forwardRef(
             {action.shortcut.map((sc) => (
               <kbd
                 key={sc}
-                className="box-border py px-1 bg-gray-100 dark:bg-black-400 text-indigo-500 rounded"
+                className="box-border py px-1 bg-gray-100 dark:bg-black-400 text-icons rounded"
               >
                 {sc}
               </kbd>

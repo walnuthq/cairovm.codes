@@ -59,7 +59,7 @@ export const Input: React.FC<Props> = forwardRef(
           onFocus={handleFocus}
           onBlur={handleBlur}
           onInput={handleInput}
-          className={`${inputClassName} w-full outline-none bg-transparent placeholder-[#E85733] dark:placeholder-[#FFCDD2] placeholder:text-center`}
+          className={`${inputClassName} w-full outline-none bg-transparent placeholder-[#E85733] dark:placeholder-[#FFCDD2]`}
           {...rest}
         />
         {searchable && (

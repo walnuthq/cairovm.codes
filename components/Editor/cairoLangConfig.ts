@@ -201,6 +201,7 @@ export function registerCairoLanguageSupport(_monaco: typeof MonacoEditor) {
       },
     ],
     colors: {
+      'editor.background': '#f9fafb',
       'editor.foreground': '#000000',
       'editorCursor.foreground': '#8B0000',
       'editor.lineHighlightBackground': '#E8573310',

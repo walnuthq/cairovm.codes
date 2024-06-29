@@ -22,7 +22,7 @@ const Console = () => {
       <p className="text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
         Console
       </p>
-      <div className="leading-6 text-[16px] text-gray-400 dark:text-darkMode-text">
+      <div className="leading-6 text-tiny text-gray-400 dark:text-darkMode-text">
         {consoleLog.map((log, index) => (
           <pre key={toKeyIndex('line', index)} className=" font-ibm-plex-sans">
             {log.type === LogType.Error && (
