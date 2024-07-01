@@ -152,7 +152,7 @@ export const InstructionsTable = ({
   )
 
   return (
-    <div className="h-full bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-black-500">
+    <div className="h-full bg-gray-50 dark:bg-darkMode-primary  border-gray-200 dark:border-black-500">
       {/* 
         Some References for react-virtuoso:
         Official Doc: https://virtuoso.dev/

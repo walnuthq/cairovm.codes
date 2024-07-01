@@ -201,9 +201,10 @@ export function registerCairoLanguageSupport(_monaco: typeof MonacoEditor) {
       },
     ],
     colors: {
+      'editor.background': '#f9fafb',
       'editor.foreground': '#000000',
       'editorCursor.foreground': '#8B0000',
-      'editor.lineHighlightBackground': '#0000FF20',
+      'editor.lineHighlightBackground': '#E8573310',
       'editor.selectionBackground': '#88000030',
       'editor.inactiveSelectionBackground': '#88000015',
     },
@@ -218,7 +219,7 @@ export function registerCairoLanguageSupport(_monaco: typeof MonacoEditor) {
       },
     ],
     colors: {
-      'editor.background': '#141515',
+      'editor.background': '#0F0E0F',
       'editor.lineHighlightBackground': '#1e1e1e',
     },
   })
