@@ -24,7 +24,7 @@ const Console = () => {
       </p>
       <div className="leading-6 text-tiny text-gray-400 dark:text-darkMode-text">
         {consoleLog.map((log, index) => (
-          <pre key={toKeyIndex('line', index)} className=" font-ibm-plex-sans">
+          <pre key={toKeyIndex('line', index)}>
             {log.type === LogType.Error && (
               <span className="text-red-500">[Error] </span>
             )}

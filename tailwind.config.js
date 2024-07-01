@@ -6,10 +6,9 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      serif: ['Inter', 'sans-serif'],
-      sans: ['Inter', 'sans-serif'],
+      serif: ['IBM Plex Sans', 'sans-serif'],
+      sans: ['IBM Plex Sans', 'sans-serif'],
       mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;',
-      'ibm-plex-sans': ['IBM Plex Sans', 'sans-serif'],
     },
     extend: {
       fontSize: {

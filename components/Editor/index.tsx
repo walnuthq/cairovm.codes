@@ -406,7 +406,7 @@ const Editor = ({ readOnly = false }: Props) => {
     <>
       <div
         className={cn(
-          'bg-gray-100 dark:bg-darkMode-secondary font-ibm-plex-sans font-normal',
+          'bg-gray-100 dark:bg-darkMode-secondary font-normal',
           !isFullScreen && 'rounded-lg',
         )}
       >
