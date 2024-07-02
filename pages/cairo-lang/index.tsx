@@ -6,7 +6,7 @@ import { AppUiContext } from 'context/appUiContext'
 
 import Editor from 'components/Editor'
 
-const HomePage = () => {
+const CairoLangPage = () => {
   const { enableFullScreen } = useContext(AppUiContext)
 
   useEffect(() => {
@@ -28,4 +28,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default CairoLangPage
