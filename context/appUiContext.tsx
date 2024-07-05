@@ -24,6 +24,7 @@ type AppUiContextProps = {
   toggleThreeColumnLayout: () => void
   toggleFullScreen: () => void
   addToConsoleLog: (line: string, type?: LogType) => void
+  enableFullScreen: () => void
 }
 
 export const AppUiContext = createContext<AppUiContextProps>({
@@ -33,6 +34,7 @@ export const AppUiContext = createContext<AppUiContextProps>({
   toggleThreeColumnLayout: () => undefined,
   toggleFullScreen: () => undefined,
   addToConsoleLog: () => undefined,
+  enableFullScreen: () => undefined,
 })
 
 export const AppUiProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -47,6 +49,10 @@ export const AppUiProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen)
+  }
+
+  const enableFullScreen = () => {
+    setIsFullScreen(true)
   }
 
   const toggleThreeColumnLayout = () => {
@@ -70,6 +76,7 @@ export const AppUiProvider: React.FC<PropsWithChildren> = ({ children }) => {
         toggleThreeColumnLayout,
         toggleFullScreen,
         addToConsoleLog,
+        enableFullScreen,
       }}
     >
       {children}

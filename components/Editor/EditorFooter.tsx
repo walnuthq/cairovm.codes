@@ -8,7 +8,7 @@ import ThemeSelector from '../ThemeSelector'
 import ToggleFullScreen from '../ToggleFullScreen'
 import ToggleThreeColumnLayout from '../ToggleThreeColumnLayout'
 
-function EditorFooter() {
+function EditorFooter({ withoutContent = false }) {
   const { cairoLangCompilerVersion } = useContext(CairoVMApiContext)
   const { isFullScreen } = useContext(AppUiContext)
   return (
@@ -24,7 +24,7 @@ function EditorFooter() {
           : ' '}
       </span>
 
-      {isFullScreen && (
+      {isFullScreen && !withoutContent && (
         <div className="flex items-center justify-end divide-x divide-gray-200 dark:divide-black-500">
           <span className="pr-4">
             Made with ❤️ by{' '}

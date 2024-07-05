@@ -4,6 +4,8 @@ import Image from 'next/image'
 import cairoLogo from 'public/cairo_logo.png'
 import Select, { OnChangeValue } from 'react-select'
 
+import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
+
 import { CodeType } from '../../context/appUiContext'
 
 type Props = {
@@ -11,6 +13,7 @@ type Props = {
   onCodeTypeChange: (option: OnChangeValue<any, any>) => void
   onlyDropDown?: boolean
   withLogo?: boolean
+  anotherTitle?: boolean
 }
 
 const codeLangOptions = Object.keys(CodeType).map((lang) => ({
@@ -23,6 +26,7 @@ const EditorHeader = ({
   onCodeTypeChange,
   onlyDropDown = false,
   withLogo = false,
+  anotherTitle = false,
 }: Props) => {
   const codeTypeValue = useMemo(
     () => ({
@@ -34,20 +38,34 @@ const EditorHeader = ({
   return (
     <>
       <div className={'flex justify-between items-center w-full'}>
-        {!onlyDropDown &&
-          (withLogo ? (
-            <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
-              <span className="pr-2">cairovm</span>
-              <Image src={cairoLogo} width={20} height={20} alt="cairo" />
-              <span className="pl-2">codes</span>
-            </div>
-          ) : (
-            <h3 className="font-semibold text-md hidden xl:inline-flex items-center">
-              <span>Cairo VM Playground</span>
-            </h3>
-          ))}
+        <div className="flex items-center">
+          {!onlyDropDown &&
+            (withLogo && !anotherTitle ? (
+              <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                <span className="pr-2">cairovm</span>
+                <Image src={cairoLogo} width={20} height={20} alt="cairo" />
+                <span className="pl-2">codes</span>
+              </div>
+            ) : (
+              <div>
+                <h3
+                  className={`${
+                    !anotherTitle && 'font-semibold'
+                  } text-md hidden xl:inline-flex items-center`}
+                >
+                  <span>{!anotherTitle && 'Cairo VM'}Playground</span>
+                </h3>
+                {anotherTitle && (
+                  <div className="text-xs text-[#BDBDBDEE]">
+                    Cairo compiler v2.6.3
+                  </div>
+                )}
+              </div>
+            ))}
+        </div>
 
         <div className="flex items-center ">
+          {anotherTitle && <ToggleThreeColumnLayout />}
           <Select
             className="z-40"
             onChange={onCodeTypeChange}

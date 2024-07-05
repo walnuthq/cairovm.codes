@@ -44,6 +44,7 @@ import { InstructionsTable } from './InstructionsTable'
 // @ts-ignore - Cairo is not part of the official highlightjs package
 type Props = {
   readOnly?: boolean
+  isCairoLangPage?: boolean
 }
 
 interface DecorationOptions {
@@ -59,7 +60,7 @@ interface Decoration {
   options: DecorationOptions
 }
 
-const Editor = ({ readOnly = false }: Props) => {
+const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   const { settingsLoaded, getSetting } = useContext(SettingsContext)
   const router = useRouter()
 
@@ -436,6 +437,7 @@ const Editor = ({ readOnly = false }: Props) => {
                     codeType={codeType}
                     onCodeTypeChange={({ value }) => setCodeType(value)}
                     withLogo={isFullScreen}
+                    anotherTitle={isCairoLangPage}
                   />
                 </div>
 
@@ -539,7 +541,7 @@ const Editor = ({ readOnly = false }: Props) => {
           </div>
         </div>
 
-        <EditorFooter />
+        <EditorFooter withoutContent={isCairoLangPage} />
       </div>
       <ArgumentsHelperModal
         showArgumentsHelper={showArgumentsHelper}
