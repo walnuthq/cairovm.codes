@@ -4,8 +4,6 @@ import Image from 'next/image'
 import cairoLogo from 'public/cairo_logo.png'
 import Select, { OnChangeValue } from 'react-select'
 
-import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
-
 import { CodeType } from '../../context/appUiContext'
 
 type Props = {
