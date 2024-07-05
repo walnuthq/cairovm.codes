@@ -55,17 +55,11 @@ const EditorHeader = ({
                 >
                   <span>{!anotherTitle && 'Cairo VM'}Playground</span>
                 </h3>
-                {anotherTitle && (
-                  <div className="text-xs text-[#BDBDBDEE]">
-                    Cairo compiler v2.6.3
-                  </div>
-                )}
               </div>
             ))}
         </div>
 
         <div className="flex items-center ">
-          {anotherTitle && <ToggleThreeColumnLayout />}
           <Select
             className="z-40"
             onChange={onCodeTypeChange}
