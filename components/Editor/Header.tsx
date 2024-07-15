@@ -4,8 +4,6 @@ import Image from 'next/image'
 import cairoLogo from 'public/cairo_logo.png'
 import Select, { OnChangeValue } from 'react-select'
 
-import ToggleThreeColumnLayout from 'components/ToggleThreeColumnLayout'
-
 import { CodeType } from '../../context/appUiContext'
 
 type Props = {
@@ -35,37 +33,30 @@ const EditorHeader = ({
     }),
     [codeType],
   )
+
   return (
     <>
       <div className={'flex justify-between items-center w-full'}>
-        <div className="flex items-center">
-          {!onlyDropDown &&
-            (withLogo && !anotherTitle ? (
-              <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
-                <span className="pr-2">cairovm</span>
-                <Image src={cairoLogo} width={20} height={20} alt="cairo" />
-                <span className="pl-2">codes</span>
-              </div>
-            ) : (
-              <div>
-                <h3
-                  className={`${
-                    !anotherTitle && 'font-semibold'
-                  } text-md hidden xl:inline-flex items-center`}
-                >
-                  <span>{!anotherTitle && 'Cairo VM'}Playground</span>
-                </h3>
-                {anotherTitle && (
-                  <div className="text-xs text-[#BDBDBDEE]">
-                    Cairo compiler v2.6.3
-                  </div>
-                )}
-              </div>
-            ))}
-        </div>
+        {!onlyDropDown &&
+          (withLogo && !anotherTitle ? (
+            <div className="flex items-center text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+              <span className="pr-2">cairovm</span>
+              <Image src={cairoLogo} width={20} height={20} alt="cairo" />
+              <span className="pl-2">codes</span>
+            </div>
+          ) : (
+            <>
+              <h3
+                className={`${
+                  !anotherTitle && 'font-semibold hidden xl:inline-flex'
+                } text-md items-center`}
+              >
+                <span>{!anotherTitle && 'Cairo VM'}Playground</span>
+              </h3>
+            </>
+          ))}
 
         <div className="flex items-center ">
-          {anotherTitle && <ToggleThreeColumnLayout />}
           <Select
             className="z-40"
             onChange={onCodeTypeChange}

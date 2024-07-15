@@ -24,7 +24,7 @@ function EditorFooter({ withoutContent = false }) {
           : ' '}
       </span>
 
-      {isFullScreen && !withoutContent && (
+      {isFullScreen && (
         <div className="flex items-center justify-end divide-x divide-gray-200 dark:divide-black-500">
           <span className="pr-4">
             Made with ❤️ by{' '}
@@ -38,10 +38,15 @@ function EditorFooter({ withoutContent = false }) {
             </a>
           </span>
           <div className="items-center flex">
-            <KBarButton />
-            <ToggleFullScreen />
+            {!withoutContent && (
+              <>
+                <KBarButton />
+                <ToggleFullScreen />
+              </>
+            )}
+
             <ToggleThreeColumnLayout />
-            <ThemeSelector />
+            {!withoutContent && <ThemeSelector />}
           </div>
         </div>
       )}
