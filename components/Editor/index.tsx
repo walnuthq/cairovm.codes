@@ -101,12 +101,12 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
 
   useEffect(() => {
     // when theme is changed, we again set theme of editor
-    if (theme === 'dark') {
+    if (theme === 'dark' || isCairoLangPage) {
       monaco?.editor.setTheme('dark-theme')
     } else {
       monaco?.editor.setTheme('light-theme')
     }
-  }, [monaco?.editor, theme])
+  }, [monaco?.editor, theme, isCairoLangPage])
 
   const handleEditorDidMount = async (
     editor: editor.IStandaloneCodeEditor,
@@ -115,7 +115,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     editorRef.current = editor
     registerCairoLanguageSupport(monaco as any)
     // once the editor is mounted we set the user selected theme
-    if (theme === 'dark') {
+    if (theme === 'dark' || isCairoLangPage) {
       monaco.editor.setTheme('dark-theme')
     } else {
       monaco.editor.setTheme('light-theme')
