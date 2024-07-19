@@ -441,7 +441,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                   />
                 </div>
 
-                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-darkMode-primary">
+                <div className="relative pane grow pane-light overflow-auto md:border-r bg-gray-50 dark:bg-black-600 border-gray-200 dark:border-darkMode-secondary">
                   {codeType === CodeType.CASM ? (
                     <InstructionsTable
                       instructions={casmInstructions}
@@ -467,6 +467,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
 
                         onMount={handleEditorDidMount}
                         options={{
+                          overviewRulerLanes: 0,
                           minimap: { enabled: false },
                           wordBreak: 'keepAll',
                           wordWrap: 'on',
