@@ -17,10 +17,10 @@ const HomePage = () => {
     <>
       <Head>
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="EVM Codes - Opcodes" />
+        <meta property="og:title" content="Cairo VM Codes" />
         <meta
           name="description"
-          content="An Ethereum Virtual Machine Opcodes Interactive Reference"
+          content="A Cairo Virtual Machine Interactive Reference"
         />
       </Head>
 
