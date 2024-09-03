@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 
 import { AppUiContext } from '../../context/appUiContext'
-import { CairoVMApiContext } from '../../context/cairoVMApiContext'
 import { cn } from '../../util/styles'
 import KBarButton from '../KBar/Button'
 import ThemeSelector from '../ThemeSelector'
@@ -9,7 +8,6 @@ import ToggleFullScreen from '../ToggleFullScreen'
 import ToggleThreeColumnLayout from '../ToggleThreeColumnLayout'
 
 function EditorFooter({ withoutContent = false }) {
-  const { cairoLangCompilerVersion } = useContext(CairoVMApiContext)
   const { isFullScreen } = useContext(AppUiContext)
   return (
     <div
@@ -18,11 +16,7 @@ function EditorFooter({ withoutContent = false }) {
         !isFullScreen && 'rounded-b-lg',
       )}
     >
-      <span>
-        {cairoLangCompilerVersion !== ''
-          ? `Cairo Compiler v${cairoLangCompilerVersion}`
-          : ' '}
-      </span>
+      <span>Cairo Compiler v2.6.3</span>
 
       {isFullScreen && (
         <div className="flex items-center justify-end divide-x divide-gray-200 dark:divide-black-500">
