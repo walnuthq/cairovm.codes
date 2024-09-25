@@ -209,6 +209,73 @@ fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
         _ => fib(b, a + b, n - 1),
     }
 }`,
+    `#[starknet::contract]
+mod SimpleContract {
+    #[storage]
+    struct Storage {
+        balance: felt252, 
+    }
+    
+    #[generate_trait]
+    impl InternalImpl of InternalTrait {
+        fn internal_function(self: @ContractState) -> felt252 {
+            self.balance.read()
+        }
+    }
+
+    fn other_internal_function(self: @ContractState) -> felt252 {
+        self.balance.read() + 5
+    }
+}
+
+use SimpleContract::{ InternalTrait, other_internal_function };
+
+fn add(a: felt252, b: felt252, c: felt252) -> felt252 {
+    a + b + c
+}
+
+fn main() -> felt252 {
+    let mut state = SimpleContract::contract_state_for_testing();
+    state.balance.write(10);
+  
+    let balance = state.balance.read();
+    let internal_balance = state.internal_function();
+    let other_balance = other_internal_function(@state);
+    
+    let res = add(balance, internal_balance, other_balance);
+    res
+}`,
+    `#[starknet::contract]
+mod Fibonacci {
+    #[storage]
+    struct Storage {
+        n: u128, 
+    }
+    
+    #[generate_trait]
+    impl CalculationImpl of CalculationTrait {
+        fn calculate_fib(self: @ContractState) -> u128 {
+            fib(1, 1, self.n.read())
+        }
+    }
+
+    fn fib(a: u128, b: u128, n: u128) -> u128 {
+        match n {
+            0 => a,
+            _ => fib(b, a + b, n - 1),
+        }
+    }
+}
+
+use Fibonacci::CalculationTrait;
+
+fn main() -> u128 {
+    let mut state = Fibonacci::contract_state_for_testing();
+    state.n.write(5);
+    
+    let result = state.calculate_fib();
+    result
+}`,
   ],
   Sierra: [
     `type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
@@ -434,4 +501,6 @@ export const CairoExampleNames = [
   'Dictionaries',
   'Ownership',
   'Fibonacci',
+  'SimpleContract',
+  'FibonacciContract',
 ]
