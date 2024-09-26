@@ -501,6 +501,6 @@ export const CairoExampleNames = [
   'Dictionaries',
   'Ownership',
   'Fibonacci',
-  'SimpleContract',
-  'FibonacciContract',
+  'Simple Contract',
+  'Fibonacci Contract',
 ]
