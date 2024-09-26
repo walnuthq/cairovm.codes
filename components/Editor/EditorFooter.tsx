@@ -16,7 +16,7 @@ function EditorFooter({ withoutContent = false }) {
         !isFullScreen && 'rounded-b-lg',
       )}
     >
-      <span>Cairo Compiler v2.6.3</span>
+      <span>Cairo Compiler v2.8.0</span>
 
       {isFullScreen && (
         <div className="flex items-center justify-end divide-x divide-gray-200 dark:divide-black-500">
