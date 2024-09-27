@@ -12,11 +12,7 @@ const PlaygroundPage = () => {
       <html lang="en"></html>
       <Head>
         <meta property="og:type" content="website" />
-        <title>EVM Codes - Playground</title>
-        <meta
-          name="description"
-          content="EVM Codes’ Playground is an interactive tool for learning how to use opcodes, the stack behind smart contracts."
-        />
+        <title>CairoVM Codes - Playground</title>
       </Head>
 
       <Container>
