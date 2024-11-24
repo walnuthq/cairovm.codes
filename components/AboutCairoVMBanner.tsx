@@ -43,9 +43,7 @@ const AboutCairoVMBanner = () => {
           >
             Walnut
           </a>
-          , this app lets you compile Cairo programs into Sierra and CASM.
-          Gradually, we will introduce step-through execution for CASM, Sierra,
-          and Cairo, as part of our Cairo debugger development.
+          , this app enables seamless compilation of Cairo programs into Sierra and CASM. With step-through execution for Cairo, Sierra, and CASM, it empowers developers to explore and understand the inner workings of the Cairo Virtual Machine.
         </p>
       </div>
     </div>
