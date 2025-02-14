@@ -26,6 +26,7 @@ type EditorControlsProps = {
   onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
+  onProveAndVerify: () => void
 }
 
 const EditorControls = ({
@@ -37,6 +38,7 @@ const EditorControls = ({
   onCompileRun,
   onProgramArgumentsUpdate,
   onShowArgumentsHelper,
+  onProveAndVerify,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -119,7 +121,7 @@ const EditorControls = ({
           })}
         />
 
-        <div>
+        <div className="flex flex-row gap-x-2">
           <Button
             onClick={onCompileRun}
             disabled={isCompileDisabled || !areProgramArgumentsValid}
@@ -127,6 +129,14 @@ const EditorControls = ({
             contentClassName="justify-center"
           >
             Run
+          </Button>
+          <Button
+            onClick={onProveAndVerify}
+            disabled={isCompileDisabled || !areProgramArgumentsValid}
+            size="sm"
+            contentClassName="justify-center"
+          >
+            Prove & Verify
           </Button>
         </div>
       </div>
