@@ -341,12 +341,21 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   }, [cairoCode, programArguments, compileCairoCode])
 
   const handleProveAndVerify = useCallback(() => {
-    addToConsoleLog(
-      'Proof generated successfully in 42s, proof size: 42kb',
-      LogType.Info,
-    )
-    addToConsoleLog('Proof verified successfully in 42ms', LogType.Info)
-    addToConsoleLog(<DownloadProof />, LogType.Info)
+    addToConsoleLog('Generating proof...', LogType.Info)
+    setTimeout(() => {
+      addToConsoleLog(
+        'Proof generation successful (finished in 42s)',
+        LogType.Info,
+      )
+      addToConsoleLog(<DownloadProof />, LogType.Info)
+      addToConsoleLog('Verifying...', LogType.Info)
+      setTimeout(() => {
+        addToConsoleLog(
+          'Verification successful (finished in 42ms)',
+          LogType.Info,
+        )
+      }, 200)
+    }, 1000)
   }, [addToConsoleLog])
 
   const handleCopyPermalink = useCallback(() => {
