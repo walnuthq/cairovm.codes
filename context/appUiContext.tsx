@@ -1,4 +1,9 @@
-import React, { PropsWithChildren, createContext, useState } from 'react'
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  createContext,
+  useState,
+} from 'react'
 
 export enum LogType {
   Error,
@@ -14,7 +19,7 @@ export enum CodeType {
 
 export interface IConsoleOutput {
   type: LogType
-  message: string
+  message: string | ReactNode
 }
 
 type AppUiContextProps = {
@@ -23,7 +28,7 @@ type AppUiContextProps = {
   consoleLog: IConsoleOutput[]
   toggleThreeColumnLayout: () => void
   toggleFullScreen: () => void
-  addToConsoleLog: (line: string, type?: LogType) => void
+  addToConsoleLog: (line: string | ReactNode, type?: LogType) => void
   enableFullScreen: () => void
 }
 
@@ -59,7 +64,7 @@ export const AppUiProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setIsThreeColumnLayout((prev) => !prev)
   }
 
-  const addToConsoleLog = (line: string, type = LogType.Info) => {
+  const addToConsoleLog = (line: string | ReactNode, type = LogType.Info) => {
     setConsoleLog((previous) => {
       const cloned = previous.map((x) => ({ ...x }))
       cloned.push({ type, message: line })

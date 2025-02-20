@@ -36,11 +36,13 @@ import { cn } from '../../util/styles'
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
 import Console from './Console'
+import { DownloadProof } from './DownloadProof'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
+
 // @ts-ignore - Cairo is not part of the official highlightjs package
 type Props = {
   readOnly?: boolean
@@ -338,6 +340,24 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     setCompiledCairoCode(cairoCode)
   }, [cairoCode, programArguments, compileCairoCode])
 
+  const handleProveAndVerify = useCallback(() => {
+    addToConsoleLog('Generating proof...', LogType.Info)
+    setTimeout(() => {
+      addToConsoleLog(
+        'Proof generation successful (finished in 42s)',
+        LogType.Info,
+      )
+      addToConsoleLog(<DownloadProof />, LogType.Info)
+      addToConsoleLog('Verifying...', LogType.Info)
+      setTimeout(() => {
+        addToConsoleLog(
+          'Verification successful (finished in 42ms)',
+          LogType.Info,
+        )
+      }, 200)
+    }, 1000)
+  }, [addToConsoleLog])
+
   const handleCopyPermalink = useCallback(() => {
     const params = {
       codeType,
@@ -504,6 +524,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                       ? setExampleOption(newExample.value)
                       : setExampleOption(0)
                   }
+                  onProveAndVerify={handleProveAndVerify}
                 />
               </div>
 
