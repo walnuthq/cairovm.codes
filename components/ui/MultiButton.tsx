@@ -5,29 +5,28 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import { Button } from './Button'
 
-interface ButtonAction {
-  name: string
-  action: () => void
-}
-
+type CompileMods = 'run' | 'run-prove-verify' | 'run-prove'
 interface MultiButtonProps {
-  buttonActions: ButtonAction[]
-  defaultLabel?: string
+  onCompileRun: (variant: CompileMods) => void
 }
 
-const MultiButton = ({
-  buttonActions,
-  defaultLabel = 'Default',
-}: MultiButtonProps) => {
-  const [selected, setSelected] = useState<ButtonAction>(
-    buttonActions[0] || {
-      name: defaultLabel,
-      action: () => console.log('Default action triggered'),
-    },
-  )
+const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
+  const [selected, setSelected] = useState<CompileMods>('run-prove-verify')
 
-  const handleSelect = (item: ButtonAction) => {
-    setSelected(item)
+  const handleMainButtonClick = () => {
+    switch (selected) {
+      case 'run-prove-verify':
+        onCompileRun('run-prove-verify')
+        break
+      case 'run':
+        onCompileRun('run')
+        break
+      case 'run-prove':
+        onCompileRun('run-prove')
+        break
+      default:
+        break
+    }
   }
 
   return (
@@ -35,9 +34,13 @@ const MultiButton = ({
       <Button
         size="sm"
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[120px] flex items-center whitespace-nowrap justify-center"
-        onClick={selected.action}
+        onClick={handleMainButtonClick}
       >
-        {selected.name}
+        {selected === 'run-prove-verify'
+          ? 'Run, prove and verify'
+          : selected === 'run'
+          ? 'Run'
+          : 'Run and prove'}
       </Button>
 
       <Menu as="div" className="relative">
@@ -49,22 +52,30 @@ const MultiButton = ({
 
         <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded shadow-lg focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in dark:bg-darkMode-primary bg-white">
           <div className="py-1">
-            {buttonActions.map((item) => (
-              <MenuItem key={item.name}>
-                {({ active }) => (
-                  <button
-                    onClick={() => handleSelect(item)}
-                    className={`block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900 ${
-                      active
-                        ? 'dark:bg-darkMode-secondary dark:text-white bg-gray-100 text-black'
-                        : ''
-                    }`}
-                  >
-                    {item.name}
-                  </button>
-                )}
-              </MenuItem>
-            ))}
+            <MenuItem>
+              <button
+                onClick={() => setSelected('run')}
+                className={`block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900`}
+              >
+                Only run
+              </button>
+            </MenuItem>
+            <MenuItem>
+              <button
+                onClick={() => setSelected('run-prove')}
+                className={`block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900`}
+              >
+                Only run and prove
+              </button>
+            </MenuItem>
+            <MenuItem>
+              <button
+                onClick={() => setSelected('run-prove-verify')}
+                className={`block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900`}
+              >
+                Run, prove and verify
+              </button>
+            </MenuItem>
           </div>
         </MenuItems>
       </Menu>
