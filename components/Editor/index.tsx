@@ -335,28 +335,38 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     [setProgramArguments],
   )
 
-  const handleCompileRun = useCallback(() => {
-    compileCairoCode(cairoCode, removeExtraWhitespaces(programArguments))
-    setCompiledCairoCode(cairoCode)
-  }, [cairoCode, programArguments, compileCairoCode])
-
-  const handleProveAndVerify = useCallback(() => {
-    addToConsoleLog('Generating proof...', LogType.Info)
-    setTimeout(() => {
-      addToConsoleLog(
-        'Proof generation successful (finished in 42s)',
-        LogType.Info,
+  const handleCompileRun = useCallback(
+    async (variant: 'run' | 'run-prove-verify' | 'run-prove') => {
+      const success = await compileCairoCode(
+        cairoCode,
+        removeExtraWhitespaces(programArguments),
       )
-      addToConsoleLog(<DownloadProof />, LogType.Info)
-      addToConsoleLog('Verifying...', LogType.Info)
-      setTimeout(() => {
-        addToConsoleLog(
-          'Verification successful (finished in 42ms)',
-          LogType.Info,
-        )
-      }, 200)
-    }, 1000)
-  }, [addToConsoleLog])
+      if (!success) {
+        return
+      }
+      setCompiledCairoCode(cairoCode)
+      if (variant === 'run-prove-verify' || variant === 'run-prove') {
+        addToConsoleLog('Generating proof...', LogType.Info)
+        setTimeout(() => {
+          addToConsoleLog(
+            'Proof generation successful (finished in 42s)',
+            LogType.Info,
+          )
+          addToConsoleLog(<DownloadProof />, LogType.Info)
+          if (variant === 'run-prove-verify') {
+            addToConsoleLog('Verifying...', LogType.Info)
+            setTimeout(() => {
+              addToConsoleLog(
+                'Verification successful (finished in 42ms)',
+                LogType.Info,
+              )
+            }, 200)
+          }
+        }, 2000)
+      }
+    },
+    [compileCairoCode, cairoCode, programArguments, addToConsoleLog],
+  )
 
   const handleCopyPermalink = useCallback(() => {
     const params = {
@@ -524,7 +534,6 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                       ? setExampleOption(newExample.value)
                       : setExampleOption(0)
                   }
-                  onProveAndVerify={handleProveAndVerify}
                 />
               </div>
 

@@ -24,10 +24,9 @@ type EditorControlsProps = {
     option: OnChangeValue<SelectOption, false>,
   ) => void
   onCopyPermalink: () => void
-  onCompileRun: () => void
+  onCompileRun: (variant: 'run' | 'run-prove-verify' | 'run-prove') => void
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
-  onProveAndVerify: () => void
 }
 
 const EditorControls = ({
@@ -39,7 +38,6 @@ const EditorControls = ({
   onCompileRun,
   onProgramArgumentsUpdate,
   onShowArgumentsHelper,
-  onProveAndVerify,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -51,7 +49,7 @@ const EditorControls = ({
       keywords: 'compile run',
       section: 'Execution',
       perform: () => {
-        onCompileRun()
+        onCompileRun('run')
       },
       subtitle: 'Run execution',
       priority: Priority.HIGH,
@@ -79,12 +77,12 @@ const EditorControls = ({
   const buttnoActions = [
     {
       name: 'Run, prove and verify',
-      action: () => console.log('Run, prove and verify'),
+      action: () => onCompileRun('run-prove-verify'),
     },
-    { name: 'Only run', action: () => console.log('Only run') },
+    { name: 'Only run', action: () => onCompileRun('run') },
     {
-      name: 'Only prove and verify',
-      action: () => console.log('Only prove and verify'),
+      name: 'Only run and prove',
+      action: () => onCompileRun('run-prove'),
     },
   ]
 
