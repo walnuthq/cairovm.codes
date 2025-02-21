@@ -346,23 +346,25 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
         return
       }
       if (variant === 'run-prove-verify' || variant === 'run-prove') {
-        addToConsoleLog('Generating proof...', LogType.Info)
         setTimeout(() => {
-          addToConsoleLog(
-            'Proof generation successful (finished in 42s)',
-            LogType.Info,
-          )
-          addToConsoleLog(<DownloadProof />, LogType.Info)
-          if (variant === 'run-prove-verify') {
-            addToConsoleLog('Verifying...', LogType.Info)
-            setTimeout(() => {
-              addToConsoleLog(
-                'Verification successful (finished in 42ms)',
-                LogType.Info,
-              )
-            }, 200)
-          }
-        }, 2000)
+          addToConsoleLog('Generating proof...', LogType.Info)
+          setTimeout(() => {
+            addToConsoleLog(
+              'Proof generation successful (finished in 42s)',
+              LogType.Info,
+            )
+            addToConsoleLog(<DownloadProof />, LogType.Info)
+            if (variant === 'run-prove-verify') {
+              addToConsoleLog('Verifying...', LogType.Info)
+              setTimeout(() => {
+                addToConsoleLog(
+                  'Verification successful (finished in 42ms)',
+                  LogType.Info,
+                )
+              }, 200)
+            }
+          }, 2000)
+        }, 100)
       }
     },
     [compileCairoCode, cairoCode, programArguments, addToConsoleLog],
