@@ -30,10 +30,10 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   }
 
   return (
-    <div className="inline-flex min-h-[38px] rounded bg-[#E85733]">
+    <div className="inline-flex min-h-[38px] rounded bg-[#E85733] justify-between">
       <Button
         size="sm"
-        className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[120px] flex items-center whitespace-nowrap justify-center"
+        className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[160px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
       >
         {selected === 'run-prove-verify'
@@ -57,7 +57,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run')}
                 className={`block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900`}
               >
-                Only run
+                Run
               </button>
             </MenuItem>
             <MenuItem>
@@ -65,7 +65,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run-prove')}
                 className={`block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900`}
               >
-                Only run and prove
+                Run and prove
               </button>
             </MenuItem>
             <MenuItem>

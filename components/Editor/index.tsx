@@ -341,10 +341,10 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
         cairoCode,
         removeExtraWhitespaces(programArguments),
       )
+      setCompiledCairoCode(cairoCode)
       if (!success) {
         return
       }
-      setCompiledCairoCode(cairoCode)
       if (variant === 'run-prove-verify' || variant === 'run-prove') {
         addToConsoleLog('Generating proof...', LogType.Info)
         setTimeout(() => {
