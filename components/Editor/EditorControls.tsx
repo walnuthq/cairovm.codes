@@ -74,18 +74,6 @@ const EditorControls = ({
     handleChangeExampleOption(option)
   }
 
-  const buttnoActions = [
-    {
-      name: 'Run, prove and verify',
-      action: () => onCompileRun('run-prove-verify'),
-    },
-    { name: 'Only run', action: () => onCompileRun('run') },
-    {
-      name: 'Only run and prove',
-      action: () => onCompileRun('run-prove'),
-    },
-  ]
-
   return (
     <div className="flex dark:bg-darkMode-primary flex-row items-center justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
       <div className="flex flex-row">
@@ -133,7 +121,7 @@ const EditorControls = ({
         />
 
         {/* <div> */}
-        <MultiButton buttonActions={buttnoActions} />
+        <MultiButton onCompileRun={onCompileRun} />
         {/* <div className="flex flex-row gap-x-2"> */}
         {/* <Button
             onClick={onCompileRun}
