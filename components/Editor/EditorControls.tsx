@@ -5,6 +5,7 @@ import { Priority, useRegisterActions } from 'kbar'
 import { OnChangeValue } from 'react-select'
 
 import { Button, Input } from 'components/ui'
+import MultiButton from 'components/ui/MultiButton'
 
 import { cn } from '../../util/styles'
 
@@ -75,6 +76,18 @@ const EditorControls = ({
     handleChangeExampleOption(option)
   }
 
+  const buttnoActions = [
+    {
+      name: 'Run, prove and verify',
+      action: () => console.log('Run, prove and verify'),
+    },
+    { name: 'Only run', action: () => console.log('Only run') },
+    {
+      name: 'Only prove and verify',
+      action: () => console.log('Only prove and verify'),
+    },
+  ]
+
   return (
     <div className="flex dark:bg-darkMode-primary flex-row items-center justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
       <div className="flex flex-row">
@@ -121,8 +134,10 @@ const EditorControls = ({
           })}
         />
 
-        <div className="flex flex-row gap-x-2">
-          <Button
+        {/* <div> */}
+        <MultiButton buttonActions={buttnoActions} />
+        {/* <div className="flex flex-row gap-x-2"> */}
+        {/* <Button
             onClick={onCompileRun}
             disabled={isCompileDisabled || !areProgramArgumentsValid}
             size="sm"
@@ -137,8 +152,8 @@ const EditorControls = ({
             contentClassName="justify-center"
           >
             Prove & Verify
-          </Button>
-        </div>
+          </Button> */}
+        {/* </div> */}
       </div>
     </div>
   )
