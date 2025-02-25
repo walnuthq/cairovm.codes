@@ -33,7 +33,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
     <div className="inline-flex min-h-[38px] rounded bg-[#E85733] justify-between">
       <Button
         size="sm"
-        className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[160px] flex items-center whitespace-nowrap justify-left flex-1"
+        className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
       >
         {selected === 'run-prove-verify'
