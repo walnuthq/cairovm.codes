@@ -336,16 +336,19 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   )
 
   const handleCompileRun = useCallback(
-    async (variant: 'run' | 'run-prove-verify' | 'run-prove') => {
-      const success = await compileCairoCode(
-        cairoCode,
-        removeExtraWhitespaces(programArguments),
-      )
-      setCompiledCairoCode(cairoCode)
-      if (!success) {
-        return
+    async (variant: 'run' | 'run-prove-verify' | 'prove') => {
+      if (variant === 'run-prove-verify' || variant === 'run') {
+        const success = await compileCairoCode(
+          cairoCode,
+          removeExtraWhitespaces(programArguments),
+        )
+        setCompiledCairoCode(cairoCode)
+        if (!success) {
+          return
+        }
       }
-      if (variant === 'run-prove-verify' || variant === 'run-prove') {
+
+      if (variant === 'run-prove-verify' || variant === 'prove') {
         setTimeout(() => {
           addToConsoleLog('Generating proof...', LogType.Info)
           setTimeout(() => {
@@ -353,9 +356,8 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
               'Proof generation successful (finished in 42s)',
               LogType.Info,
             )
-            addToConsoleLog(<DownloadProof />, LogType.Info)
             if (variant === 'run-prove-verify') {
-              addToConsoleLog('Verifying...', LogType.Info)
+              addToConsoleLog('Verifying proof...', LogType.Info)
               setTimeout(() => {
                 addToConsoleLog(
                   'Verification successful (finished in 42ms)',
@@ -363,6 +365,9 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                 )
               }, 200)
             }
+            setTimeout(() => {
+              addToConsoleLog(<DownloadProof />, LogType.Info)
+            }, 300)
           }, 2000)
         }, 100)
       }
