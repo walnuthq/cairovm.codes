@@ -5,7 +5,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import { Button } from './Button'
 
-type CompileMods = 'run' | 'run-prove-verify' | 'run-prove'
+type CompileMods = 'run' | 'run-prove-verify' | 'prove'
 interface MultiButtonProps {
   onCompileRun: (variant: CompileMods) => void
 }
@@ -21,8 +21,8 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
       case 'run':
         onCompileRun('run')
         break
-      case 'run-prove':
-        onCompileRun('run-prove')
+      case 'prove':
+        onCompileRun('prove')
         break
       default:
         break
@@ -37,10 +37,10 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         onClick={handleMainButtonClick}
       >
         {selected === 'run-prove-verify'
-          ? 'Run, prove and verify'
+          ? 'Run and prove'
           : selected === 'run'
-          ? 'Run'
-          : 'Run and prove'}
+          ? 'Only run'
+          : 'Only prove'}
       </Button>
 
       <Menu as="div" className="relative">
@@ -56,15 +56,15 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run')}
                 className="block w-full px-4 pt-3 pb-2 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary hover:rounded-t rounded-none"
               >
-                Run
+                Only run
               </button>
             </MenuItem>
             <MenuItem>
               <button
-                onClick={() => setSelected('run-prove')}
+                onClick={() => setSelected('prove')}
                 className="block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary rounded-none"
               >
-                Run and prove
+                Only prove
               </button>
             </MenuItem>
             <MenuItem>
@@ -72,7 +72,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run-prove-verify')}
                 className="block w-full px-4 pt-2 pb-3 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary hover:rounded-b rounded-none"
               >
-                Run, prove and verify
+                Run and prove
               </button>
             </MenuItem>
           </div>
