@@ -5,7 +5,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import { Button } from './Button'
 
-type CompileMods = 'run' | 'run-prove-verify' | 'prove'
+type CompileMods = 'run' | 'run-prove-verify'
 interface MultiButtonProps {
   onCompileRun: (variant: CompileMods) => void
 }
@@ -21,9 +21,6 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
       case 'run':
         onCompileRun('run')
         break
-      case 'prove':
-        onCompileRun('prove')
-        break
       default:
         break
     }
@@ -36,11 +33,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
       >
-        {selected === 'run-prove-verify'
-          ? 'Run and prove'
-          : selected === 'run'
-          ? 'Only run'
-          : 'Only prove'}
+        {selected === 'run-prove-verify' ? 'Run and prove' : 'Only run'}
       </Button>
 
       <Menu as="div" className="relative">
@@ -57,14 +50,6 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 className="block w-full px-4 pt-3 pb-2 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary hover:rounded-t rounded-none"
               >
                 Only run
-              </button>
-            </MenuItem>
-            <MenuItem>
-              <button
-                onClick={() => setSelected('prove')}
-                className="block w-full px-4 py-2 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary rounded-none"
-              >
-                Only prove
               </button>
             </MenuItem>
             <MenuItem>

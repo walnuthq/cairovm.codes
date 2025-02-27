@@ -1,11 +1,11 @@
-export const DownloadProof = () => {
+export const DownloadProof = ({ proof }: { proof: string }) => {
   function handleDownloadProof() {
-    const content = 'Proof'
-    const blob = new Blob([content], { type: 'text/plain' })
+    const content = proof
+    const blob = new Blob([content], { type: 'application/json' })
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'proof.txt'
+    a.download = 'proof.json'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

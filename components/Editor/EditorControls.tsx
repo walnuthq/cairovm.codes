@@ -24,7 +24,7 @@ type EditorControlsProps = {
     option: OnChangeValue<SelectOption, false>,
   ) => void
   onCopyPermalink: () => void
-  onCompileRun: (variant: 'run' | 'run-prove-verify' | 'prove') => void
+  onCompileRun: (variant: 'run' | 'run-prove-verify') => void
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
 }

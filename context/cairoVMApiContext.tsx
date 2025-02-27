@@ -77,10 +77,16 @@ type ContextProps = {
   breakPoints?: BreakPoints
   sierraStatementsToCairoInfo?: SierraStatementsToCairoInfo
 
+  proof?: string
+  proofTime?: number
+  verificationTime?: number
+
   setDebugMode: (debugMode: ProgramDebugMode) => void
   compileCairoCode: (
     cairoCode: string,
     programArguments: string,
+    isProofRequired: boolean,
+    isVerificationRequired: boolean,
   ) => Promise<boolean>
   onExecutionStepChange: (action: 'increase' | 'decrease') => void
   onContinueExecution: () => void
@@ -109,6 +115,10 @@ export const CairoVMApiContext = createContext<ContextProps>({
   breakPoints: {},
   sierraStatementsToCairoInfo: {},
   casmToSierraStatementsMap: {},
+
+  proof: undefined,
+  proofTime: undefined,
+  verificationTime: undefined,
 
   compileCairoCode: () => Promise.resolve(false),
   onExecutionStepChange: noOp,
@@ -154,6 +164,11 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     useState<CasmToSierraMap>({})
   const [casmToSierraStatementsMap, setCasmToSierraStatementsMap] =
     useState<CasmToSierraMap>({})
+  const [proof, setProof] = useState<string | undefined>(undefined)
+  const [proofTime, setProofTime] = useState<number | undefined>(undefined)
+  const [verificationTime, setVerificationTime] = useState<number | undefined>(
+    undefined,
+  )
 
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const currentSierraVariables =
@@ -308,7 +323,12 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     setBreakPoints({ ...breakPoints, [addr]: false })
   }
 
-  const compileCairoCode = async (cairoCode: string, programArguments = '') => {
+  const compileCairoCode = async (
+    cairoCode: string,
+    programArguments = '',
+    isProofRequired = false,
+    isVerificationRequired = false,
+  ) => {
     setCompilationState(ProgramCompilationState.Compiling)
     setExecutionState(ProgramExecutionState.Executing)
 
@@ -321,11 +341,13 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         body: JSON.stringify({
           cairo_program_code: cairoCode,
           program_arguments: programArguments,
+          proof_required: isProofRequired,
+          verification_required: isVerificationRequired,
         }),
       })
-      const data = await response.json()
-
-      console.log('success')
+      const responseContent = await response.text()
+      console.log(responseContent)
+      const data = JSON.parse(responseContent)
 
       setCompilationState(
         data.is_compilation_successful === true
@@ -378,6 +400,9 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         )
       setSierraStatements(sierraStatements)
       setCasmToSierraProgramMap(casmToSierraProgramMap)
+      setProof(data.proof ?? undefined)
+      setProofTime(data.proving_time_ms ?? undefined)
+      setVerificationTime(data.verification_time_ms ?? undefined)
       return true
     } catch (error) {
       console.log('error')
@@ -413,6 +438,9 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         casmToSierraStatementsMap,
         breakPoints,
         sierraStatementsToCairoInfo,
+        proof,
+        proofTime,
+        verificationTime,
         setDebugMode,
         compileCairoCode,
         onExecutionStepChange,

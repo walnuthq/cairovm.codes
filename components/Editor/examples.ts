@@ -4,6 +4,7 @@ export const Examples: ExampleCode = {
   Cairo: [
     `use core::felt252;
 
+#[executable]
 fn main() -> felt252 {
     let n = 2 + 3;
     n
@@ -12,6 +13,7 @@ fn main() -> felt252 {
 
 const my_constant: felt252 = 42;
 
+#[executable]
 fn main() {    
     
     // non-mutable variable
@@ -36,6 +38,7 @@ fn main() {
 }`,
     `use core::felt252;
 
+#[executable]
 fn main() {    
     let my_felt252 = 10;
     
@@ -61,6 +64,7 @@ enum Direction {
     Right
 }
 
+#[executable]
 fn main() {
 
     // if / else expression
@@ -126,6 +130,7 @@ fn add(a: u32, b: u32) -> u64 {
 }
 
 // This functions doesn't return anything.
+#[executable]
 fn main() {
     let a = 1;
     let b = 2;
@@ -182,6 +187,7 @@ fn foo_receives_ref(ref arr: Array<u128>) {
     // keeps the ownership of the array.
 }
 
+#[executable]
 fn main() {
     // as the creator of arr, the main function owns the array
     let mut arr = ArrayTrait::<u128>::new();
@@ -197,6 +203,7 @@ fn main() {
 }`,
     `use core::felt252;
 
+#[executable]
 fn main() -> felt252 {
     let n = 10;
     let result = fib(1, 1, n);
@@ -234,6 +241,7 @@ fn add(a: felt252, b: felt252, c: felt252) -> felt252 {
     a + b + c
 }
 
+#[executable]
 fn main() -> felt252 {
     let mut state = SimpleContract::contract_state_for_testing();
     state.balance.write(10);
@@ -269,6 +277,7 @@ mod Fibonacci {
 
 use Fibonacci::CalculationTrait;
 
+#[executable]
 fn main() -> u128 {
     let mut state = Fibonacci::contract_state_for_testing();
     state.n.write(5);

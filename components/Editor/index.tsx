@@ -25,7 +25,12 @@ import { Setting, SettingsContext } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
 import { isArgumentStringValid } from 'util/compiler'
-import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
+import {
+  codeHighlight,
+  formatTime,
+  isEmpty,
+  objToQueryString,
+} from 'util/string'
 
 import { Examples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
@@ -85,6 +90,9 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     debugMode,
     activeSierraIndexes,
     setDebugMode,
+    proof,
+    proofTime,
+    verificationTime,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -254,6 +262,24 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
           LogType.Error,
         )
       }
+
+      if (proof && proofTime) {
+        addToConsoleLog('Generating proof...', LogType.Info)
+        addToConsoleLog(
+          `Proof generation successful (finished in ${formatTime(proofTime)})`,
+          LogType.Info,
+        )
+        addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
+        if (verificationTime) {
+          addToConsoleLog('Verifying proof...', LogType.Info)
+          addToConsoleLog(
+            `Verification successful (finished in ${formatTime(
+              verificationTime,
+            )})`,
+            LogType.Info,
+          )
+        }
+      }
     } else if (compilationState === ProgramCompilationState.CompilationErr) {
       addToConsoleLog('Compilation failed', LogType.Error)
     }
@@ -337,42 +363,15 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
 
   const handleCompileRun = useCallback(
     async (variant: 'run' | 'run-prove-verify' | 'prove') => {
-      if (variant === 'run-prove-verify' || variant === 'run') {
-        const success = await compileCairoCode(
-          cairoCode,
-          removeExtraWhitespaces(programArguments),
-        )
-        setCompiledCairoCode(cairoCode)
-        if (!success) {
-          return
-        }
-      }
-
-      if (variant === 'run-prove-verify' || variant === 'prove') {
-        setTimeout(() => {
-          addToConsoleLog('Generating proof...', LogType.Info)
-          setTimeout(() => {
-            addToConsoleLog(
-              'Proof generation successful (finished in 42s)',
-              LogType.Info,
-            )
-            if (variant === 'run-prove-verify') {
-              addToConsoleLog('Verifying proof...', LogType.Info)
-              setTimeout(() => {
-                addToConsoleLog(
-                  'Verification successful (finished in 42ms)',
-                  LogType.Info,
-                )
-              }, 200)
-            }
-            setTimeout(() => {
-              addToConsoleLog(<DownloadProof />, LogType.Info)
-            }, 300)
-          }, 2000)
-        }, 100)
-      }
+      await compileCairoCode(
+        cairoCode,
+        removeExtraWhitespaces(programArguments),
+        variant === 'run-prove-verify',
+        variant === 'run-prove-verify',
+      )
+      setCompiledCairoCode(cairoCode)
     },
-    [compileCairoCode, cairoCode, programArguments, addToConsoleLog],
+    [compileCairoCode, cairoCode, programArguments],
   )
 
   const handleCopyPermalink = useCallback(() => {
