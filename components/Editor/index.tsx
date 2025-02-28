@@ -25,7 +25,12 @@ import { Setting, SettingsContext } from 'context/settingsContext'
 
 import { getAbsoluteURL } from 'util/browser'
 import { isArgumentStringValid } from 'util/compiler'
-import { codeHighlight, isEmpty, objToQueryString } from 'util/string'
+import {
+  codeHighlight,
+  formatTime,
+  isEmpty,
+  objToQueryString,
+} from 'util/string'
 
 import { Examples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
@@ -36,11 +41,13 @@ import { cn } from '../../util/styles'
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
 import Console from './Console'
+import { DownloadProof } from './DownloadProof'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
 import Header from './Header'
 import { InstructionsTable } from './InstructionsTable'
+
 // @ts-ignore - Cairo is not part of the official highlightjs package
 type Props = {
   readOnly?: boolean
@@ -83,6 +90,10 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     debugMode,
     activeSierraIndexes,
     setDebugMode,
+    proof,
+    proofTime,
+    verificationTime,
+    provingIsNotSupported,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -247,10 +258,34 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
       }
 
       if (executionState === ProgramExecutionState.Error) {
+        if (executionPanicMessage && executionPanicMessage.length > 0) {
+          addToConsoleLog(
+            'Runtime error: ' + executionPanicMessage,
+            LogType.Error,
+          )
+        } else {
+          addToConsoleLog('Runtime error', LogType.Error)
+        }
+      }
+
+      if (proof && proofTime) {
+        addToConsoleLog('Generating proof...', LogType.Info)
         addToConsoleLog(
-          'Runtime error: ' + executionPanicMessage,
-          LogType.Error,
+          `Proof generation successful (finished in ${formatTime(proofTime)})`,
+          LogType.Info,
         )
+        addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
+        if (verificationTime) {
+          addToConsoleLog('Verifying proof...', LogType.Info)
+          addToConsoleLog(
+            `Verification successful (finished in ${formatTime(
+              verificationTime,
+            )})`,
+            LogType.Info,
+          )
+        }
+      } else if (provingIsNotSupported) {
+        addToConsoleLog('Proving is not supported for contracts', LogType.Error)
       }
     } else if (compilationState === ProgramCompilationState.CompilationErr) {
       addToConsoleLog('Compilation failed', LogType.Error)
@@ -333,10 +368,18 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     [setProgramArguments],
   )
 
-  const handleCompileRun = useCallback(() => {
-    compileCairoCode(cairoCode, removeExtraWhitespaces(programArguments))
-    setCompiledCairoCode(cairoCode)
-  }, [cairoCode, programArguments, compileCairoCode])
+  const handleCompileRun = useCallback(
+    async (variant: 'run' | 'run-prove-verify' | 'prove') => {
+      await compileCairoCode(
+        cairoCode,
+        removeExtraWhitespaces(programArguments),
+        variant === 'run-prove-verify',
+        variant === 'run-prove-verify',
+      )
+      setCompiledCairoCode(cairoCode)
+    },
+    [compileCairoCode, cairoCode, programArguments],
+  )
 
   const handleCopyPermalink = useCallback(() => {
     const params = {

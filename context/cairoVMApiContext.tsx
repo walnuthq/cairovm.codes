@@ -77,8 +77,19 @@ type ContextProps = {
   breakPoints?: BreakPoints
   sierraStatementsToCairoInfo?: SierraStatementsToCairoInfo
 
+  proof?: string
+  proofTime?: number
+  verificationTime?: number
+
+  provingIsNotSupported: boolean
+
   setDebugMode: (debugMode: ProgramDebugMode) => void
-  compileCairoCode: (cairoCode: string, programArguments: string) => void
+  compileCairoCode: (
+    cairoCode: string,
+    programArguments: string,
+    isProofRequired: boolean,
+    isVerificationRequired: boolean,
+  ) => Promise<boolean>
   onExecutionStepChange: (action: 'increase' | 'decrease') => void
   onContinueExecution: () => void
   addBreakPoint: (addr: string) => void
@@ -107,7 +118,13 @@ export const CairoVMApiContext = createContext<ContextProps>({
   sierraStatementsToCairoInfo: {},
   casmToSierraStatementsMap: {},
 
-  compileCairoCode: noOp,
+  provingIsNotSupported: false,
+
+  proof: undefined,
+  proofTime: undefined,
+  verificationTime: undefined,
+
+  compileCairoCode: () => Promise.resolve(false),
   onExecutionStepChange: noOp,
   onContinueExecution: noOp,
   addBreakPoint: noOp,
@@ -151,6 +168,12 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     useState<CasmToSierraMap>({})
   const [casmToSierraStatementsMap, setCasmToSierraStatementsMap] =
     useState<CasmToSierraMap>({})
+  const [proof, setProof] = useState<string | undefined>(undefined)
+  const [proofTime, setProofTime] = useState<number | undefined>(undefined)
+  const [verificationTime, setVerificationTime] = useState<number | undefined>(
+    undefined,
+  )
+  const [provingIsNotSupported, setProvingIsNotSupported] = useState(false)
 
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const currentSierraVariables =
@@ -305,81 +328,95 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     setBreakPoints({ ...breakPoints, [addr]: false })
   }
 
-  const compileCairoCode = (cairoCode: string, programArguments = '') => {
+  const compileCairoCode = async (
+    cairoCode: string,
+    programArguments = '',
+    isProofRequired = false,
+    isVerificationRequired = false,
+  ) => {
     setCompilationState(ProgramCompilationState.Compiling)
     setExecutionState(ProgramExecutionState.Executing)
 
-    fetch(CAIRO_VM_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        cairo_program_code: cairoCode,
-        program_arguments: programArguments,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('success')
-
-        setCompilationState(
-          data.is_compilation_successful === true
-            ? ProgramCompilationState.CompilationSuccess
-            : ProgramCompilationState.CompilationErr,
-        )
-        setSierraSubStepIndex(undefined)
-        setLogs(data.logs)
-        setExecutionState(
-          data.is_execution_successful === true
-            ? ProgramExecutionState.Success
-            : ProgramExecutionState.Error,
-        )
-        setExecutionTraceStepNumber(
-          data.is_execution_successful === true
-            ? 0
-            : data.tracer_data.trace.length - 2,
-        )
-        setCasmCode(data.casm_program_code)
-        setSierraCode(data.sierra_program_code)
-        setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
-        setSerializedOutput(data.serialized_output)
-        setExecutionPanicMessage(data.execution_panic_message)
-        setTracerData({
-          memory: data.tracer_data.memory,
-          pcInstMap: data.tracer_data.pc_inst_map,
-          trace: data.tracer_data.trace,
-          callstack: data.tracer_data.callstack,
-          pcToInstIndexesMap: data.tracer_data.pc_to_inst_indexes_map,
-          entryToSierraVarsMap: data.tracer_data.trace_entries_to_sierra_vars,
-        })
-        setBreakPoints(
-          Object.keys(data.tracer_data.memory).reduce(
-            (state, value) => ({ ...state, [value]: false }),
-            {},
-          ),
-        )
-        setSierraStatementsToCairoInfo(
-          data.tracer_data.sierra_to_cairo_debug_info
-            .sierra_statements_to_cairo_info,
-        )
-        setCasmToSierraStatementsMap(data.casm_to_sierra_map)
-        setCasmInstructions(
-          parseStringInstructions(data.casm_formatted_instructions),
-        )
-        const { sierraStatements, casmToSierraProgramMap } =
-          parseSierraFormattedProgramAndCasmToSierraMap(
-            data.sierra_formatted_program,
-            data.casm_to_sierra_map,
-          )
-        setSierraStatements(sierraStatements)
-        setCasmToSierraProgramMap(casmToSierraProgramMap)
+    try {
+      const response = await fetch(CAIRO_VM_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cairo_program_code: cairoCode,
+          program_arguments: programArguments,
+          proof_required: isProofRequired,
+          verification_required: isVerificationRequired,
+        }),
       })
-      .catch((error) => {
-        console.log('error')
-        setCompilationState(ProgramCompilationState.CompilationErr)
-        console.error('Error:', error)
+      const responseContent = await response.text()
+      const data = JSON.parse(responseContent)
+      setCompilationState(
+        data.is_compilation_successful === true
+          ? ProgramCompilationState.CompilationSuccess
+          : ProgramCompilationState.CompilationErr,
+      )
+      setSierraSubStepIndex(undefined)
+      setLogs(data.logs)
+      setExecutionState(
+        data.is_execution_successful === true
+          ? ProgramExecutionState.Success
+          : ProgramExecutionState.Error,
+      )
+      if (!data.is_execution_successful) {
+        return false
+      }
+      setExecutionTraceStepNumber(
+        data.is_execution_successful === true
+          ? 0
+          : data.tracer_data.trace.length - 2,
+      )
+      setCasmCode(data.casm_program_code)
+      setSierraCode(data.sierra_program_code)
+      setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
+      setSerializedOutput(data.serialized_output)
+      setExecutionPanicMessage(data.execution_panic_message)
+      setTracerData({
+        memory: data.tracer_data.memory,
+        pcInstMap: data.tracer_data.pc_inst_map,
+        trace: data.tracer_data.trace,
+        callstack: data.tracer_data.callstack,
+        pcToInstIndexesMap: data.tracer_data.pc_to_inst_indexes_map,
+        entryToSierraVarsMap: data.tracer_data.trace_entries_to_sierra_vars,
       })
+      setBreakPoints(
+        Object.keys(data.tracer_data.memory).reduce(
+          (state, value) => ({ ...state, [value]: false }),
+          {},
+        ),
+      )
+      setSierraStatementsToCairoInfo(
+        data.tracer_data.sierra_to_cairo_debug_info
+          .sierra_statements_to_cairo_info,
+      )
+      setCasmToSierraStatementsMap(data.casm_to_sierra_map)
+      setCasmInstructions(
+        parseStringInstructions(data.casm_formatted_instructions),
+      )
+      const { sierraStatements, casmToSierraProgramMap } =
+        parseSierraFormattedProgramAndCasmToSierraMap(
+          data.sierra_formatted_program,
+          data.casm_to_sierra_map,
+        )
+      setSierraStatements(sierraStatements)
+      setCasmToSierraProgramMap(casmToSierraProgramMap)
+      setProof(data.proof ?? undefined)
+      setProofTime(data.proving_time_ms ?? undefined)
+      setVerificationTime(data.verification_time_ms ?? undefined)
+      setProvingIsNotSupported(data.proving_is_not_supported ?? false)
+      return true
+    } catch (error) {
+      console.log('error')
+      setCompilationState(ProgramCompilationState.CompilationErr)
+      console.error('Error:', error)
+      return false
+    }
   }
 
   return (
@@ -408,6 +445,10 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         casmToSierraStatementsMap,
         breakPoints,
         sierraStatementsToCairoInfo,
+        proof,
+        proofTime,
+        verificationTime,
+        provingIsNotSupported,
         setDebugMode,
         compileCairoCode,
         onExecutionStepChange,

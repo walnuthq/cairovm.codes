@@ -5,6 +5,7 @@ import { Priority, useRegisterActions } from 'kbar'
 import { OnChangeValue } from 'react-select'
 
 import { Button, Input } from 'components/ui'
+import MultiButton from 'components/ui/MultiButton'
 
 import { cn } from '../../util/styles'
 
@@ -23,7 +24,7 @@ type EditorControlsProps = {
     option: OnChangeValue<SelectOption, false>,
   ) => void
   onCopyPermalink: () => void
-  onCompileRun: () => void
+  onCompileRun: (variant: 'run' | 'run-prove-verify') => void
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
 }
@@ -48,7 +49,7 @@ const EditorControls = ({
       keywords: 'compile run',
       section: 'Execution',
       perform: () => {
-        onCompileRun()
+        onCompileRun('run')
       },
       subtitle: 'Run execution',
       priority: Priority.HIGH,
@@ -119,8 +120,10 @@ const EditorControls = ({
           })}
         />
 
-        <div>
-          <Button
+        {/* <div> */}
+        <MultiButton onCompileRun={onCompileRun} />
+        {/* <div className="flex flex-row gap-x-2"> */}
+        {/* <Button
             onClick={onCompileRun}
             disabled={isCompileDisabled || !areProgramArgumentsValid}
             size="sm"
@@ -128,7 +131,15 @@ const EditorControls = ({
           >
             Run
           </Button>
-        </div>
+          <Button
+            onClick={onProveAndVerify}
+            disabled={isCompileDisabled || !areProgramArgumentsValid}
+            size="sm"
+            contentClassName="justify-center"
+          >
+            Prove & Verify
+          </Button> */}
+        {/* </div> */}
       </div>
     </div>
   )
