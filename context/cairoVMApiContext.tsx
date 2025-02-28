@@ -81,6 +81,8 @@ type ContextProps = {
   proofTime?: number
   verificationTime?: number
 
+  provingIsNotSupported: boolean
+
   setDebugMode: (debugMode: ProgramDebugMode) => void
   compileCairoCode: (
     cairoCode: string,
@@ -115,6 +117,8 @@ export const CairoVMApiContext = createContext<ContextProps>({
   breakPoints: {},
   sierraStatementsToCairoInfo: {},
   casmToSierraStatementsMap: {},
+
+  provingIsNotSupported: false,
 
   proof: undefined,
   proofTime: undefined,
@@ -169,6 +173,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const [verificationTime, setVerificationTime] = useState<number | undefined>(
     undefined,
   )
+  const [provingIsNotSupported, setProvingIsNotSupported] = useState(false)
 
   const currentTraceEntry = tracerData?.trace[executionTraceStepNumber]
   const currentSierraVariables =
@@ -346,9 +351,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         }),
       })
       const responseContent = await response.text()
-      console.log(responseContent)
       const data = JSON.parse(responseContent)
-
       setCompilationState(
         data.is_compilation_successful === true
           ? ProgramCompilationState.CompilationSuccess
@@ -361,6 +364,9 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
           ? ProgramExecutionState.Success
           : ProgramExecutionState.Error,
       )
+      if (!data.is_execution_successful) {
+        return false
+      }
       setExecutionTraceStepNumber(
         data.is_execution_successful === true
           ? 0
@@ -403,6 +409,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
       setProof(data.proof ?? undefined)
       setProofTime(data.proving_time_ms ?? undefined)
       setVerificationTime(data.verification_time_ms ?? undefined)
+      setProvingIsNotSupported(data.proving_is_not_supported ?? false)
       return true
     } catch (error) {
       console.log('error')
@@ -441,6 +448,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         proof,
         proofTime,
         verificationTime,
+        provingIsNotSupported,
         setDebugMode,
         compileCairoCode,
         onExecutionStepChange,

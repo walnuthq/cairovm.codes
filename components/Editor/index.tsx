@@ -93,6 +93,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     proof,
     proofTime,
     verificationTime,
+    provingIsNotSupported,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -257,10 +258,14 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
       }
 
       if (executionState === ProgramExecutionState.Error) {
-        addToConsoleLog(
-          'Runtime error: ' + executionPanicMessage,
-          LogType.Error,
-        )
+        if (executionPanicMessage && executionPanicMessage.length > 0) {
+          addToConsoleLog(
+            'Runtime error: ' + executionPanicMessage,
+            LogType.Error,
+          )
+        } else {
+          addToConsoleLog('Runtime error', LogType.Error)
+        }
       }
 
       if (proof && proofTime) {
@@ -279,6 +284,8 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
             LogType.Info,
           )
         }
+      } else if (provingIsNotSupported) {
+        addToConsoleLog('Proving is not supported for contracts', LogType.Error)
       }
     } else if (compilationState === ProgramCompilationState.CompilationErr) {
       addToConsoleLog('Compilation failed', LogType.Error)
