@@ -4,7 +4,6 @@ export const Examples: ExampleCode = {
   Cairo: [
     `use core::felt252;
 
-#[executable]
 fn main() -> felt252 {
     let n = 2 + 3;
     n
@@ -13,7 +12,6 @@ fn main() -> felt252 {
 
 const my_constant: felt252 = 42;
 
-#[executable]
 fn main() {    
     
     // non-mutable variable
@@ -36,27 +34,25 @@ fn main() {
     
     // my_mut_var = 'hello world' <-- fails to compile
 }`,
-    // ,
-    //     `use core::felt252;
+    `use core::felt252;
 
-    // #[executable]
-    // fn main() {
-    //     let my_felt252 = 10;
-
-    //     // Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
-    //     let my_u8: u8 = my_felt252.try_into().unwrap();
-
-    //     let my_u16: u16 = my_u8.into();
-    //     let my_u32: u32 = my_u16.into();
-    //     let my_u64: u64 = my_u32.into();
-    //     let _my_u128: u128 = my_u64.into();
-
-    //     // As a felt252 is smaller than a u256, we can use the into() method
-    //     let _my_u256: u256 = my_felt252.into();
-    //     let _my_usize: usize = my_felt252.try_into().unwrap();
-    //     let _my_other_felt252: felt252 = my_u8.into();
-    //     let _my_third_felt252: felt252 = my_u16.into();
-    // }`
+fn main() {    
+    let my_felt252 = 10;
+    
+    // Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
+    let my_u8: u8 = my_felt252.try_into().unwrap();
+    
+    let my_u16: u16 = my_u8.into();
+    let my_u32: u32 = my_u16.into();
+    let my_u64: u64 = my_u32.into();
+    let _my_u128: u128 = my_u64.into();
+    
+    // As a felt252 is smaller than a u256, we can use the into() method
+    let _my_u256: u256 = my_felt252.into();
+    let _my_usize: usize = my_felt252.try_into().unwrap();
+    let _my_other_felt252: felt252 = my_u8.into();
+    let _my_third_felt252: felt252 = my_u16.into();
+}`,
     `#[derive(Drop)]
 enum Direction {
     Up,
@@ -65,7 +61,6 @@ enum Direction {
     Right
 }
 
-#[executable]
 fn main() {
 
     // if / else expression
@@ -131,7 +126,6 @@ fn add(a: u32, b: u32) -> u64 {
 }
 
 // This functions doesn't return anything.
-#[executable]
 fn main() {
     let a = 1;
     let b = 2;
@@ -143,30 +137,28 @@ fn main() {
     let _z = add(a: x, b: y);
 }
 `,
-    //     `use array::ArrayTrait;
+    `use array::ArrayTrait;
 
-    // #[executable]
-    // fn main () {
-    //     let mut a = ArrayTrait::new();
-
-    //     // add some items in the array
-    //     a.append(1);
-    //     a.append(2);
-
-    //     // get array length
-    //     assert!(a.len() == 2, "wrong array length");
-
-    //     // 2 ways to read an item from the array
-    //     // * get() returns an Option so you can handle out-of-bounds error
-    //     // * at() panics in case of out-of-bounds error
-    //     let first_element = *a.get(0).unwrap().unbox();
-    //     // a.get(2) will return None
-
-    //     let second_element = *a.at(1);
-    //     // a.at(2) will cause an error
-    // }`
-    `#[executable]
 fn main () {
+    let mut a = ArrayTrait::new();
+
+    // add some items in the array
+    a.append(1);
+    a.append(2);
+    
+    // get array length
+    assert!(a.len() == 2, "wrong array length");
+
+    // 2 ways to read an item from the array
+    // * get() returns an Option so you can handle out-of-bounds error
+    // * at() panics in case of out-of-bounds error
+    let first_element = *a.get(0).unwrap().unbox();
+    // a.get(2) will return None
+
+    let second_element = *a.at(1);
+    // a.at(2) will cause an error
+}`,
+    `fn main () {
     let mut balances: Felt252Dict<u64> = Default::default();
 
     balances.insert('Alex', 100);
@@ -190,7 +182,6 @@ fn foo_receives_ref(ref arr: Array<u128>) {
     // keeps the ownership of the array.
 }
 
-#[executable]
 fn main() {
     // as the creator of arr, the main function owns the array
     let mut arr = ArrayTrait::<u128>::new();
@@ -206,7 +197,6 @@ fn main() {
 }`,
     `use core::felt252;
 
-#[executable]
 fn main() -> felt252 {
     let n = 10;
     let result = fib(1, 1, n);
@@ -504,10 +494,10 @@ ret;
 export const CairoExampleNames = [
   'Simple',
   'Variables & mutability',
-  //   'Type casting',
+  'Type casting',
   'Control flow',
   'Functions',
-  //   'Arrays',
+  'Arrays',
   'Dictionaries',
   'Ownership',
   'Fibonacci',

@@ -86,22 +86,3 @@ export const objToQueryString = (params: any) => {
     .filter((param) => param !== null)
     .join('&')
 }
-
-/**
- * Transforms a time value in milliseconds into a formatted string.
- * - If the value is greater than 1000ms, converts it to seconds,
- *   rounds to 3 decimal places, and removes any trailing zeros.
- * - Otherwise, returns the input in milliseconds.
- *
- * @param milliseconds - The time value in milliseconds.
- * @returns A formatted string with the appropriate unit.
- */
-export function formatTime(milliseconds: number): string {
-  if (milliseconds > 1000) {
-    const seconds = milliseconds / 1000
-    // Use toFixed(3) to round to 3 decimals and then parseFloat to remove trailing zeros.
-    return `${parseFloat(seconds.toFixed(3))}s`
-  } else {
-    return `${milliseconds}ms`
-  }
-}
