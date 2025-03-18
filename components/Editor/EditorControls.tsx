@@ -8,7 +8,7 @@ import { Button, Input } from 'components/ui'
 
 import { cn } from '../../util/styles'
 
-import ExampleSelector from './ExampleSelector'
+import ExampleSelector, { MobileExampleSelector } from './ExampleSelector'
 
 type SelectOption = {
   value: number
@@ -86,8 +86,12 @@ const EditorControls = ({
         >
           <RiLinksLine size={16} />
         </Button>
-
-        <ExampleSelector onExampleChange={onExampleChange} />
+        <div className="xl:hidden block">
+          <ExampleSelector onExampleChange={onExampleChange} />
+        </div>
+        <div className="xl:block hidden">
+          <MobileExampleSelector onExampleChange={onExampleChange} />
+        </div>
       </div>
 
       <div className="flex flex-row grow gap-x-2 items-center justify-end">
