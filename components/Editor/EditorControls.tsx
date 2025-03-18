@@ -5,11 +5,10 @@ import { Priority, useRegisterActions } from 'kbar'
 import { OnChangeValue } from 'react-select'
 
 import { Button, Input } from 'components/ui'
-import MultiButton from 'components/ui/MultiButton'
 
 import { cn } from '../../util/styles'
 
-import ExampleSelector from './ExampleSelector'
+import ExampleSelector, { MobileExampleSelector } from './ExampleSelector'
 
 type SelectOption = {
   value: number
@@ -24,7 +23,7 @@ type EditorControlsProps = {
     option: OnChangeValue<SelectOption, false>,
   ) => void
   onCopyPermalink: () => void
-  onCompileRun: (variant: 'run' | 'run-prove-verify') => void
+  onCompileRun: () => void
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
 }
@@ -49,7 +48,7 @@ const EditorControls = ({
       keywords: 'compile run',
       section: 'Execution',
       perform: () => {
-        onCompileRun('run')
+        onCompileRun()
       },
       subtitle: 'Run execution',
       priority: Priority.HIGH,
@@ -87,8 +86,12 @@ const EditorControls = ({
         >
           <RiLinksLine size={16} />
         </Button>
-
-        <ExampleSelector onExampleChange={onExampleChange} />
+        <div className="xl:hidden block">
+          <ExampleSelector onExampleChange={onExampleChange} />
+        </div>
+        <div className="xl:block hidden">
+          <MobileExampleSelector onExampleChange={onExampleChange} />
+        </div>
       </div>
 
       <div className="flex flex-row grow gap-x-2 items-center justify-end">
@@ -120,10 +123,8 @@ const EditorControls = ({
           })}
         />
 
-        {/* <div> */}
-        <MultiButton onCompileRun={onCompileRun} />
-        {/* <div className="flex flex-row gap-x-2"> */}
-        {/* <Button
+        <div>
+          <Button
             onClick={onCompileRun}
             disabled={isCompileDisabled || !areProgramArgumentsValid}
             size="sm"
@@ -131,15 +132,7 @@ const EditorControls = ({
           >
             Run
           </Button>
-          <Button
-            onClick={onProveAndVerify}
-            disabled={isCompileDisabled || !areProgramArgumentsValid}
-            size="sm"
-            contentClassName="justify-center"
-          >
-            Prove & Verify
-          </Button> */}
-        {/* </div> */}
+        </div>
       </div>
     </div>
   )
