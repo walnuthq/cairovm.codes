@@ -27,30 +27,6 @@ const examplesOptions = Examples.Cairo.map((_, i) => ({
   label: CairoExampleNames[i],
 }))
 
-export function MobileExampleSelector({ onExampleChange }: Props) {
-  return (
-    <Select
-      onChange={onExampleChange}
-      options={examplesOptions}
-      classNamePrefix="select"
-      placeholder={'Choose Cairo Example'}
-      menuPlacement="top"
-      isSearchable={false}
-      instanceId={useId()}
-      styles={{
-        placeholder: (baseStyles) => ({
-          ...baseStyles,
-          color: '#4B5563',
-          ':hover': {
-            color: '#111827',
-          },
-          whiteSpace: 'nowrap',
-        }),
-      }}
-    />
-  )
-}
-
 function ExampleSelector({ onExampleChange }: Props) {
   return (
     <Select
