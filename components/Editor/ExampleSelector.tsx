@@ -27,11 +27,12 @@ const examplesOptions = Examples.Cairo.map((_, i) => ({
   label: CairoExampleNames[i],
 }))
 
-function ExampleSelector({ onExampleChange }: Props) {
+export function MobileExampleSelector({ onExampleChange }: Props) {
   return (
     <Select
       onChange={onExampleChange}
       options={examplesOptions}
+      defaultValue={examplesOptions[0]}
       components={{
         DropdownIndicator,
       }}
@@ -45,31 +46,22 @@ function ExampleSelector({ onExampleChange }: Props) {
   )
 }
 
-export default ExampleSelector
-
-export function MobileExampleSelector({ onExampleChange }: Props) {
+export function ExampleSelector({ onExampleChange }: Props) {
   return (
     <Select
       onChange={onExampleChange}
       options={examplesOptions}
+      defaultValue={examplesOptions[0]}
       classNamePrefix="select"
       placeholder={'Choose Cairo Example'}
       menuPlacement="top"
       isSearchable={false}
       instanceId={useId()}
-      styles={{
-        placeholder: (baseStyles) => ({
-          ...baseStyles,
-          color: '#4B5563',
-          ':hover': {
-            color: '#111827',
-          },
-          whiteSpace: 'nowrap',
-        }),
-      }}
     />
   )
 }
+
+export default ExampleSelector
 
 const reactSelectStyles: StylesConfig<
   SelectOption,

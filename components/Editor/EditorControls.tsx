@@ -88,10 +88,10 @@ const EditorControls = ({
           <RiLinksLine size={16} />
         </Button>
 
-        <div className="xl:hidden block">
+        <div className="xl:block hidden w-44">
           <ExampleSelector onExampleChange={onExampleChange} />
         </div>
-        <div className="xl:block hidden">
+        <div className="xl:hidden block">
           <MobileExampleSelector onExampleChange={onExampleChange} />
         </div>
       </div>
