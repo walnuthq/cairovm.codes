@@ -51,7 +51,7 @@ export function MobileExampleSelector({ onExampleChange }: Props) {
   )
 }
 
-export function ExampleSelector({ onExampleChange }: Props) {
+function ExampleSelector({ onExampleChange }: Props) {
   return (
     <Select
       onChange={onExampleChange}
