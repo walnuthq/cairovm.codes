@@ -88,7 +88,7 @@ const EditorControls = ({
           <RiLinksLine size={16} />
         </Button>
 
-        <div className="xl:block hidden w-44">
+        <div className="xl:block hidden max-w-36 2xl:max-w-full">
           <ExampleSelector onExampleChange={onExampleChange} />
         </div>
         <div className="xl:hidden block">

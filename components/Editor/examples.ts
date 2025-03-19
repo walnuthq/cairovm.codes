@@ -502,7 +502,7 @@ ret;
 }
 
 export const CairoExampleNames = [
-  'Simple',
+  'Simple program',
   'Variables & mutability',
   //   'Type casting',
   'Control flow',
