@@ -9,4 +9,4 @@ export const FORKS_WITH_TIMESTAMPS: { [name: string]: number } = {
 }
 
 export const CAIRO_VM_API_URL =
-  process.env.NEXT_PUBLIC_CAIRO_VM_API_URL || 'https://api.cairovm.codes/v1/run'
+  process.env.NEXT_PUBLIC_CAIRO_VM_API_URL || 'http://51.15.233.88:3000/v1/run'
