@@ -11,7 +11,7 @@ interface MultiButtonProps {
 }
 
 const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
-  const [selected, setSelected] = useState<CompileMods>('run-prove-verify')
+  const [selected, setSelected] = useState<CompileMods>('run')
 
   const handleMainButtonClick = () => {
     switch (selected) {
@@ -49,7 +49,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run')}
                 className="block w-full px-4 pt-3 pb-2 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary hover:rounded-t rounded-none"
               >
-                Only run
+                Run and Debug
               </button>
             </MenuItem>
             <MenuItem>
@@ -57,7 +57,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run-prove-verify')}
                 className="block w-full px-4 pt-2 pb-3 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary hover:rounded-b rounded-none"
               >
-                Run and prove
+                Prove and Verify
               </button>
             </MenuItem>
           </div>
