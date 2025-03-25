@@ -268,24 +268,10 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
         }
       }
 
-      if (proof && proofTime) {
-        addToConsoleLog('Generating proof...', LogType.Info)
-        addToConsoleLog(
-          `Proof generation successful (finished in ${formatTime(proofTime)})`,
-          LogType.Info,
-        )
-        addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
-        if (verificationTime) {
-          addToConsoleLog('Verifying proof...', LogType.Info)
-          addToConsoleLog(
-            `Verification successful (finished in ${formatTime(
-              verificationTime,
-            )})`,
-            LogType.Info,
-          )
-        }
-      } else if (provingIsNotSupported) {
+      if (provingIsNotSupported) {
         addToConsoleLog('Proving is not supported for contracts', LogType.Error)
+      } else {
+        addToConsoleLog('Generating proof...', LogType.Info)
       }
     } else if (compilationState === ProgramCompilationState.CompilationErr) {
       addToConsoleLog('Compilation failed', LogType.Error)
@@ -312,6 +298,37 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     serializedOutput,
     apiLogs,
     executionPanicMessage,
+  ])
+
+  useEffect(() => {
+    if (compilationState === ProgramCompilationState.CompilationSuccess) {
+      if (proof && proofTime) {
+        addToConsoleLog(
+          `Proof generation successful (finished in ${formatTime(proofTime)})`,
+          LogType.Info,
+        )
+        addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
+        if (verificationTime) {
+          addToConsoleLog('Verifying proof...', LogType.Info)
+          setTimeout(() => {
+            addToConsoleLog(
+              `Verification successful (finished in ${formatTime(
+                verificationTime,
+              )})`,
+              LogType.Info,
+            )
+          }, 200)
+        }
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    compilationState,
+    proof,
+    proofTime,
+    provingIsNotSupported,
+    verificationTime,
   ])
 
   const isRangeVisible = (startLine: number, endLine: number) => {

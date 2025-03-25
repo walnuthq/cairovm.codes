@@ -8,7 +8,7 @@ import React, {
 
 import { IInstruction, ILogEntry } from 'types'
 
-import { CAIRO_VM_API_URL } from 'util/constants'
+import { CAIRO_VM_API_URL, CAIRO_VM_PROVER_API_URL } from 'util/constants'
 
 import { TraceEntry, TracerData, SierraVariables } from 'components/Tracer'
 
@@ -406,10 +406,35 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         )
       setSierraStatements(sierraStatements)
       setCasmToSierraProgramMap(casmToSierraProgramMap)
-      setProof(data.proof ?? undefined)
-      setProofTime(data.proving_time_ms ?? undefined)
-      setVerificationTime(data.verification_time_ms ?? undefined)
+
       setProvingIsNotSupported(data.proving_is_not_supported ?? false)
+
+      if (data.proving_is_not_supported !== true) {
+        const provingResponse = await fetch(CAIRO_VM_PROVER_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            air_public_input: data.air_public_input,
+            air_private_input: data.air_private_input,
+            trace: data.trace,
+            memory: data.memory,
+            folder_path: data.folder_path,
+          }),
+        })
+        const provingResponseContent = await provingResponse.text()
+        const provingData = JSON.parse(provingResponseContent)
+
+        setProof(provingData.proof ?? undefined)
+        setProofTime(provingData.proving_time_ms ?? undefined)
+        setVerificationTime(provingData.verification_time_ms ?? undefined)
+      } else {
+        setProof(undefined)
+        setProofTime(undefined)
+        setVerificationTime(undefined)
+      }
+
       return true
     } catch (error) {
       console.log('error')
