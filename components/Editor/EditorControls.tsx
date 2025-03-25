@@ -75,78 +75,107 @@ const EditorControls = ({
   }
 
   return (
-    <div className="flex dark:bg-darkMode-primary flex-row items-center justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
-      <div className="flex flex-row">
-        <Button
-          onClick={onCopyPermalink}
-          transparent
-          padded={false}
-          tooltip="Share permalink [p]"
-          tooltipId="share-permalink"
-          className="p-2 text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278] focus:outline-none"
-        >
-          <RiLinksLine size={16} />
-        </Button>
-
-        <div className="xl:block hidden max-w-36 2xl:max-w-full">
-          <ExampleSelector onExampleChange={onExampleChange} />
-        </div>
-        <div className="xl:hidden block">
-          <MobileExampleSelector onExampleChange={onExampleChange} />
-        </div>
-      </div>
-
-      <div className="flex flex-row grow gap-x-2 items-center justify-end">
-        <Input
-          ref={inputRef}
-          rightIcon={
-            <button onClick={onShowArgumentsHelper}>
-              <RiQuestionLine
-                size={20}
-                className="text-gray-400 hover:text-gray-500"
-              />
-            </button>
-          }
-          onChange={(e) => {
-            onProgramArgumentsUpdate(e.target.value)
-          }}
-          readOnly={isCompileDisabled}
-          value={programArguments}
-          placeholder={`Program arguments`}
-          className={cn(
-            'max-w-64 border bg-gray-200 dark:bg-darkMode-primary',
-            {
-              'dark:border-[#46373A]': areProgramArgumentsValid,
-              'border-red-500': !areProgramArgumentsValid,
-            },
-          )}
-          inputClassName={cn('text-xs md:text-sm', {
-            'text-red-500': !areProgramArgumentsValid,
-          })}
-        />
-
-        {/* <div> */}
-        <MultiButton onCompileRun={onCompileRun} />
-        {/* <div className="flex flex-row gap-x-2"> */}
-        {/* <Button
-            onClick={onCompileRun}
-            disabled={isCompileDisabled || !areProgramArgumentsValid}
-            size="sm"
-            contentClassName="justify-center"
-          >
-            Run
-          </Button>
+    <>
+      <Input
+        ref={inputRef}
+        rightIcon={
+          <button onClick={onShowArgumentsHelper}>
+            <RiQuestionLine
+              size={20}
+              className="text-gray-400 hover:text-gray-500"
+            />
+          </button>
+        }
+        onChange={(e) => {
+          onProgramArgumentsUpdate(e.target.value)
+        }}
+        readOnly={isCompileDisabled}
+        value={programArguments}
+        placeholder={`Program arguments`}
+        className={cn(
+          'border bg-gray-200 rounded-none dark:bg-darkMode-primary lg:hidden',
+          {
+            'dark:border-[#46373A]': areProgramArgumentsValid,
+            'border-red-500': !areProgramArgumentsValid,
+          },
+        )}
+        inputClassName={cn('text-xs md:text-sm', {
+          'text-red-500': !areProgramArgumentsValid,
+        })}
+      />
+      <div className="flex dark:bg-darkMode-primary flex-row items-center justify-between gap-x-4 px-4 py-4 md:py-2 md:border-r border-gray-200 dark:border-black-500">
+        <div className="flex flex-row">
           <Button
-            onClick={onProveAndVerify}
-            disabled={isCompileDisabled || !areProgramArgumentsValid}
-            size="sm"
-            contentClassName="justify-center"
+            onClick={onCopyPermalink}
+            transparent
+            padded={false}
+            tooltip="Share permalink [p]"
+            tooltipId="share-permalink"
+            className="p-2 text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278] focus:outline-none"
           >
-            Prove & Verify
-          </Button> */}
-        {/* </div> */}
+            <RiLinksLine size={16} />
+          </Button>
+
+          <div className="xl:block hidden max-w-36 2xl:max-w-full">
+            <ExampleSelector onExampleChange={onExampleChange} />
+          </div>
+          <div className="xl:hidden block">
+            <MobileExampleSelector onExampleChange={onExampleChange} />
+          </div>
+        </div>
+
+        <div className="flex flex-row grow gap-x-2 items-center justify-end">
+          <Input
+            ref={inputRef}
+            rightIcon={
+              <button onClick={onShowArgumentsHelper}>
+                <RiQuestionLine
+                  size={20}
+                  className="text-gray-400 hover:text-gray-500"
+                />
+              </button>
+            }
+            onChange={(e) => {
+              onProgramArgumentsUpdate(e.target.value)
+            }}
+            readOnly={isCompileDisabled}
+            value={programArguments}
+            placeholder={`Program arguments`}
+            className={cn(
+              'max-w-64 border hidden lg:flex bg-gray-200 dark:bg-darkMode-primary',
+              {
+                'dark:border-[#46373A]': areProgramArgumentsValid,
+                'border-red-500': !areProgramArgumentsValid,
+              },
+            )}
+            inputClassName={cn('text-xs md:text-sm', {
+              'text-red-500': !areProgramArgumentsValid,
+            })}
+          />
+
+          {/* <div> */}
+          <MultiButton onCompileRun={onCompileRun} />
+          {/* <div className="flex flex-row gap-x-2"> */}
+          {/* <Button
+      onClick={onCompileRun}
+      disabled={isCompileDisabled || !areProgramArgumentsValid}
+      size="sm"
+      contentClassName="justify-center"
+    >
+      Run
+    </Button>
+    <Button
+      onClick={onProveAndVerify}
+      disabled={isCompileDisabled || !areProgramArgumentsValid}
+      size="sm"
+      contentClassName="justify-center"
+    >
+      Prove & Verify
+    </Button> */}
+          {/* </div> */}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
