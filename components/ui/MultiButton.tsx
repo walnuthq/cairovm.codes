@@ -33,7 +33,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
       >
-        {selected === 'run-prove-verify' ? 'Run and prove' : 'Only run'}
+        {selected === 'run-prove-verify' ? 'Prove and Verify' : 'Run and Debug'}
       </Button>
 
       <Menu as="div" className="relative">
