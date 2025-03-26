@@ -29,6 +29,7 @@ export enum ProgramExecutionState {
 export enum ProgramDebugMode {
   Execution = 'Debug VM Execution Trace',
   Sierra = 'Debug Sierra',
+  Proof = 'Proof',
 }
 
 interface Position {

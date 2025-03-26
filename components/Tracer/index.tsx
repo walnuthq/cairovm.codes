@@ -16,6 +16,7 @@ import { InstructionsTable as SierraInstructionTable } from 'components/Editor/I
 import { cn } from '../../util/styles'
 
 import ExecutionStatus from './ExecutionStatus'
+import ProofTable from './ProofTable'
 
 export interface Instruction {
   ap_update: string
@@ -72,6 +73,7 @@ export const Tracer = () => {
     errorCasmInstructionIndex,
     currentSierraVariables,
     activeSierraIndexes,
+    proof,
   } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
@@ -173,7 +175,7 @@ export const Tracer = () => {
             />
           </div>
         )
-      ) : (
+      ) : debugMode === ProgramDebugMode.Sierra ? (
         <SierraInstructionTable
           instructions={sierraStatements}
           codeType={CodeType.Sierra}
@@ -181,6 +183,8 @@ export const Tracer = () => {
           errorIndexes={casmToSierraProgramMap[errorCasmInstructionIndex] ?? []}
           variables={currentSierraVariables || {}}
         />
+      ) : (
+        <ProofTable proof={proof} />
       )}
 
       <div className="border-gray-200 border-t dark:bg-darkMode-secondary dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
