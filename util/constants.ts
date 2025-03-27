@@ -9,4 +9,4 @@ export const FORKS_WITH_TIMESTAMPS: { [name: string]: number } = {
 }
 
 export const CAIRO_VM_API_URL =
-  process.env.NEXT_PUBLIC_CAIRO_VM_API_URL || 'ws://api2.cairovm.codes/ws'
+  process.env.NEXT_PUBLIC_CAIRO_VM_API_URL || 'wss://api2.cairovm.codes/ws'
