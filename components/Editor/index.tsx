@@ -94,6 +94,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     proofTime,
     verificationTime,
     provingIsNotSupported,
+    proofRequired,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -270,7 +271,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
 
       if (provingIsNotSupported) {
         addToConsoleLog('Proving is not supported for contracts', LogType.Error)
-      } else {
+      } else if (proofRequired) {
         addToConsoleLog('Generating proof...', LogType.Info)
       }
     } else if (compilationState === ProgramCompilationState.CompilationErr) {
@@ -301,7 +302,10 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   ])
 
   useEffect(() => {
-    if (compilationState === ProgramCompilationState.CompilationSuccess) {
+    if (
+      compilationState === ProgramCompilationState.CompilationSuccess &&
+      proofRequired
+    ) {
       if (proof && proofTime) {
         addToConsoleLog(
           `Proof generation successful (finished in ${formatTime(proofTime)})`,
