@@ -2,17 +2,16 @@ import { useContext, useEffect, useState } from 'react'
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { ReadyState } from 'react-use-websocket'
 
 import { AppUiContext } from 'context/appUiContext'
 import {
   CairoVMApiContext,
   ProgramCompilationState,
+  ProgramDebugMode,
 } from 'context/cairoVMApiContext'
 
-import { CAIRO_VM_API_URL } from 'util/constants'
-
 import { Button } from './Button'
-import { ReadyState } from 'react-use-websocket'
 
 type CompileMods = 'run' | 'run-prove-verify'
 interface MultiButtonProps {
@@ -22,7 +21,8 @@ interface MultiButtonProps {
 const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   const [selected, setSelected] = useState<CompileMods>('run')
   const { addToConsoleLog } = useContext(AppUiContext)
-  const { compilationState, readyState } = useContext(CairoVMApiContext)
+  const { compilationState, readyState, setDebugMode } =
+    useContext(CairoVMApiContext)
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
       addToConsoleLog('App initialised')
