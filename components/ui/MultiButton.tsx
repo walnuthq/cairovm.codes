@@ -25,7 +25,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   const { compilationState, readyState } = useContext(CairoVMApiContext)
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
-      addToConsoleLog('App initialised...')
+      addToConsoleLog('App initialised')
     }
   }, [readyState])
 

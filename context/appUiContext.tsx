@@ -45,7 +45,12 @@ export const AppUiContext = createContext<AppUiContextProps>({
 export const AppUiProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isThreeColumnLayout, setIsThreeColumnLayout] = useState(false)
-  const [consoleLog, setConsoleLog] = useState<IConsoleOutput[]>([])
+  const [consoleLog, setConsoleLog] = useState<IConsoleOutput[]>([
+    {
+      type: LogType.Info,
+      message: 'Initialising...',
+    },
+  ])
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen)

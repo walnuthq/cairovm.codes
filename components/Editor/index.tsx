@@ -254,6 +254,8 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     if (compilationState === ProgramCompilationState.CompilationSuccess) {
       addToConsoleLog('Compilation successful')
 
+      addToConsoleLog('Executing...')
+
       if (serializedOutput) {
         addToConsoleLog(`Execution output: ${serializedOutput}`)
       }
@@ -269,7 +271,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
         }
       }
 
-      if (provingIsNotSupported) {
+      if (provingIsNotSupported && proofRequired) {
         addToConsoleLog('Proving is not supported for contracts', LogType.Error)
       } else if (proofRequired) {
         addToConsoleLog('Generating proof...', LogType.Info)
