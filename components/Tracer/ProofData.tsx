@@ -14,11 +14,19 @@ const ProofData = ({ proof }: { proof: string | undefined }) => {
     <div className={proof ? 'h-full w-full overflow-auto pane pane-light' : ''}>
       {parsedProof ? (
         <pre className="pl-4 py-2 text-gray-600 text-sm">{parsedProof}</pre>
-      ) : proofRequired &&
-        executionState === ProgramExecutionState.Executing ? (
-        <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
-          Loading...
-        </div>
+      ) : proofRequired ? (
+        executionState === ProgramExecutionState.Executing ||
+        executionState === ProgramExecutionState.Success ? (
+          <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
+            Loading...
+          </div>
+        ) : (
+          executionState === ProgramExecutionState.Error && (
+            <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
+              Error
+            </div>
+          )
+        )
       ) : (
         <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
           Use 'Prove and Verify' to generate the proof first.
