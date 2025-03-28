@@ -36,7 +36,6 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         break
       case 'run':
         onCompileRun('run')
-        setDebugMode(ProgramDebugMode.Execution)
         break
       default:
         break
