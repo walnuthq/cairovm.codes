@@ -16,7 +16,7 @@ import { InstructionsTable as SierraInstructionTable } from 'components/Editor/I
 import { cn } from '../../util/styles'
 
 import ExecutionStatus from './ExecutionStatus'
-import ProofTable from './ProofTable'
+import ProofData from './ProofData'
 
 export interface Instruction {
   ap_update: string
@@ -184,7 +184,7 @@ export const Tracer = () => {
           variables={currentSierraVariables || {}}
         />
       ) : (
-        <ProofTable proof={proof} />
+        <ProofData proof={proof} />
       )}
 
       <div className="border-gray-200 border-t dark:bg-darkMode-secondary dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
