@@ -4,11 +4,15 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import { AppUiContext } from 'context/appUiContext'
-import { useWebSocketClient } from 'context/cairoVMApiContext'
+import {
+  CairoVMApiContext,
+  ProgramCompilationState,
+} from 'context/cairoVMApiContext'
 
 import { CAIRO_VM_API_URL } from 'util/constants'
 
 import { Button } from './Button'
+import { ReadyState } from 'react-use-websocket'
 
 type CompileMods = 'run' | 'run-prove-verify'
 interface MultiButtonProps {
@@ -17,13 +21,13 @@ interface MultiButtonProps {
 
 const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   const [selected, setSelected] = useState<CompileMods>('run')
-  const { connectionStatus } = useWebSocketClient(CAIRO_VM_API_URL)
   const { addToConsoleLog } = useContext(AppUiContext)
+  const { compilationState, readyState } = useContext(CairoVMApiContext)
   useEffect(() => {
-    if (connectionStatus === 'Open') {
+    if (readyState === ReadyState.OPEN) {
       addToConsoleLog('App initialised...')
     }
-  }, [connectionStatus])
+  }, [readyState])
 
   const handleMainButtonClick = () => {
     switch (selected) {
@@ -41,7 +45,10 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   return (
     <div className="inline-flex min-h-[38px] rounded bg-[#E85733] justify-between">
       <Button
-        disabled={connectionStatus !== 'Open'}
+        disabled={
+          readyState !== ReadyState.OPEN ||
+          compilationState === ProgramCompilationState.Compiling
+        }
         size="sm"
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
@@ -51,7 +58,10 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
 
       <Menu as="div" className="relative">
         <MenuButton
-          disabled={connectionStatus !== 'Open'}
+          disabled={
+            readyState !== ReadyState.OPEN ||
+            compilationState === ProgramCompilationState.Compiling
+          }
           className="h-full disabled:cursor-not-allowed disabled:opacity-50 px-3 flex items-center justify-center rounded-r bg-[#E85733] hover:bg-[#fa5d36] focus:z-10 relative"
         >
           <span className="sr-only">Open options</span>

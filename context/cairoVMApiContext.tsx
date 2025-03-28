@@ -10,6 +10,7 @@ import { IInstruction, ILogEntry } from 'types'
 
 import { TraceEntry, TracerData, SierraVariables } from 'components/Tracer'
 import { CAIRO_VM_API_URL } from 'util/constants'
+import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 export enum ProgramCompilationState {
   Idle,
@@ -80,7 +81,7 @@ type ContextProps = {
   proof?: string
   proofTime?: number
   verificationTime?: number
-
+  readyState: number
   provingIsNotSupported: boolean
   proofRequired: boolean
   setDebugMode: (debugMode: ProgramDebugMode) => void
@@ -117,7 +118,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   breakPoints: {},
   sierraStatementsToCairoInfo: {},
   casmToSierraStatementsMap: {},
-
+  readyState: 0,
   provingIsNotSupported: false,
   proofRequired: false,
 
@@ -330,89 +331,114 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     setBreakPoints({ ...breakPoints, [addr]: false })
   }
 
-  const { send: wsSendMessage } = useWebSocketClient(
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
     CAIRO_VM_API_URL,
-    (message) => {
-      const serverMessage = JSON.parse(message.data) as {
-        RunnerResult: any
-        ProverResult: any
-        CompilerAndRunnerError: string
-        ProverAndVerifierError: string
-      }
-      if (serverMessage.RunnerResult) {
-        const data = serverMessage.RunnerResult
-        setCompilationState(
-          serverMessage.RunnerResult.is_compilation_successful === true
-            ? ProgramCompilationState.CompilationSuccess
-            : ProgramCompilationState.CompilationErr,
-        )
-        setSierraSubStepIndex(undefined)
-        setLogs(serverMessage.RunnerResult.logs)
-        setExecutionState(
-          serverMessage.RunnerResult.is_execution_successful === true
-            ? ProgramExecutionState.Success
-            : ProgramExecutionState.Error,
-        )
-        if (!serverMessage.RunnerResult.is_execution_successful) {
-          return
-        }
-        setExecutionTraceStepNumber(
-          data.is_execution_successful === true
-            ? 0
-            : data.tracer_data.trace.length - 2,
-        )
-        setCasmCode(data.casm_program_code)
-        setSierraCode(data.sierra_program_code)
-        setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
-        setSerializedOutput(data.serialized_output)
-        setExecutionPanicMessage(data.execution_panic_message)
-        setTracerData({
-          memory: data.tracer_data.memory,
-          pcInstMap: data.tracer_data.pc_inst_map,
-          trace: data.tracer_data.trace,
-          callstack: data.tracer_data.callstack,
-          pcToInstIndexesMap: data.tracer_data.pc_to_inst_indexes_map,
-          entryToSierraVarsMap: data.tracer_data.trace_entries_to_sierra_vars,
-        })
-        setBreakPoints(
-          Object.keys(data.tracer_data.memory).reduce(
-            (state, value) => ({ ...state, [value]: false }),
-            {},
-          ),
-        )
-        setSierraStatementsToCairoInfo(
-          data.tracer_data.sierra_to_cairo_debug_info
-            .sierra_statements_to_cairo_info,
-        )
-        setCasmToSierraStatementsMap(data.casm_to_sierra_map)
-        setCasmInstructions(
-          parseStringInstructions(data.casm_formatted_instructions),
-        )
-        const { sierraStatements, casmToSierraProgramMap } =
-          parseSierraFormattedProgramAndCasmToSierraMap(
-            data.sierra_formatted_program,
-            data.casm_to_sierra_map,
-          )
-        setSierraStatements(sierraStatements)
-        setCasmToSierraProgramMap(casmToSierraProgramMap)
-
-        setProvingIsNotSupported(data.proving_is_not_supported ?? false)
-        if (data.proof_required === true) {
-          setProof(undefined)
-          setProofTime(undefined)
-          setVerificationTime(undefined)
-        }
-      } else if (serverMessage.ProverResult) {
-        setProof(serverMessage.ProverResult.proof ?? undefined)
-        setProofTime(serverMessage.ProverResult.proving_time_ms ?? undefined)
-        setVerificationTime(
-          serverMessage.ProverResult.verification_time_ms ?? undefined,
-        )
-      } else if (serverMessage.CompilerAndRunnerError) {
-        setCompilationState(ProgramCompilationState.CompilationErr)
-      }
+    {
+      share: false,
+      shouldReconnect: () => true,
     },
   )
+
+  // Run when the connection state (readyState) changes
+  useEffect(() => {
+    if (readyState === ReadyState.OPEN) {
+      console.log('Connection opened')
+    } else if (readyState === ReadyState.CLOSED) {
+      console.log('Connection closed')
+    } else if (readyState === ReadyState.CONNECTING) {
+      console.log('Connection connecting')
+    } else if (readyState === ReadyState.CLOSING) {
+      console.log('Connection closing')
+    }
+  }, [readyState])
+
+  // Run when a new WebSocket message is received (lastJsonMessage)
+  useEffect(() => {
+    handleMessage(lastJsonMessage as any)
+  }, [lastJsonMessage])
+
+  const handleMessage = (serverMessage: {
+    RunnerResult: any
+    ProverResult: any
+    CompilerAndRunnerError: string
+    ProverAndVerifierError: string
+  }) => {
+    if (!serverMessage) {
+      return
+    }
+    if (serverMessage.RunnerResult) {
+      const data = serverMessage.RunnerResult
+      setCompilationState(
+        serverMessage.RunnerResult.is_compilation_successful === true
+          ? ProgramCompilationState.CompilationSuccess
+          : ProgramCompilationState.CompilationErr,
+      )
+      setSierraSubStepIndex(undefined)
+      setLogs(serverMessage.RunnerResult.logs)
+      setExecutionState(
+        serverMessage.RunnerResult.is_execution_successful === true
+          ? ProgramExecutionState.Success
+          : ProgramExecutionState.Error,
+      )
+      if (!serverMessage.RunnerResult.is_execution_successful) {
+        return
+      }
+      setExecutionTraceStepNumber(
+        data.is_execution_successful === true
+          ? 0
+          : data.tracer_data.trace.length - 2,
+      )
+      setCasmCode(data.casm_program_code)
+      setSierraCode(data.sierra_program_code)
+      setCairoLangCompilerVersion(data.cairo_lang_compiler_version)
+      setSerializedOutput(data.serialized_output)
+      setExecutionPanicMessage(data.execution_panic_message)
+      setTracerData({
+        memory: data.tracer_data.memory,
+        pcInstMap: data.tracer_data.pc_inst_map,
+        trace: data.tracer_data.trace,
+        callstack: data.tracer_data.callstack,
+        pcToInstIndexesMap: data.tracer_data.pc_to_inst_indexes_map,
+        entryToSierraVarsMap: data.tracer_data.trace_entries_to_sierra_vars,
+      })
+      setBreakPoints(
+        Object.keys(data.tracer_data.memory).reduce(
+          (state, value) => ({ ...state, [value]: false }),
+          {},
+        ),
+      )
+      setSierraStatementsToCairoInfo(
+        data.tracer_data.sierra_to_cairo_debug_info
+          .sierra_statements_to_cairo_info,
+      )
+      setCasmToSierraStatementsMap(data.casm_to_sierra_map)
+      setCasmInstructions(
+        parseStringInstructions(data.casm_formatted_instructions),
+      )
+      const { sierraStatements, casmToSierraProgramMap } =
+        parseSierraFormattedProgramAndCasmToSierraMap(
+          data.sierra_formatted_program,
+          data.casm_to_sierra_map,
+        )
+      setSierraStatements(sierraStatements)
+      setCasmToSierraProgramMap(casmToSierraProgramMap)
+
+      setProvingIsNotSupported(data.proving_is_not_supported ?? false)
+      if (data.proof_required === true) {
+        setProof(undefined)
+        setProofTime(undefined)
+        setVerificationTime(undefined)
+      }
+    } else if (serverMessage.ProverResult) {
+      setProof(serverMessage.ProverResult.proof ?? undefined)
+      setProofTime(serverMessage.ProverResult.proving_time_ms ?? undefined)
+      setVerificationTime(
+        serverMessage.ProverResult.verification_time_ms ?? undefined,
+      )
+    } else if (serverMessage.CompilerAndRunnerError) {
+      setCompilationState(ProgramCompilationState.CompilationErr)
+    }
+  }
 
   const compileCairoCode = async (
     cairoCode: string,
@@ -423,15 +449,14 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     setCompilationState(ProgramCompilationState.Compiling)
     setExecutionState(ProgramExecutionState.Executing)
     setProofRequired(isProofRequired)
+    setProof(undefined)
 
-    wsSendMessage(
-      JSON.stringify({
-        cairo_program_code: cairoCode,
-        program_arguments: programArguments,
-        proof_required: isProofRequired,
-        verification_required: isVerificationRequired,
-      }),
-    )
+    sendJsonMessage({
+      cairo_program_code: cairoCode,
+      program_arguments: programArguments,
+      proof_required: isProofRequired,
+      verification_required: isVerificationRequired,
+    })
 
     return true
   }
@@ -448,6 +473,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         cairoLangCompilerVersion,
         serializedOutput,
         logs,
+        readyState,
         tracerData,
         casmInstructions,
         executionTraceStepNumber,
@@ -545,67 +571,4 @@ const parseSierraFormattedProgramAndCasmToSierraMap = (
     sierraStatements: statements,
     casmToSierraProgramMap: casmToSierraProgramMap,
   }
-}
-
-export const useWebSocketClient = (
-  socketUrl: string,
-  onMessageCallback?: (message: MessageEvent<any>) => void,
-) => {
-  const wsRef = useRef<WebSocket | null>(null)
-  const [readyState, setReadyState] = useState<number>(WebSocket.CONNECTING)
-
-  useEffect(() => {
-    const ws = new WebSocket(socketUrl)
-    wsRef.current = ws
-
-    ws.onopen = () => {
-      console.log('WebSocket connection opened')
-      setReadyState(ws.readyState)
-    }
-
-    ws.onclose = () => {
-      console.log('WebSocket connection closed')
-      setReadyState(ws.readyState)
-    }
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-
-    ws.onmessage = (message: MessageEvent) => {
-      if (onMessageCallback) {
-        onMessageCallback(message)
-      }
-    }
-
-    // Clean up the socket on component unmount
-    return () => {
-      // ws.close()
-    }
-  }, [socketUrl, onMessageCallback])
-
-  const send = (message: string) => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(message)
-    } else {
-      console.warn('WebSocket is not open. Message not sent:', message)
-    }
-  }
-
-  const connectionStatus = (() => {
-    switch (readyState) {
-      case WebSocket.CONNECTING:
-        return 'Connecting'
-      case WebSocket.OPEN:
-        return 'Open'
-      case WebSocket.CLOSING:
-        return 'Closing'
-      case WebSocket.CLOSED:
-        return 'Closed'
-      default:
-        return 'Unknown'
-    }
-  })()
-
-  return { send, readyState, connectionStatus }
 }
