@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+
+import { AppUiContext } from 'context/appUiContext'
+import { useWebSocketClient } from 'context/cairoVMApiContext'
+
+import { CAIRO_VM_API_URL } from 'util/constants'
 
 import { Button } from './Button'
 
@@ -12,6 +17,13 @@ interface MultiButtonProps {
 
 const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   const [selected, setSelected] = useState<CompileMods>('run')
+  const { connectionStatus } = useWebSocketClient(CAIRO_VM_API_URL)
+  const { addToConsoleLog } = useContext(AppUiContext)
+  useEffect(() => {
+    if (connectionStatus === 'Open') {
+      addToConsoleLog('App initialised...')
+    }
+  }, [connectionStatus])
 
   const handleMainButtonClick = () => {
     switch (selected) {
@@ -29,6 +41,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   return (
     <div className="inline-flex min-h-[38px] rounded bg-[#E85733] justify-between">
       <Button
+        disabled={connectionStatus !== 'Open'}
         size="sm"
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
@@ -37,7 +50,10 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
       </Button>
 
       <Menu as="div" className="relative">
-        <MenuButton className="h-full px-3 flex items-center justify-center rounded-r bg-[#E85733] hover:bg-[#fa5d36] focus:z-10 relative">
+        <MenuButton
+          disabled={connectionStatus !== 'Open'}
+          className="h-full disabled:cursor-not-allowed disabled:opacity-50 px-3 flex items-center justify-center rounded-r bg-[#E85733] hover:bg-[#fa5d36] focus:z-10 relative"
+        >
           <span className="sr-only">Open options</span>
           <ChevronDownIcon aria-hidden="true" className="w-5" color="black" />
           <span className="absolute left-0 top-1/2 h-2/3 w-[1px] bg-[#00000033] -translate-y-1/2" />
