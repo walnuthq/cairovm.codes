@@ -313,9 +313,6 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
           `Proof generation successful (finished in ${formatTime(proofTime)})`,
           LogType.Info,
         )
-        setTimeout(() => {
-          setDebugMode(ProgramDebugMode.Proof)
-        }, 100)
         addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
 
         if (verificationTime) {

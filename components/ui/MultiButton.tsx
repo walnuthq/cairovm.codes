@@ -9,6 +9,7 @@ import {
   CairoVMApiContext,
   ProgramCompilationState,
   ProgramDebugMode,
+  ProgramExecutionState,
 } from 'context/cairoVMApiContext'
 
 import { Button } from './Button'
@@ -21,8 +22,14 @@ interface MultiButtonProps {
 const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   const [selected, setSelected] = useState<CompileMods>('run')
   const { addToConsoleLog } = useContext(AppUiContext)
-  const { compilationState, readyState, setDebugMode } =
-    useContext(CairoVMApiContext)
+  const {
+    compilationState,
+    readyState,
+    setDebugMode,
+    proof,
+    executionState,
+    proofRequired,
+  } = useContext(CairoVMApiContext)
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
       addToConsoleLog('App initialised')
@@ -33,9 +40,11 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
     switch (selected) {
       case 'run-prove-verify':
         onCompileRun('run-prove-verify')
+        setDebugMode(ProgramDebugMode.Proof)
         break
       case 'run':
         onCompileRun('run')
+        setDebugMode(ProgramDebugMode.Sierra)
         break
       default:
         break
@@ -47,7 +56,11 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
       <Button
         disabled={
           readyState !== ReadyState.OPEN ||
-          compilationState === ProgramCompilationState.Compiling
+          compilationState === ProgramCompilationState.Compiling ||
+          (proofRequired &&
+            !proof &&
+            (executionState === ProgramExecutionState.Executing ||
+              executionState === ProgramExecutionState.Success))
         }
         size="sm"
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
@@ -60,7 +73,11 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         <MenuButton
           disabled={
             readyState !== ReadyState.OPEN ||
-            compilationState === ProgramCompilationState.Compiling
+            compilationState === ProgramCompilationState.Compiling ||
+            (proofRequired &&
+              !proof &&
+              (executionState === ProgramExecutionState.Executing ||
+                executionState === ProgramExecutionState.Success))
           }
           className="h-full disabled:cursor-not-allowed disabled:opacity-50 px-3 flex items-center justify-center rounded-r bg-[#E85733] hover:bg-[#fa5d36] focus:z-10 relative"
         >
