@@ -6,11 +6,12 @@ import React, {
   useRef,
 } from 'react'
 
+import useWebSocket, { ReadyState } from 'react-use-websocket'
 import { IInstruction, ILogEntry } from 'types'
 
-import { TraceEntry, TracerData, SierraVariables } from 'components/Tracer'
 import { CAIRO_VM_API_URL } from 'util/constants'
-import useWebSocket, { ReadyState } from 'react-use-websocket'
+
+import { TraceEntry, TracerData, SierraVariables } from 'components/Tracer'
 
 export enum ProgramCompilationState {
   Idle,

@@ -7,6 +7,7 @@ import { CodeType } from 'context/appUiContext'
 import {
   BreakPoints,
   CairoVMApiContext,
+  ProgramCompilationState,
   ProgramDebugMode,
   ProgramExecutionState,
 } from 'context/cairoVMApiContext'
@@ -74,6 +75,7 @@ export const Tracer = () => {
     currentSierraVariables,
     activeSierraIndexes,
     proof,
+    compilationState,
   } = useContext(CairoVMApiContext)
 
   const trace = tracerData?.trace
@@ -151,38 +153,59 @@ export const Tracer = () => {
       </div>
 
       {debugMode === ProgramDebugMode.Execution ? (
-        tracerData &&
-        currentTraceEntry &&
-        trace &&
-        breakPoints && (
-          <div
-            className={
-              'h-full w-full bg-gray-50 dark:bg-darkMode-primary border-gray-200 dark:border-black-500'
-            }
-          >
-            <InstructionsTable
-              memory={tracerData.memory}
-              pcInstMap={tracerData.pcInstMap}
-              currentTraceEntry={currentTraceEntry}
-              currentFocus={currentFocus.idx}
-              breakpoints={breakPoints}
-              toogleBreakPoint={toogleBreakPoint}
-              errorTraceEntry={
-                executionState === ProgramExecutionState.Error
-                  ? errorTraceEntry
-                  : null
-              }
-            />
+        trace === undefined ? (
+          <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
+            {compilationState === ProgramCompilationState.Idle
+              ? 'Run the app to get debug info'
+              : compilationState === ProgramCompilationState.Compiling
+              ? 'Compiling...'
+              : 'Error'}
           </div>
+        ) : (
+          tracerData &&
+          currentTraceEntry &&
+          breakPoints && (
+            <div
+              className={
+                'h-full w-full bg-gray-50 dark:bg-darkMode-primary border-gray-200 dark:border-black-500'
+              }
+            >
+              <InstructionsTable
+                memory={tracerData.memory}
+                pcInstMap={tracerData.pcInstMap}
+                currentTraceEntry={currentTraceEntry}
+                currentFocus={currentFocus.idx}
+                breakpoints={breakPoints}
+                toogleBreakPoint={toogleBreakPoint}
+                errorTraceEntry={
+                  executionState === ProgramExecutionState.Error
+                    ? errorTraceEntry
+                    : null
+                }
+              />
+            </div>
+          )
         )
       ) : debugMode === ProgramDebugMode.Sierra ? (
-        <SierraInstructionTable
-          instructions={sierraStatements}
-          codeType={CodeType.Sierra}
-          activeIndexes={activeSierraIndexes}
-          errorIndexes={casmToSierraProgramMap[errorCasmInstructionIndex] ?? []}
-          variables={currentSierraVariables || {}}
-        />
+        trace === undefined ? (
+          <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
+            {compilationState === ProgramCompilationState.Idle
+              ? 'Run the app to get debug info'
+              : compilationState === ProgramCompilationState.Compiling
+              ? 'Compiling...'
+              : 'Error'}
+          </div>
+        ) : (
+          <SierraInstructionTable
+            instructions={sierraStatements}
+            codeType={CodeType.Sierra}
+            activeIndexes={activeSierraIndexes}
+            errorIndexes={
+              casmToSierraProgramMap[errorCasmInstructionIndex] ?? []
+            }
+            variables={currentSierraVariables || {}}
+          />
+        )
       ) : (
         <ProofData proof={proof} />
       )}
@@ -221,11 +244,7 @@ function DebugInfoTab({
 }) {
   return (
     <div className="p-4">
-      {trace === undefined ? (
-        <p className="text-mono text-tiny text-gray-400 dark:text-gray-500">
-          Run the app to get debug info
-        </p>
-      ) : (
+      {trace && (
         <dl className="text-2xs">
           {debugMode === ProgramDebugMode.Execution && (
             <div className="flex flex-col lg:flex-row justify-between">
