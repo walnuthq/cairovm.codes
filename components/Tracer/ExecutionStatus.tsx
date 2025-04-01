@@ -4,6 +4,7 @@ import {
   RiArrowGoForwardLine,
   RiArrowGoBackLine,
   RiPlayCircleLine,
+  RiFileDownloadLine,
 } from '@remixicon/react'
 import { Priority, useRegisterActions } from 'kbar'
 import Select from 'react-select'
@@ -13,6 +14,7 @@ import { CairoVMApiContext, ProgramDebugMode } from 'context/cairoVMApiContext'
 import { Button } from 'components/ui'
 
 import { TraceEntry } from '.'
+import { handleDownloadProof } from 'components/Editor/DownloadProof'
 
 type DebugModeOption = {
   value: ProgramDebugMode
@@ -39,7 +41,7 @@ const ExecutionStatus = ({
   trace: TraceEntry[] | undefined
   executionTraceStepNumber: number
 }) => {
-  const { debugMode, setDebugMode } = useContext(CairoVMApiContext)
+  const { debugMode, setDebugMode, proof } = useContext(CairoVMApiContext)
 
   const debugModeValue: DebugModeOption = useMemo(
     () => ({
@@ -111,47 +113,62 @@ const ExecutionStatus = ({
         />
       </div>
 
-      <div className="flex flex-row items-center gap-4">
+      {debugMode === ProgramDebugMode.Proof ? (
         <Button
           transparent
-          onClick={onStepOut}
-          padded={false}
-          tooltip="Step back [b]"
-          tooltipId="step1"
-          disabled={executionTraceStepNumber === 0}
+          onClick={() => proof && handleDownloadProof(proof)}
+          tooltip="Download proof"
+          disabled={!proof}
+          tooltipId="download-proof"
         >
-          <RiArrowGoBackLine
+          <RiFileDownloadLine
             size={16}
             className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
           />
         </Button>
-        <Button
-          transparent
-          onClick={onStepIn}
-          padded={false}
-          tooltip="Step next [n]"
-          tooltipId="step2"
-          disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
-        >
-          <RiArrowGoForwardLine
-            size={16}
-            className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
-          />
-        </Button>
-        <Button
-          transparent
-          onClick={onContinueExecution}
-          padded={false}
-          tooltip="Continue execution [c]"
-          tooltipId="continue-execution"
-          disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
-        >
-          <RiPlayCircleLine
-            size={16}
-            className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
-          />
-        </Button>
-      </div>
+      ) : (
+        <div className="flex flex-row items-center gap-4">
+          <Button
+            transparent
+            onClick={onStepOut}
+            padded={false}
+            tooltip="Step back [b]"
+            tooltipId="step1"
+            disabled={executionTraceStepNumber === 0}
+          >
+            <RiArrowGoBackLine
+              size={16}
+              className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
+            />
+          </Button>
+          <Button
+            transparent
+            onClick={onStepIn}
+            padded={false}
+            tooltip="Step next [n]"
+            tooltipId="step2"
+            disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
+          >
+            <RiArrowGoForwardLine
+              size={16}
+              className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
+            />
+          </Button>
+          <Button
+            transparent
+            onClick={onContinueExecution}
+            padded={false}
+            tooltip="Continue execution [c]"
+            tooltipId="continue-execution"
+            disabled={executionTraceStepNumber + 1 === trace?.length || !trace}
+          >
+            <RiPlayCircleLine
+              size={16}
+              className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
+            />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
