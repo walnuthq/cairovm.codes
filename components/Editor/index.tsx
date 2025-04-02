@@ -41,7 +41,6 @@ import { cn } from '../../util/styles'
 import { ArgumentsHelperModal } from './ArgumentsHelperModal'
 import { registerCairoLanguageSupport } from './cairoLangConfig'
 import Console from './Console'
-import { DownloadProof } from './DownloadProof'
 import EditorControls from './EditorControls'
 import EditorFooter from './EditorFooter'
 import ExtraColumn from './ExtraColumn'
@@ -313,7 +312,6 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
           `Proof generation successful (finished in ${formatTime(proofTime)})`,
           LogType.Info,
         )
-        addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
 
         if (verificationTime) {
           addToConsoleLog('Verifying proof...', LogType.Info)

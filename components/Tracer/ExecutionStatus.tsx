@@ -117,14 +117,16 @@ const ExecutionStatus = ({
         <Button
           transparent
           onClick={() => proof && handleDownloadProof(proof)}
-          tooltip="Download proof"
           disabled={!proof}
-          tooltipId="download-proof"
+          className="font-normal text-gray-600 hover:text-gray-900 dark:text-darkMode-text dark:hover:text-gray-400 text-sm"
         >
-          <RiFileDownloadLine
-            size={16}
-            className="text-[#E85733] dark:text-darkMode-icons hover:text-[#fc9278]"
-          />
+          <div className="flex items-center gap-2 hover">
+            <RiFileDownloadLine
+              size={16}
+              className="text-[#E85733] dark:text-darkMode-icons "
+            />
+            <div className="">Download Proof</div>
+          </div>
         </Button>
       ) : (
         <div className="flex flex-row items-center gap-4">
