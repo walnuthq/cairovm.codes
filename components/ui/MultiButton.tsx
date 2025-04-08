@@ -40,11 +40,11 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
     switch (selected) {
       case 'run-prove-verify':
         onCompileRun('run-prove-verify')
-        setDebugMode(ProgramDebugMode.Proof)
+        setDebugMode(ProgramDebugMode.Execution)
         break
       case 'run':
         onCompileRun('run')
-        setDebugMode(ProgramDebugMode.Sierra)
+        setDebugMode(ProgramDebugMode.Execution)
         break
       default:
         break
@@ -66,7 +66,9 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         className="rounded-r-none px-3 py-2 text-xs md:text-sm min-w-[130px] flex items-center whitespace-nowrap justify-left flex-1"
         onClick={handleMainButtonClick}
       >
-        {selected === 'run-prove-verify' ? 'Prove and Verify' : 'Run and Debug'}
+        {selected === 'run-prove-verify'
+          ? 'Run, Prove and Debug'
+          : 'Run and Debug'}
       </Button>
 
       <Menu as="div" className="relative">
@@ -100,7 +102,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
                 onClick={() => setSelected('run-prove-verify')}
                 className="block w-full px-4 pt-2 pb-3 text-sm text-left dark:text-darkMode-text text-gray-900 hover:bg-gray-100 dark:hover:bg-darkMode-secondary hover:rounded-b rounded-none"
               >
-                Prove and Verify
+                Run, Prove and Debug
               </button>
             </MenuItem>
           </div>
