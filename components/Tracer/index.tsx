@@ -17,7 +17,6 @@ import { InstructionsTable as SierraInstructionTable } from 'components/Editor/I
 import { cn } from '../../util/styles'
 
 import ExecutionStatus from './ExecutionStatus'
-import ProofData from './ProofData'
 
 export interface Instruction {
   ap_update: string
