@@ -337,6 +337,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     {
       share: false,
       shouldReconnect: () => true,
+      onError: (event) => console.error('WebSocket error:', event),
     },
   )
 
@@ -451,7 +452,6 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
     setExecutionState(ProgramExecutionState.Executing)
     setProofRequired(isProofRequired)
     setProof(undefined)
-
     sendJsonMessage({
       cairo_program_code: cairoCode,
       program_arguments: programArguments,
