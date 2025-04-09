@@ -323,11 +323,11 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
               )})`,
               LogType.Info,
             )
+            addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
           }, 200)
-        }
-        setTimeout(() => {
+        } else {
           addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
-        }, 201)
+        }
       }
     }
 
