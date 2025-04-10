@@ -272,7 +272,10 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
       }
 
       if (provingIsNotSupported && proofRequired) {
-        addToConsoleLog('Proving is not supported for contracts', LogType.Error)
+        addToConsoleLog(
+          'Proving is not supported without #[executable]',
+          LogType.Error,
+        )
       } else if (proofRequired) {
         addToConsoleLog('Generating proof...', LogType.Info)
       }

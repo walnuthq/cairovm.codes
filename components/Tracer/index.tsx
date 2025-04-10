@@ -152,7 +152,7 @@ export const Tracer = () => {
       </div>
 
       {debugMode === ProgramDebugMode.Execution ? (
-        trace === undefined ? (
+        compilationState !== ProgramCompilationState.CompilationSuccess ? (
           <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
             {compilationState === ProgramCompilationState.Idle
               ? 'Run the app to get debug info'
@@ -187,7 +187,7 @@ export const Tracer = () => {
         )
       ) : (
         debugMode === ProgramDebugMode.Sierra &&
-        (trace === undefined ? (
+        (compilationState !== ProgramCompilationState.CompilationSuccess ? (
           <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
             {compilationState === ProgramCompilationState.Idle
               ? 'Run the app to get debug info'
@@ -209,6 +209,7 @@ export const Tracer = () => {
       )}
       <div className="border-gray-200 border-t dark:bg-darkMode-secondary dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
         <DebugInfoTab
+          compilationState={compilationState}
           debugMode={debugMode}
           trace={trace}
           currentTraceEntry={currentTraceEntry}
@@ -228,6 +229,7 @@ function DebugInfoTab({
   executionTraceStepNumber,
   handleRegisterPointerClick,
   debugMode,
+  compilationState,
 }: {
   trace: TraceEntry[] | undefined
   currentTraceEntry: TraceEntry | undefined
@@ -235,158 +237,165 @@ function DebugInfoTab({
   executionTraceStepNumber: number
   handleRegisterPointerClick: (num: number) => void
   debugMode: ProgramDebugMode
+  compilationState: ProgramCompilationState
 }) {
   return (
     <div className="p-4">
-      {trace && (
-        <dl className="text-2xs">
-          {debugMode === ProgramDebugMode.Execution && (
-            <div className="flex flex-col lg:flex-row justify-between">
-              <div>
-                <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
-                  Registers
-                </dt>
-                <dd className="mb-2 flex gap-1">
-                  <button
-                    onClick={() => {
-                      handleRegisterPointerClick(
-                        currentTraceEntry?.pc as number,
-                      )
-                    }}
-                    className=" inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-fuchsia-700 hover:!border-fuchsia-700"
-                  >
-                    PC: {currentTraceEntry?.pc}
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleRegisterPointerClick(
-                        currentTraceEntry?.fp as number,
-                      )
-                    }}
-                    className=" inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-green-700 hover:!border-green-700"
-                  >
-                    FP: {currentTraceEntry?.fp}
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleRegisterPointerClick(
-                        currentTraceEntry?.ap as number,
-                      )
-                    }}
-                    className="inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-orange-700 hover:!border-orange-700"
-                  >
-                    AP: {currentTraceEntry?.ap}
-                  </button>
-                </dd>
+      {trace &&
+        compilationState === ProgramCompilationState.CompilationSuccess && (
+          <dl className="text-2xs">
+            {debugMode === ProgramDebugMode.Execution && (
+              <div className="flex flex-col lg:flex-row justify-between">
+                <div>
+                  <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
+                    Registers
+                  </dt>
+                  <dd className="mb-2 flex gap-1">
+                    <button
+                      onClick={() => {
+                        handleRegisterPointerClick(
+                          currentTraceEntry?.pc as number,
+                        )
+                      }}
+                      className=" inline-block border px-2 py-1 mb-1 cursor-pointer rounded-sm break-all text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-fuchsia-700 hover:!border-fuchsia-700"
+                    >
+                      PC: {currentTraceEntry?.pc}
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleRegisterPointerClick(
+                          currentTraceEntry?.fp as number,
+                        )
+                      }}
+                      className=" inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-green-700 hover:!border-green-700"
+                    >
+                      FP: {currentTraceEntry?.fp}
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleRegisterPointerClick(
+                          currentTraceEntry?.ap as number,
+                        )
+                      }}
+                      className="inline-block border px-2 py-1 mb-1 rounded-sm break-all cursor-pointer text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD] hover:!text-orange-700 hover:!border-orange-700"
+                    >
+                      AP: {currentTraceEntry?.ap}
+                    </button>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
+                    Execution steps
+                  </dt>
+                  <dd className="mb-2">
+                    <div className="inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD]">
+                      Current: {executionTraceStepNumber + 1}, Total:{' '}
+                      {trace?.length}
+                    </div>
+                  </dd>
+                </div>
               </div>
-              <div>
-                <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
-                  Execution steps
-                </dt>
-                <dd className="mb-2">
-                  <div className="inline-block border px-2 py-1 mb-1 rounded-sm break-all text-tiny border-gray-300 dark:border-[#46373A] text-gray-500 dark:text-[#BDBDBD]">
-                    Current: {executionTraceStepNumber + 1}, Total:{' '}
-                    {trace?.length}
-                  </div>
-                </dd>
-              </div>
-            </div>
-          )}
-          <div>
-            <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
-              Callstack
-            </dt>
-            <dd className="font-mono mb-2">
-              <table className="w-full font-mono text-tiny border border-gray-300 dark:border-[#46373A]">
-                <thead>
-                  <tr className="text-left sticky z-[1] top-0 bg-gray-50 dark:bg-darkMode-secondary text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-[#46373A]">
-                    {debugMode === ProgramDebugMode.Execution && (
-                      <>
-                        <th className="py-1 px-2 font-thin min-w-16">FP</th>
-                        <th className="py-1 px-2 font-thin  whitespace-nowrap w-16">
-                          CALL PC
-                        </th>
-                        <th className="py-1 px-2 font-thin whitespace-nowrap w-16">
-                          RET PC
-                        </th>
-                      </>
-                    )}
-                    <th className="py-1 px-2 font-thin text-left min-w-64">
-                      FN NAME
-                    </th>
-                    <th className="py-1 px-2 font-thin text-left min-w-full">
-                      PARAMETERS
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentCallstackEntry?.map((callstackEntry, index) => {
-                    if (
-                      callstackEntry.fn_name ||
-                      debugMode === ProgramDebugMode.Execution
-                    ) {
-                      return (
-                        <tr
-                          key={index}
-                          className="relative border-b border-gray-300 dark:border-[#46373A] text-gray-400 dark:text-gray-600"
-                        >
-                          {debugMode === ProgramDebugMode.Execution && (
-                            <>
-                              <td className="py-1 px-2 min-w-16">
-                                {callstackEntry.fp}
-                              </td>
-                              <td className="py-1 px-2 w-16">
-                                {callstackEntry.call_pc}
-                              </td>
-                              <td className="py-1 px-2 w-16">
-                                {callstackEntry.ret_pc}
-                              </td>
-                            </>
-                          )}
-                          <td className="py-1 px-2 text-left w-64 break-all">
-                            {callstackEntry.fn_name}
-                          </td>
-                          <td className="py-1 px-2 text-left w-full">
-                            {callstackEntry?.params?.map(
-                              (
-                                param: { type_name: string; value: number[] },
-                                index,
-                                array,
-                              ) => (
-                                <div key={index} className="inline-block">
-                                  <div
-                                    data-tip={param.type_name}
-                                    data-for={param.type_name}
-                                    className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0 break-normal"
-                                  >
-                                    {param.value.length > 1
-                                      ? `[${param.value.join(', ')}]`
-                                      : param.value[0]}
-
-                                    <ReactTooltip
-                                      className="tooltip"
-                                      id={param.type_name}
-                                      effect="solid"
-                                      uuid="buttonTooltip"
-                                    />
-                                  </div>
-                                  <span>
-                                    {index < array.length - 1 ? ',\u00A0' : ''}
-                                  </span>
-                                </div>
-                              ),
+            )}
+            <div>
+              <dt className="mb-1 text-gray-500 dark:text-[#BDBDBD] font-medium uppercase text-[13px] leading-6">
+                Callstack
+              </dt>
+              <dd className="font-mono mb-2">
+                <table className="w-full font-mono text-tiny border border-gray-300 dark:border-[#46373A]">
+                  <thead>
+                    <tr className="text-left sticky z-[1] top-0 bg-gray-50 dark:bg-darkMode-secondary text-gray-400 dark:text-gray-600 border-b border-gray-300 dark:border-[#46373A]">
+                      {debugMode === ProgramDebugMode.Execution && (
+                        <>
+                          <th className="py-1 px-2 font-thin min-w-16">FP</th>
+                          <th className="py-1 px-2 font-thin  whitespace-nowrap w-16">
+                            CALL PC
+                          </th>
+                          <th className="py-1 px-2 font-thin whitespace-nowrap w-16">
+                            RET PC
+                          </th>
+                        </>
+                      )}
+                      <th className="py-1 px-2 font-thin text-left min-w-64">
+                        FN NAME
+                      </th>
+                      <th className="py-1 px-2 font-thin text-left min-w-full">
+                        PARAMETERS
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentCallstackEntry?.map((callstackEntry, index) => {
+                      if (
+                        callstackEntry.fn_name ||
+                        debugMode === ProgramDebugMode.Execution
+                      ) {
+                        return (
+                          <tr
+                            key={index}
+                            className="relative border-b border-gray-300 dark:border-[#46373A] text-gray-400 dark:text-gray-600"
+                          >
+                            {debugMode === ProgramDebugMode.Execution && (
+                              <>
+                                <td className="py-1 px-2 min-w-16">
+                                  {callstackEntry.fp}
+                                </td>
+                                <td className="py-1 px-2 w-16">
+                                  {callstackEntry.call_pc}
+                                </td>
+                                <td className="py-1 px-2 w-16">
+                                  {callstackEntry.ret_pc}
+                                </td>
+                              </>
                             )}
-                          </td>
-                        </tr>
-                      )
-                    }
-                  })}
-                </tbody>
-              </table>
-            </dd>
-          </div>
-        </dl>
-      )}
+                            <td className="py-1 px-2 text-left w-64 break-all">
+                              {callstackEntry.fn_name}
+                            </td>
+                            <td className="py-1 px-2 text-left w-full">
+                              {callstackEntry?.params?.map(
+                                (
+                                  param: {
+                                    type_name: string
+                                    value: number[]
+                                  },
+                                  index,
+                                  array,
+                                ) => (
+                                  <div key={index} className="inline-block">
+                                    <div
+                                      data-tip={param.type_name}
+                                      data-for={param.type_name}
+                                      className="inline-block cursor-pointer hover:text-black-700 transition-colors ease-out delay-0 break-normal"
+                                    >
+                                      {param.value.length > 1
+                                        ? `[${param.value.join(', ')}]`
+                                        : param.value[0]}
+
+                                      <ReactTooltip
+                                        className="tooltip"
+                                        id={param.type_name}
+                                        effect="solid"
+                                        uuid="buttonTooltip"
+                                      />
+                                    </div>
+                                    <span>
+                                      {index < array.length - 1
+                                        ? ',\u00A0'
+                                        : ''}
+                                    </span>
+                                  </div>
+                                ),
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      }
+                    })}
+                  </tbody>
+                </table>
+              </dd>
+            </div>
+          </dl>
+        )}
     </div>
   )
 }
