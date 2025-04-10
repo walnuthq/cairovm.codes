@@ -17,7 +17,6 @@ import { InstructionsTable as SierraInstructionTable } from 'components/Editor/I
 import { cn } from '../../util/styles'
 
 import ExecutionStatus from './ExecutionStatus'
-import ProofData from './ProofData'
 
 export interface Instruction {
   ap_update: string
@@ -186,8 +185,9 @@ export const Tracer = () => {
             </div>
           )
         )
-      ) : debugMode === ProgramDebugMode.Sierra ? (
-        compilationState !== ProgramCompilationState.CompilationSuccess ? (
+      ) : (
+        debugMode === ProgramDebugMode.Sierra &&
+        (compilationState !== ProgramCompilationState.CompilationSuccess ? (
           <div className="flex justify-center items-center text-gray-600 dark:text-darkMode-text">
             {compilationState === ProgramCompilationState.Idle
               ? 'Run the app to get debug info'
@@ -205,25 +205,19 @@ export const Tracer = () => {
             }
             variables={currentSierraVariables || {}}
           />
-        )
-      ) : (
-        <ProofData proof={proof} />
+        ))
       )}
-      {debugMode !== ProgramDebugMode.Proof ? (
-        <div className="border-gray-200 border-t dark:bg-darkMode-secondary dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
-          <DebugInfoTab
-            compilationState={compilationState}
-            debugMode={debugMode}
-            trace={trace}
-            currentTraceEntry={currentTraceEntry}
-            executionTraceStepNumber={executionTraceStepNumber}
-            currentCallstackEntry={currentCallstackEntry}
-            handleRegisterPointerClick={handleRegisterPointerClick}
-          />
-        </div>
-      ) : (
-        <div></div>
-      )}
+      <div className="border-gray-200 border-t dark:bg-darkMode-secondary dark:border-black-500 flex-none pane pane-light overflow-auto h-[22vh]">
+        <DebugInfoTab
+          compilationState={compilationState}
+          debugMode={debugMode}
+          trace={trace}
+          currentTraceEntry={currentTraceEntry}
+          executionTraceStepNumber={executionTraceStepNumber}
+          currentCallstackEntry={currentCallstackEntry}
+          handleRegisterPointerClick={handleRegisterPointerClick}
+        />
+      </div>
     </>
   )
 }

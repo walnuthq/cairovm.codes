@@ -316,7 +316,6 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
           `Proof generation successful (finished in ${formatTime(proofTime)})`,
           LogType.Info,
         )
-        addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
 
         if (verificationTime) {
           addToConsoleLog('Verifying proof...', LogType.Info)
@@ -327,7 +326,10 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
               )})`,
               LogType.Info,
             )
+            addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
           }, 200)
+        } else {
+          addToConsoleLog(<DownloadProof proof={proof} />, LogType.Info)
         }
       }
     }
