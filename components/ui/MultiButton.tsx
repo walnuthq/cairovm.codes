@@ -29,6 +29,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
     proof,
     executionState,
     proofRequired,
+    provingIsNotSupported,
   } = useContext(CairoVMApiContext)
 
   useEffect(() => {
@@ -56,7 +57,7 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         ) {
           addToConsoleLog('Error: Connection closed', LogType.Error)
         }
-      }, 5000)
+      }, 10000)
     }
 
     return () => {
@@ -87,7 +88,8 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         disabled={
           readyState !== ReadyState.OPEN ||
           compilationState === ProgramCompilationState.Compiling ||
-          (proofRequired &&
+          (!provingIsNotSupported &&
+            proofRequired &&
             !proof &&
             (executionState === ProgramExecutionState.Executing ||
               executionState === ProgramExecutionState.Success))
@@ -104,7 +106,8 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
           disabled={
             readyState !== ReadyState.OPEN ||
             compilationState === ProgramCompilationState.Compiling ||
-            (proofRequired &&
+            (!provingIsNotSupported &&
+              proofRequired &&
               !proof &&
               (executionState === ProgramExecutionState.Executing ||
                 executionState === ProgramExecutionState.Success))
