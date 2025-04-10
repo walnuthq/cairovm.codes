@@ -4,7 +4,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { ReadyState } from 'react-use-websocket'
 
-import { AppUiContext } from 'context/appUiContext'
+import { AppUiContext, LogType } from 'context/appUiContext'
 import {
   CairoVMApiContext,
   ProgramCompilationState,
@@ -21,7 +21,7 @@ interface MultiButtonProps {
 
 const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
   const [selected, setSelected] = useState<CompileMods>('run')
-  const { addToConsoleLog } = useContext(AppUiContext)
+  const { addToConsoleLog, consoleLog } = useContext(AppUiContext)
   const {
     compilationState,
     readyState,
@@ -29,12 +29,43 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
     proof,
     executionState,
     proofRequired,
+    provingIsNotSupported,
   } = useContext(CairoVMApiContext)
+
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout
+
     if (readyState === ReadyState.OPEN) {
-      addToConsoleLog('App initialised')
+      const hasInitMessage = consoleLog.some(
+        (item) => item.message === 'App initialised',
+      )
+      const lastMessageIsError =
+        consoleLog[consoleLog.length - 1]?.message ===
+        'Error: Connection closed'
+
+      if (!hasInitMessage) {
+        addToConsoleLog('App initialised')
+      } else if (lastMessageIsError) {
+        addToConsoleLog('App reconnected')
+      }
+    } else if (readyState === ReadyState.CLOSED) {
+      timeoutId = setTimeout(() => {
+        const lastMessage = consoleLog[consoleLog.length - 1]?.message
+        if (
+          readyState === ReadyState.CLOSED &&
+          lastMessage !== 'Error: Connection closed'
+        ) {
+          addToConsoleLog('Error: Connection closed', LogType.Error)
+        }
+      }, 10000)
     }
-  }, [readyState])
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [readyState, consoleLog, addToConsoleLog])
 
   const handleMainButtonClick = () => {
     switch (selected) {
@@ -57,7 +88,8 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
         disabled={
           readyState !== ReadyState.OPEN ||
           compilationState === ProgramCompilationState.Compiling ||
-          (proofRequired &&
+          (!provingIsNotSupported &&
+            proofRequired &&
             !proof &&
             (executionState === ProgramExecutionState.Executing ||
               executionState === ProgramExecutionState.Success))
@@ -74,7 +106,8 @@ const MultiButton = ({ onCompileRun }: MultiButtonProps) => {
           disabled={
             readyState !== ReadyState.OPEN ||
             compilationState === ProgramCompilationState.Compiling ||
-            (proofRequired &&
+            (!provingIsNotSupported &&
+              proofRequired &&
               !proof &&
               (executionState === ProgramExecutionState.Executing ||
                 executionState === ProgramExecutionState.Success))
