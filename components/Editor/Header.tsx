@@ -1,11 +1,10 @@
-import { useMemo, useId } from 'react'
+import { useMemo, useId, useContext } from 'react'
 
 import Image from 'next/image'
 import cairoLogo from 'public/cairo_logo.png'
 import Select, { OnChangeValue } from 'react-select'
 
 import { CodeType } from '../../context/appUiContext'
-
 type Props = {
   codeType: string | undefined
   onCodeTypeChange: (option: OnChangeValue<any, any>) => void
@@ -45,7 +44,7 @@ const EditorHeader = ({
               <span className="pl-2">codes</span>
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-4">
               <h3
                 className={`${
                   !anotherTitle && 'font-semibold hidden xl:inline-flex'
@@ -53,9 +52,8 @@ const EditorHeader = ({
               >
                 <span>{!anotherTitle && 'Cairo VM'}Playground</span>
               </h3>
-            </>
+            </div>
           ))}
-
         <div className="flex items-center ">
           <Select
             className="z-40"

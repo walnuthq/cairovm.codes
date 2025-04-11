@@ -95,6 +95,8 @@ type ContextProps = {
   onContinueExecution: () => void
   addBreakPoint: (addr: string) => void
   removeBreakPoint: (addr: string) => void
+  isProveMode: boolean
+  setProveMode: (proveMode: boolean) => void
 }
 
 export const CairoVMApiContext = createContext<ContextProps>({
@@ -121,6 +123,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   readyState: 0,
   provingIsNotSupported: false,
   proofRequired: false,
+  isProveMode: false,
 
   proof: undefined,
   proofTime: undefined,
@@ -132,6 +135,7 @@ export const CairoVMApiContext = createContext<ContextProps>({
   addBreakPoint: noOp,
   removeBreakPoint: noOp,
   setDebugMode: noOp,
+  setProveMode: noOp,
 })
 
 export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
@@ -140,6 +144,7 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
   const [debugMode, setDebugMode] = useState<ProgramDebugMode>(
     ProgramDebugMode.Execution,
   )
+  const [isProveMode, setProveMode] = useState(false)
   const [sierraCode, setSierraCode] = useState<string>('')
   const [casmCode, setCasmCode] = useState<string>('')
   const [casmInstructions, setCasmInstructions] = useState<IInstruction[]>([])
@@ -499,6 +504,8 @@ export const CairoVMApiProvider: React.FC<PropsWithChildren> = ({
         onContinueExecution,
         addBreakPoint,
         removeBreakPoint,
+        isProveMode,
+        setProveMode,
       }}
     >
       {children}

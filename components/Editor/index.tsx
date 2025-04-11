@@ -32,7 +32,7 @@ import {
   objToQueryString,
 } from 'util/string'
 
-import { Examples } from 'components/Editor/examples'
+import { Examples, ProveExamples } from 'components/Editor/examples'
 import { Tracer } from 'components/Tracer'
 
 import { AppUiContext, CodeType, LogType } from '../../context/appUiContext'
@@ -95,6 +95,8 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     verificationTime,
     provingIsNotSupported,
     proofRequired,
+    isProveMode,
+    setProveMode,
   } = useContext(CairoVMApiContext)
 
   const { addToConsoleLog, isThreeColumnLayout } = useContext(AppUiContext)
@@ -240,10 +242,18 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
-      setCairoCode(Examples[initialCodeType][exampleOption])
+      if (isProveMode) {
+        if (exampleOption > ProveExamples[initialCodeType].length - 1) {
+          setCairoCode(ProveExamples[initialCodeType][0])
+        } else {
+          setCairoCode(ProveExamples[initialCodeType][exampleOption])
+        }
+      } else {
+        setCairoCode(Examples[initialCodeType][exampleOption])
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsLoaded && router.isReady, exampleOption])
+  }, [settingsLoaded && router.isReady, exampleOption, isProveMode])
 
   useEffect(() => {
     if (compilationState === ProgramCompilationState.Compiling) {
@@ -564,12 +574,15 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                 </div>
 
                 <EditorControls
+                  setProveMode={setProveMode}
+                  exampleOption={exampleOption}
                   isCompileDisabled={isCompileDisabled}
                   programArguments={programArguments}
                   areProgramArgumentsValid={areProgramArgumentsValid}
                   onCopyPermalink={handleCopyPermalink}
                   onProgramArgumentsUpdate={handleProgramArgumentsUpdate}
                   onCompileRun={handleCompileRun}
+                  isProveMode={isProveMode}
                   onShowArgumentsHelper={() => setShowArgumentsHelper(true)}
                   handleChangeExampleOption={(newExample) =>
                     newExample !== null
