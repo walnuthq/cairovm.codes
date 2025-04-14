@@ -75,8 +75,6 @@ export function ExampleSelector({
   isProveMode,
   exampleOption,
 }: Props) {
-  console.log('exampleOption', exampleOption)
-  console.log('proveExamplesOptions.length', proveExamplesOptions.length)
   return (
     <Select
       onChange={onExampleChange}

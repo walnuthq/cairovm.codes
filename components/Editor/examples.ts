@@ -107,7 +107,6 @@ export const Examples: ExampleCode = {
   }
   
   // This functions doesn't return anything.
-
   fn main() {
       let a = 1;
       let b = 2;

@@ -268,6 +268,8 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
 
       if (serializedOutput) {
         addToConsoleLog(`Execution output: ${serializedOutput}`)
+      } else {
+        addToConsoleLog(`Executed`)
       }
 
       if (executionState === ProgramExecutionState.Error) {
