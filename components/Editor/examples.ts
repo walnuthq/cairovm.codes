@@ -4,279 +4,279 @@ export const Examples: ExampleCode = {
   Cairo: [
     `use core::felt252;
   
-  fn main() -> felt252 {
-      let n = 2 + 3;
-      n
-  }`,
+fn main() -> felt252 {
+	let n = 2 + 3;
+	n
+}`,
     `use core::felt252;
   
-  const my_constant: felt252 = 42;
-  
-  fn main() {    
-      
-      // non-mutable variable
-      let my_var = 12;
-  
-      println!("{my_var}");
-       
-      // my_var = 38;  <-- fails to compile
-      
-      // variable shadowing (declare another variable with the same name)
-      let my_var = 'hello world';
-  
-      println!("{my_var}");
-      
-      // mutable variable
-      let mut my_mut_var = 10;
-      my_mut_var = my_mut_var * 2;
-      
-      println!("{my_mut_var}");
-      
-      // my_mut_var = 'hello world' <-- fails to compile
-  }`,
+const my_constant: felt252 = 42;
+
+fn main() {    
+    
+	// non-mutable variable
+	let my_var = 12;
+
+	println!("{my_var}");
+	
+	// my_var = 38;  <-- fails to compile
+	
+	// variable shadowing (declare another variable with the same name)
+	let my_var = 'hello world';
+
+	println!("{my_var}");
+	
+	// mutable variable
+	let mut my_mut_var = 10;
+	my_mut_var = my_mut_var * 2;
+	
+	println!("{my_mut_var}");
+	
+	// my_mut_var = 'hello world' <-- fails to compile
+}`,
     `#[derive(Drop)]
-  enum Direction {
-      Up,
-      Down,
-      Left,
-      Right
-  }
-  
-  fn main() {
-  
-      // if / else expression
-      let x = 10;
-      let y = 20;
-      
-      if x == y {
-          println!("x == y");
-      }
-      else {
-          println!("x != y");
-      };
-  
-      // if with return value
-      let _res = if x == y {
-          'equal'
-      }
-      else {
-          'not_equal'
-      };
-  
-      // match expression (with some limitations in Cairo <= 2.5)
-      let x = Direction::Up;
-      match x {
-          Direction::Up => println!("you win !"),
-          _ => println!("you loose ...")
-      }
-  
-      // match expression with return value
-      let x = Direction::Down;
-      let _res = match x {
-          Direction::Up => 1,
-          Direction::Down => -1,
-          Direction::Left => -1,
-          Direction::Right => 1,
-      };
-  
-      // loop expression
-      
-      let mut i: u128 = 0;
-      loop {
-          if i > 9 { // Break condition
-              break;
-          }
-  
-          i = i + 1;
-      };
-      
-      // loop with return value
-      let _res = loop {
-          if i > 9 { break (42); }
-          i = i + 1;
-      };
-      
-  }`,
+enum Direction {
+	Up,
+	Down,
+	Left,
+	Right
+}
+
+fn main() {
+
+	// if / else expression
+	let x = 10;
+	let y = 20;
+	
+	if x == y {
+			println!("x == y");
+	}
+	else {
+			println!("x != y");
+	};
+
+	// if with return value
+	let _res = if x == y {
+			'equal'
+	}
+	else {
+			'not_equal'
+	};
+
+	// match expression (with some limitations in Cairo <= 2.5)
+	let x = Direction::Up;
+	match x {
+			Direction::Up => println!("you win !"),
+			_ => println!("you loose ...")
+	}
+
+	// match expression with return value
+	let x = Direction::Down;
+	let _res = match x {
+			Direction::Up => 1,
+			Direction::Down => -1,
+			Direction::Left => -1,
+			Direction::Right => 1,
+	};
+
+	// loop expression
+	
+	let mut i: u128 = 0;
+	loop {
+			if i > 9 { // Break condition
+					break;
+			}
+
+			i = i + 1;
+	};
+	
+	// loop with return value
+	let _res = loop {
+			if i > 9 { break (42); }
+			i = i + 1;
+	};
+    
+}`,
     `// This function returns an u32.
-  fn add(a: u32, b: u32) -> u64 {
-  
-      // there is no semi-colon at the end so the
-      // result of this expression is returned.
-      // equivalent to: return x + 1;
-      a.into() + b.into()
-  }
-  
-  // This functions doesn't return anything.
-  fn main() {
-      let a = 1;
-      let b = 2;
-      let x = 3;
-      let y = 4;
-  
-      // named parameters to be more explicit
-      let _c = add(:a, :b);
-      let _z = add(a: x, b: y);
-  }
+fn add(a: u32, b: u32) -> u64 {
+
+	// there is no semi-colon at the end so the
+	// result of this expression is returned.
+	// equivalent to: return x + 1;
+	a.into() + b.into()
+}
+
+// This functions doesn't return anything.
+fn main() {
+	let a = 1;
+	let b = 2;
+	let x = 3;
+	let y = 4;
+
+	// named parameters to be more explicit
+	let _c = add(:a, :b);
+	let _z = add(a: x, b: y);
+}
   `,
     `fn main () {
-      let mut balances: Felt252Dict<u64> = Default::default();
-  
-      balances.insert('Alex', 100);
-      balances.insert('Maria', 200);
-  
-      let alex_balance = balances.get('Alex');
-      assert!(alex_balance == 100, "Balance is not 100");
-  
-      let maria_balance = balances.get('Maria');
-      assert!(maria_balance == 200, "Balance is not 200");
-  }`,
+	let mut balances: Felt252Dict<u64> = Default::default();
+
+	balances.insert('Alex', 100);
+	balances.insert('Maria', 200);
+
+	let alex_balance = balances.get('Alex');
+	assert!(alex_balance == 100, "Balance is not 100");
+
+	let maria_balance = balances.get('Maria');
+	assert!(maria_balance == 200, "Balance is not 200");
+}`,
     `use array::ArrayTrait;
   
-  fn foo_takes_ownership(arr: Array<u128>) {
-      // foo takes ownership of the array.
-      // when this function returns, arr is dropped.
-  }
-  
-  fn foo_receives_ref(ref arr: Array<u128>) {
-      // receives a ref to an array so the calling function
-      // keeps the ownership of the array.
-  }
-  
-  fn main() {
-      // as the creator of arr, the main function owns the array
-      let mut arr = ArrayTrait::<u128>::new();
-  
-      foo_takes_ownership(arr); // moves ownership of the array to function call
-  
-      // foo(arr); // <- fails to compile, as main doesn't own the array anymore
-      
-      let mut another_arr = ArrayTrait::<u128>::new();
-      
-      foo_receives_ref(ref another_arr);
-      foo_receives_ref(ref another_arr); // no compilation issue, main still owns another_arr 
-  }`,
+fn foo_takes_ownership(arr: Array<u128>) {
+	// foo takes ownership of the array.
+	// when this function returns, arr is dropped.
+}
+
+fn foo_receives_ref(ref arr: Array<u128>) {
+	// receives a ref to an array so the calling function
+	// keeps the ownership of the array.
+}
+
+fn main() {
+	// as the creator of arr, the main function owns the array
+	let mut arr = ArrayTrait::<u128>::new();
+
+	foo_takes_ownership(arr); // moves ownership of the array to function call
+
+	// foo(arr); // <- fails to compile, as main doesn't own the array anymore
+	
+	let mut another_arr = ArrayTrait::<u128>::new();
+	
+	foo_receives_ref(ref another_arr);
+	foo_receives_ref(ref another_arr); // no compilation issue, main still owns another_arr 
+}`,
     `use core::felt252;
   
-  fn main() -> felt252 {
-      let n = 10;
-      let result = fib(1, 1, n);
-      result
-  }
-  
-  fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
-      match n {
-          0 => a,
-          _ => fib(b, a + b, n - 1),
-      }
-  }`,
+fn main() -> felt252 {
+	let n = 10;
+	let result = fib(1, 1, n);
+	result
+}
+
+fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
+	match n {
+			0 => a,
+			_ => fib(b, a + b, n - 1),
+	}
+}`,
 
     `use core::felt252;
 
 fn main() {
-    let my_felt252 = 10;
+	let my_felt252 = 10;
 
-    // Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
-    let my_u8: u8 = my_felt252.try_into().unwrap();
+	// Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
+	let my_u8: u8 = my_felt252.try_into().unwrap();
 
-    let my_u16: u16 = my_u8.into();
-    let my_u32: u32 = my_u16.into();
-    let my_u64: u64 = my_u32.into();
-    let _my_u128: u128 = my_u64.into();
+	let my_u16: u16 = my_u8.into();
+	let my_u32: u32 = my_u16.into();
+	let my_u64: u64 = my_u32.into();
+	let _my_u128: u128 = my_u64.into();
 
-    // As a felt252 is smaller than a u256, we can use the into() method
-    let _my_u256: u256 = my_felt252.into();
-    let _my_usize: usize = my_felt252.try_into().unwrap();
-    let _my_other_felt252: felt252 = my_u8.into();
-    let _my_third_felt252: felt252 = my_u16.into();
+	// As a felt252 is smaller than a u256, we can use the into() method
+	let _my_u256: u256 = my_felt252.into();
+	let _my_usize: usize = my_felt252.try_into().unwrap();
+	let _my_other_felt252: felt252 = my_u8.into();
+	let _my_third_felt252: felt252 = my_u16.into();
 }`,
 
     `use array::ArrayTrait;
 
 fn main () {
-    let mut a = ArrayTrait::new();
+	let mut a = ArrayTrait::new();
 
-    // add some items in the array
-    a.append(1);
-    a.append(2);
+	// add some items in the array
+	a.append(1);
+	a.append(2);
 
-    // get array length
-    assert!(a.len() == 2, "wrong array length");
+	// get array length
+	assert!(a.len() == 2, "wrong array length");
 
-    // 2 ways to read an item from the array
-    // * get() returns an Option so you can handle out-of-bounds error
-    // * at() panics in case of out-of-bounds error
-    let first_element = *a.get(0).unwrap().unbox();
-    // a.get(2) will return None
+	// 2 ways to read an item from the array
+	// * get() returns an Option so you can handle out-of-bounds error
+	// * at() panics in case of out-of-bounds error
+	let first_element = *a.get(0).unwrap().unbox();
+	// a.get(2) will return None
 
-    let second_element = *a.at(1);
-    // a.at(2) will cause an error
+	let second_element = *a.at(1);
+	// a.at(2) will cause an error
 }`,
     `#[starknet::contract]
 mod SimpleContract {
-    #[storage]
-    struct Storage {
-        balance: felt252, 
-    }
-    
-    #[generate_trait]
-    impl InternalImpl of InternalTrait {
-        fn internal_function(self: @ContractState) -> felt252 {
-            self.balance.read()
-        }
-    }
+	#[storage]
+	struct Storage {
+		balance: felt252, 
+	}
 
-    fn other_internal_function(self: @ContractState) -> felt252 {
-        self.balance.read() + 5
-    }
+	#[generate_trait]
+	impl InternalImpl of InternalTrait {
+			fn internal_function(self: @ContractState) -> felt252 {
+				self.balance.read()
+			}
+	}
+
+	fn other_internal_function(self: @ContractState) -> felt252 {
+		self.balance.read() + 5
+	}
 }
 
 use SimpleContract::{ InternalTrait, other_internal_function };
 
 fn add(a: felt252, b: felt252, c: felt252) -> felt252 {
-    a + b + c
+	a + b + c
 }
 
 fn main() -> felt252 {
-    let mut state = SimpleContract::contract_state_for_testing();
-    state.balance.write(10);
-  
-    let balance = state.balance.read();
-    let internal_balance = state.internal_function();
-    let other_balance = other_internal_function(@state);
-    
-    let res = add(balance, internal_balance, other_balance);
-    res
+	let mut state = SimpleContract::contract_state_for_testing();
+	state.balance.write(10);
+
+	let balance = state.balance.read();
+	let internal_balance = state.internal_function();
+	let other_balance = other_internal_function(@state);
+	
+	let res = add(balance, internal_balance, other_balance);
+	res
 }`,
     `#[starknet::contract]
 mod Fibonacci {
-    #[storage]
-    struct Storage {
-        n: u128, 
-    }
-    
-    #[generate_trait]
-    impl CalculationImpl of CalculationTrait {
-        fn calculate_fib(self: @ContractState) -> u128 {
-            fib(1, 1, self.n.read())
-        }
-    }
+	#[storage]
+	struct Storage {
+		n: u128, 
+	}
+	
+	#[generate_trait]
+	impl CalculationImpl of CalculationTrait {
+		fn calculate_fib(self: @ContractState) -> u128 {
+			fib(1, 1, self.n.read())
+		}
+	}
 
-    fn fib(a: u128, b: u128, n: u128) -> u128 {
-        match n {
-            0 => a,
-            _ => fib(b, a + b, n - 1),
-        }
-    }
+	fn fib(a: u128, b: u128, n: u128) -> u128 {
+		match n {
+			0 => a,
+			_ => fib(b, a + b, n - 1),
+		}
+	}
 }
 
 use Fibonacci::CalculationTrait;
 
 fn main() -> u128 {
-    let mut state = Fibonacci::contract_state_for_testing();
-    state.n.write(5);
-    
-    let result = state.calculate_fib();
-    result
+	let mut state = Fibonacci::contract_state_for_testing();
+	state.n.write(5);
+	
+	let result = state.calculate_fib();
+	result
 }`,
   ],
   Sierra: [
@@ -497,178 +497,178 @@ export const ProveExamples: ExampleCode = {
   Cairo: [
     `use core::felt252;
   
-  #[executable]
-  fn main() -> felt252 {
-      let n = 2 + 3;
-      n
-  }`,
+#[executable]
+fn main() -> felt252 {
+	let n = 2 + 3;
+	n
+}`,
     `use core::felt252;
   
-  const my_constant: felt252 = 42;
-  
-  #[executable]
-  fn main() {    
-      
-      // non-mutable variable
-      let my_var = 12;
-  
-      println!("{my_var}");
-       
-      // my_var = 38;  <-- fails to compile
-      
-      // variable shadowing (declare another variable with the same name)
-      let my_var = 'hello world';
-  
-      println!("{my_var}");
-      
-      // mutable variable
-      let mut my_mut_var = 10;
-      my_mut_var = my_mut_var * 2;
-      
-      println!("{my_mut_var}");
-      
-      // my_mut_var = 'hello world' <-- fails to compile
-  }`,
+const my_constant: felt252 = 42;
+
+#[executable]
+fn main() {    
+	
+	// non-mutable variable
+	let my_var = 12;
+
+	println!("{my_var}");
+		
+	// my_var = 38;  <-- fails to compile
+	
+	// variable shadowing (declare another variable with the same name)
+	let my_var = 'hello world';
+
+	println!("{my_var}");
+	
+	// mutable variable
+	let mut my_mut_var = 10;
+	my_mut_var = my_mut_var * 2;
+	
+	println!("{my_mut_var}");
+	
+	// my_mut_var = 'hello world' <-- fails to compile
+}`,
     `#[derive(Drop)]
-  enum Direction {
-      Up,
-      Down,
-      Left,
-      Right
-  }
-  
-  #[executable]
-  fn main() {
-  
-      // if / else expression
-      let x = 10;
-      let y = 20;
-      
-      if x == y {
-          println!("x == y");
-      }
-      else {
-          println!("x != y");
-      };
-  
-      // if with return value
-      let _res = if x == y {
-          'equal'
-      }
-      else {
-          'not_equal'
-      };
-  
-      // match expression (with some limitations in Cairo <= 2.5)
-      let x = Direction::Up;
-      match x {
-          Direction::Up => println!("you win !"),
-          _ => println!("you loose ...")
-      }
-  
-      // match expression with return value
-      let x = Direction::Down;
-      let _res = match x {
-          Direction::Up => 1,
-          Direction::Down => -1,
-          Direction::Left => -1,
-          Direction::Right => 1,
-      };
-  
-      // loop expression
-      
-      let mut i: u128 = 0;
-      loop {
-          if i > 9 { // Break condition
-              break;
-          }
-  
-          i = i + 1;
-      };
-      
-      // loop with return value
-      let _res = loop {
-          if i > 9 { break (42); }
-          i = i + 1;
-      };
-      
-  }`,
+enum Direction {
+	Up,
+	Down,
+	Left,
+	Right
+}
+
+#[executable]
+fn main() {
+
+	// if / else expression
+	let x = 10;
+	let y = 20;
+	
+	if x == y {
+			println!("x == y");
+	}
+	else {
+			println!("x != y");
+	};
+
+	// if with return value
+	let _res = if x == y {
+			'equal'
+	}
+	else {
+			'not_equal'
+	};
+
+	// match expression (with some limitations in Cairo <= 2.5)
+	let x = Direction::Up;
+	match x {
+			Direction::Up => println!("you win !"),
+			_ => println!("you loose ...")
+	}
+
+	// match expression with return value
+	let x = Direction::Down;
+	let _res = match x {
+			Direction::Up => 1,
+			Direction::Down => -1,
+			Direction::Left => -1,
+			Direction::Right => 1,
+	};
+
+	// loop expression
+	
+	let mut i: u128 = 0;
+	loop {
+			if i > 9 { // Break condition
+					break;
+			}
+
+			i = i + 1;
+	};
+	
+	// loop with return value
+	let _res = loop {
+			if i > 9 { break (42); }
+			i = i + 1;
+	};
+		
+}`,
     `// This function returns an u32.
-  fn add(a: u32, b: u32) -> u64 {
-  
-      // there is no semi-colon at the end so the
-      // result of this expression is returned.
-      // equivalent to: return x + 1;
-      a.into() + b.into()
-  }
-  
-  // This functions doesn't return anything.
-  #[executable]
-  fn main() {
-      let a = 1;
-      let b = 2;
-      let x = 3;
-      let y = 4;
-  
-      // named parameters to be more explicit
-      let _c = add(:a, :b);
-      let _z = add(a: x, b: y);
-  }
-  `,
+fn add(a: u32, b: u32) -> u64 {
+
+	// there is no semi-colon at the end so the
+	// result of this expression is returned.
+	// equivalent to: return x + 1;
+	a.into() + b.into()
+}
+
+// This functions doesn't return anything.
+#[executable]
+fn main() {
+	let a = 1;
+	let b = 2;
+	let x = 3;
+	let y = 4;
+
+	// named parameters to be more explicit
+	let _c = add(:a, :b);
+	let _z = add(a: x, b: y);
+}
+`,
     `#[executable]
-  fn main () {
-      let mut balances: Felt252Dict<u64> = Default::default();
-  
-      balances.insert('Alex', 100);
-      balances.insert('Maria', 200);
-  
-      let alex_balance = balances.get('Alex');
-      assert!(alex_balance == 100, "Balance is not 100");
-  
-      let maria_balance = balances.get('Maria');
-      assert!(maria_balance == 200, "Balance is not 200");
-  }`,
+fn main () {
+	let mut balances: Felt252Dict<u64> = Default::default();
+
+	balances.insert('Alex', 100);
+	balances.insert('Maria', 200);
+
+	let alex_balance = balances.get('Alex');
+	assert!(alex_balance == 100, "Balance is not 100");
+
+	let maria_balance = balances.get('Maria');
+	assert!(maria_balance == 200, "Balance is not 200");
+}`,
     `use array::ArrayTrait;
   
-  fn foo_takes_ownership(arr: Array<u128>) {
-      // foo takes ownership of the array.
-      // when this function returns, arr is dropped.
-  }
-  
-  fn foo_receives_ref(ref arr: Array<u128>) {
-      // receives a ref to an array so the calling function
-      // keeps the ownership of the array.
-  }
+fn foo_takes_ownership(arr: Array<u128>) {
+	// foo takes ownership of the array.
+	// when this function returns, arr is dropped.
+}
+
+fn foo_receives_ref(ref arr: Array<u128>) {
+	// receives a ref to an array so the calling function
+	// keeps the ownership of the array.
+}
   
   #[executable]
-  fn main() {
-      // as the creator of arr, the main function owns the array
-      let mut arr = ArrayTrait::<u128>::new();
-  
-      foo_takes_ownership(arr); // moves ownership of the array to function call
-  
-      // foo(arr); // <- fails to compile, as main doesn't own the array anymore
-      
-      let mut another_arr = ArrayTrait::<u128>::new();
-      
-      foo_receives_ref(ref another_arr);
-      foo_receives_ref(ref another_arr); // no compilation issue, main still owns another_arr 
-  }`,
+fn main() {
+	// as the creator of arr, the main function owns the array
+	let mut arr = ArrayTrait::<u128>::new();
+
+	foo_takes_ownership(arr); // moves ownership of the array to function call
+
+	// foo(arr); // <- fails to compile, as main doesn't own the array anymore
+	
+	let mut another_arr = ArrayTrait::<u128>::new();
+	
+	foo_receives_ref(ref another_arr);
+	foo_receives_ref(ref another_arr); // no compilation issue, main still owns another_arr 
+}`,
     `use core::felt252;
+
+#[executable]
+fn main() -> felt252 {
+	let n = 10;
+	let result = fib(1, 1, n);
+	result
+}
   
-  #[executable]
-  fn main() -> felt252 {
-      let n = 10;
-      let result = fib(1, 1, n);
-      result
-  }
-  
-  fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
-      match n {
-          0 => a,
-          _ => fib(b, a + b, n - 1),
-      }
-  }`,
+fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
+	match n {
+		0 => a,
+		_ => fib(b, a + b, n - 1),
+	}
+}`,
   ],
   Sierra: [
     `type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
