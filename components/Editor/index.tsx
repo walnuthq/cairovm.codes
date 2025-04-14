@@ -104,6 +104,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   const { theme } = useTheme()
 
   const [cairoCode, setCairoCode] = useState('')
+  const [isExampleChanged, setExampleChanged] = useState(false)
   const [compiledCairoCode, setCompiledCairoCode] = useState(cairoCode)
   const [exampleOption, setExampleOption] = useState<number>(0)
   const [codeType, setCodeType] = useState<string | undefined>()
@@ -112,6 +113,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
     useState<editor.IEditorDecorationsCollection | null>(null)
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
   const monaco = useMonaco()
+  const prevExampleOptionRef = useRef<number | null>(null)
 
   useEffect(() => {
     // when theme is changed, we again set theme of editor
@@ -225,6 +227,9 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   useEffect(() => {
     const query = router.query
 
+    const prevExampleOption = prevExampleOptionRef.current
+    const exampleOptionChanged = prevExampleOption !== exampleOption
+
     if ('codeType' in query && 'code' in query) {
       setCodeType(query.codeType as string)
       setCairoCode(
@@ -242,16 +247,22 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
         getSetting(Setting.EditorCodeType) || CodeType.Cairo
 
       setCodeType(initialCodeType)
-      if (isProveMode) {
-        if (exampleOption > ProveExamples[initialCodeType].length - 1) {
-          setCairoCode(ProveExamples[initialCodeType][0])
+
+      if (!isExampleChanged || exampleOptionChanged) {
+        setExampleChanged(false)
+        if (isProveMode) {
+          if (exampleOption > ProveExamples[initialCodeType].length - 1) {
+            setCairoCode(ProveExamples[initialCodeType][0])
+          } else {
+            setCairoCode(ProveExamples[initialCodeType][exampleOption])
+          }
         } else {
-          setCairoCode(ProveExamples[initialCodeType][exampleOption])
+          setCairoCode(Examples[initialCodeType][exampleOption])
         }
-      } else {
-        setCairoCode(Examples[initialCodeType][exampleOption])
       }
     }
+
+    prevExampleOptionRef.current = exampleOption
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsLoaded && router.isReady, exampleOption, isProveMode])
 
@@ -371,6 +382,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
   const handleCairoCodeChange = (value: string | undefined) => {
     if (value) {
       setCairoCode(value)
+      setExampleChanged(true)
     } else {
       setCairoCode('')
     }

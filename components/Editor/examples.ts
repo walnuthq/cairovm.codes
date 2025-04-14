@@ -640,7 +640,7 @@ fn foo_receives_ref(ref arr: Array<u128>) {
 	// keeps the ownership of the array.
 }
   
-  #[executable]
+#[executable]
 fn main() {
 	// as the creator of arr, the main function owns the array
 	let mut arr = ArrayTrait::<u128>::new();
