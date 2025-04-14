@@ -10,6 +10,7 @@ import MultiButton from 'components/ui/MultiButton'
 import { cn } from '../../util/styles'
 
 import ExampleSelector, { MobileExampleSelector } from './ExampleSelector'
+import { Checkbox } from 'components/ui/Checkbox'
 
 type SelectOption = {
   value: number
@@ -27,6 +28,9 @@ type EditorControlsProps = {
   onCompileRun: (variant: 'run' | 'run-prove-verify') => void
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
+  isProveMode: boolean
+  exampleOption: number
+  setProveMode: (proveMode: boolean) => void
 }
 
 const EditorControls = ({
@@ -38,6 +42,9 @@ const EditorControls = ({
   onCompileRun,
   onProgramArgumentsUpdate,
   onShowArgumentsHelper,
+  isProveMode,
+  exampleOption,
+  setProveMode,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -117,14 +124,30 @@ const EditorControls = ({
           </Button>
 
           <div className="xl:block hidden max-w-36 2xl:max-w-full">
-            <ExampleSelector onExampleChange={onExampleChange} />
+            <ExampleSelector
+              isProveMode={isProveMode}
+              onExampleChange={onExampleChange}
+              exampleOption={exampleOption}
+            />
           </div>
           <div className="xl:hidden block">
-            <MobileExampleSelector onExampleChange={onExampleChange} />
+            <MobileExampleSelector
+              isProveMode={isProveMode}
+              onExampleChange={onExampleChange}
+              exampleOption={exampleOption}
+            />
           </div>
         </div>
 
         <div className="flex flex-row grow gap-x-2 items-center justify-end">
+          <div className="flex items-center">
+            <Checkbox
+              text="Prove & Verify"
+              value={'Prove mode'}
+              isChecked={isProveMode}
+              onChange={() => setProveMode(!isProveMode)}
+            />
+          </div>
           <Input
             ref={inputRef}
             rightIcon={
@@ -152,27 +175,7 @@ const EditorControls = ({
               'text-red-500': !areProgramArgumentsValid,
             })}
           />
-
-          {/* <div> */}
           <MultiButton onCompileRun={onCompileRun} />
-          {/* <div className="flex flex-row gap-x-2"> */}
-          {/* <Button
-      onClick={onCompileRun}
-      disabled={isCompileDisabled || !areProgramArgumentsValid}
-      size="sm"
-      contentClassName="justify-center"
-    >
-      Run
-    </Button>
-    <Button
-      onClick={onProveAndVerify}
-      disabled={isCompileDisabled || !areProgramArgumentsValid}
-      size="sm"
-      contentClassName="justify-center"
-    >
-      Prove & Verify
-    </Button> */}
-          {/* </div> */}
         </div>
       </div>
     </>

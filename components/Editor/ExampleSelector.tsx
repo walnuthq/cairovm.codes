@@ -11,8 +11,12 @@ import Select, {
 import { cn } from '../../util/styles'
 import { Button } from '../ui'
 
-import { CairoExampleNames, Examples } from './examples'
-
+import {
+  CairoExampleNames,
+  CairoExampleNamesProveMode,
+  Examples,
+  ProveExamples,
+} from './examples'
 type SelectOption = {
   value: number
   label: string
@@ -20,6 +24,8 @@ type SelectOption = {
 
 type Props = {
   onExampleChange: (option: SelectOption | null) => void
+  isProveMode: boolean
+  exampleOption: number
 }
 
 const examplesOptions = Examples.Cairo.map((_, i) => ({
@@ -27,12 +33,30 @@ const examplesOptions = Examples.Cairo.map((_, i) => ({
   label: CairoExampleNames[i],
 }))
 
-export function MobileExampleSelector({ onExampleChange }: Props) {
+const proveExamplesOptions = ProveExamples.Cairo.map((_, i) => ({
+  value: i,
+  label: CairoExampleNamesProveMode[i],
+}))
+
+export function MobileExampleSelector({
+  onExampleChange,
+  isProveMode,
+  exampleOption,
+}: Props) {
   return (
     <Select
       onChange={onExampleChange}
-      options={examplesOptions}
-      defaultValue={examplesOptions[0]}
+      options={isProveMode ? proveExamplesOptions : examplesOptions}
+      value={
+        isProveMode
+          ? exampleOption > proveExamplesOptions.length - 1
+            ? proveExamplesOptions[0]
+            : proveExamplesOptions[exampleOption]
+          : exampleOption > examplesOptions.length - 1
+          ? examplesOptions[0]
+          : examplesOptions[exampleOption]
+      }
+      defaultValue={isProveMode ? proveExamplesOptions[0] : examplesOptions[0]}
       components={{
         DropdownIndicator,
       }}
@@ -46,12 +70,25 @@ export function MobileExampleSelector({ onExampleChange }: Props) {
   )
 }
 
-export function ExampleSelector({ onExampleChange }: Props) {
+export function ExampleSelector({
+  onExampleChange,
+  isProveMode,
+  exampleOption,
+}: Props) {
   return (
     <Select
       onChange={onExampleChange}
-      options={examplesOptions}
-      defaultValue={examplesOptions[0]}
+      options={isProveMode ? proveExamplesOptions : examplesOptions}
+      value={
+        isProveMode
+          ? exampleOption > proveExamplesOptions.length - 1
+            ? proveExamplesOptions[0]
+            : proveExamplesOptions[exampleOption]
+          : exampleOption > examplesOptions.length - 1
+          ? examplesOptions[0]
+          : examplesOptions[exampleOption]
+      }
+      defaultValue={isProveMode ? proveExamplesOptions[0] : examplesOptions[0]}
       classNamePrefix="select"
       placeholder={'Choose Cairo Example'}
       menuPlacement="top"
