@@ -29,7 +29,6 @@ type EditorControlsProps = {
   onProgramArgumentsUpdate: (args: string) => void
   onShowArgumentsHelper: () => void
   isProveMode: boolean
-  exampleOption: number
   setProveMode: (proveMode: boolean) => void
 }
 
@@ -43,7 +42,6 @@ const EditorControls = ({
   onProgramArgumentsUpdate,
   onShowArgumentsHelper,
   isProveMode,
-  exampleOption,
   setProveMode,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -127,14 +125,12 @@ const EditorControls = ({
             <ExampleSelector
               isProveMode={isProveMode}
               onExampleChange={onExampleChange}
-              exampleOption={exampleOption}
             />
           </div>
           <div className="xl:hidden block">
             <MobileExampleSelector
               isProveMode={isProveMode}
               onExampleChange={onExampleChange}
-              exampleOption={exampleOption}
             />
           </div>
         </div>

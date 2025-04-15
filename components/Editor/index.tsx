@@ -251,9 +251,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
       if (!isExampleChanged || exampleOptionChanged) {
         setExampleChanged(false)
         if (isProveMode) {
-          if (exampleOption > ProveExamples[initialCodeType].length - 1) {
-            setCairoCode(ProveExamples[initialCodeType][0])
-          } else {
+          if (exampleOption <= ProveExamples[initialCodeType].length - 1) {
             setCairoCode(ProveExamples[initialCodeType][exampleOption])
           }
         } else {
@@ -589,7 +587,6 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
 
                 <EditorControls
                   setProveMode={setProveMode}
-                  exampleOption={exampleOption}
                   isCompileDisabled={isCompileDisabled}
                   programArguments={programArguments}
                   areProgramArgumentsValid={areProgramArgumentsValid}
