@@ -11,12 +11,7 @@ import Select, {
 import { cn } from '../../util/styles'
 import { Button } from '../ui'
 
-import {
-  CairoExampleNames,
-  CairoExampleNamesProveMode,
-  Examples,
-  ProveExamples,
-} from './examples'
+import { CairoExampleNames, Examples, ProveExamples } from './examples'
 type SelectOption = {
   value: number
   label: string
