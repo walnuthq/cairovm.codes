@@ -141,6 +141,8 @@ const EditorControls = ({
               text="Prove & Verify"
               value={'Prove mode'}
               isChecked={isProveMode}
+              tooltip="Contract examples are not available for proving"
+              tooltipId="prove-and-verify"
               onChange={() => setProveMode(!isProveMode)}
             />
           </div>
