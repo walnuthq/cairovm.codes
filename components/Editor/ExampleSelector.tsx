@@ -27,22 +27,21 @@ type Props = {
   isProveMode: boolean
 }
 
-const examplesOptions = Examples.Cairo.map((_, i) => ({
-  value: i,
-  label: CairoExampleNames[i],
-}))
-
-const proveExamplesOptions = ProveExamples.Cairo.map((_, i) => ({
-  value: i,
-  label: CairoExampleNamesProveMode[i],
-}))
-
 export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
+  const examplesArray = isProveMode ? ProveExamples : Examples
+  const examplesOptions = examplesArray.Cairo.map((code, i) => ({
+    value: i,
+    label: CairoExampleNames[i],
+    isDisabled:
+      isProveMode &&
+      (CairoExampleNames[i].includes('Contract') ||
+        !code.includes('#[executable]')),
+  }))
   return (
     <Select
       onChange={onExampleChange}
-      options={isProveMode ? proveExamplesOptions : examplesOptions}
-      defaultValue={isProveMode ? proveExamplesOptions[0] : examplesOptions[0]}
+      options={examplesOptions}
+      defaultValue={examplesOptions[0]}
       components={{
         DropdownIndicator,
       }}
@@ -57,11 +56,20 @@ export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
 }
 
 export function ExampleSelector({ onExampleChange, isProveMode }: Props) {
+  const examplesArray = isProveMode ? ProveExamples : Examples
+  const examplesOptions = examplesArray.Cairo.map((code, i) => ({
+    value: i,
+    label: CairoExampleNames[i],
+    isDisabled:
+      isProveMode &&
+      (CairoExampleNames[i].includes('Contract') ||
+        !code.includes('#[executable]')),
+  }))
   return (
     <Select
       onChange={onExampleChange}
-      options={isProveMode ? proveExamplesOptions : examplesOptions}
-      defaultValue={isProveMode ? proveExamplesOptions[0] : examplesOptions[0]}
+      options={examplesOptions}
+      defaultValue={examplesOptions[0]}
       classNamePrefix="select"
       placeholder={'Choose Cairo Example'}
       menuPlacement="top"

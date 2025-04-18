@@ -600,6 +600,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                       ? setExampleOption(newExample.value)
                       : setExampleOption(0)
                   }
+                  exampleOption={exampleOption}
                 />
               </div>
 

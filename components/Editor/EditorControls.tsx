@@ -11,6 +11,7 @@ import { cn } from '../../util/styles'
 
 import ExampleSelector, { MobileExampleSelector } from './ExampleSelector'
 import { Checkbox } from 'components/ui/Checkbox'
+import { ProveExamples } from './examples'
 
 type SelectOption = {
   value: number
@@ -30,6 +31,7 @@ type EditorControlsProps = {
   onShowArgumentsHelper: () => void
   isProveMode: boolean
   setProveMode: (proveMode: boolean) => void
+  exampleOption: number
 }
 
 const EditorControls = ({
@@ -43,6 +45,7 @@ const EditorControls = ({
   onShowArgumentsHelper,
   isProveMode,
   setProveMode,
+  exampleOption,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -144,6 +147,12 @@ const EditorControls = ({
               tooltip="Contract examples are not available for proving"
               tooltipId="prove-and-verify"
               onChange={() => setProveMode(!isProveMode)}
+              isDisabled={
+                ProveExamples.Cairo[exampleOption].includes(
+                  '#[starknet::contract]',
+                ) ||
+                !ProveExamples.Cairo[exampleOption].includes('#[executable]')
+              }
             />
           </div>
           <Input
