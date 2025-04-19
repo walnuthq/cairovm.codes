@@ -6,20 +6,57 @@ import Select, {
   DropdownIndicatorProps,
   GroupBase,
   StylesConfig,
+  OptionProps,
 } from 'react-select'
+import ReactTooltip from 'react-tooltip'
 
 import { cn } from '../../util/styles'
 import { Button } from '../ui'
 
 import { CairoExampleNames, Examples, ProveExamples } from './examples'
+
 type SelectOption = {
   value: number
   label: string
+}
+type OptionType = {
+  value: number
+  label: string
+  isDisabled?: boolean
 }
 
 type Props = {
   onExampleChange: (option: SelectOption | null) => void
   isProveMode: boolean
+}
+
+const CustomOption = (props: OptionProps<OptionType, false>) => {
+  const { data, isDisabled } = props
+  const tooltipId = `tooltip-${data.value}`
+
+  return (
+    <>
+      <components.Option
+        {...props}
+        innerRef={props.innerRef}
+        innerProps={{
+          ...props.innerProps,
+          ...(isDisabled && {
+            'data-tip': 'This example is not available for proving.',
+            'data-for': tooltipId,
+          }),
+        }}
+      />
+      {isDisabled && (
+        <ReactTooltip
+          id={tooltipId}
+          place="right"
+          delayShow={200}
+          effect="solid"
+        />
+      )}
+    </>
+  )
 }
 
 export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
@@ -32,6 +69,7 @@ export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
       (CairoExampleNames[i].includes('Contract') ||
         !code.includes('#[executable]')),
   }))
+
   return (
     <Select
       onChange={onExampleChange}
@@ -39,6 +77,7 @@ export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
       defaultValue={examplesOptions[0]}
       components={{
         DropdownIndicator,
+        Option: CustomOption,
       }}
       controlShouldRenderValue={false}
       classNamePrefix="select"
@@ -60,8 +99,9 @@ export function ExampleSelector({ onExampleChange, isProveMode }: Props) {
       (CairoExampleNames[i].includes('Contract') ||
         !code.includes('#[executable]')),
   }))
+
   return (
-    <Select
+    <Select<OptionType, false>
       onChange={onExampleChange}
       options={examplesOptions}
       defaultValue={examplesOptions[0]}
@@ -69,6 +109,9 @@ export function ExampleSelector({ onExampleChange, isProveMode }: Props) {
       placeholder={'Choose Cairo Example'}
       menuPlacement="top"
       isSearchable={false}
+      components={{
+        Option: CustomOption,
+      }}
       instanceId={useId()}
     />
   )

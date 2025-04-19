@@ -601,6 +601,7 @@ const Editor = ({ readOnly = false, isCairoLangPage = false }: Props) => {
                       : setExampleOption(0)
                   }
                   exampleOption={exampleOption}
+                  cairoCode={cairoCode}
                 />
               </div>
 
