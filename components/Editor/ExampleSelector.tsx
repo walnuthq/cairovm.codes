@@ -6,20 +6,23 @@ import Select, {
   DropdownIndicatorProps,
   GroupBase,
   StylesConfig,
+  OptionProps,
 } from 'react-select'
+import ReactTooltip from 'react-tooltip'
 
 import { cn } from '../../util/styles'
 import { Button } from '../ui'
 
-import {
-  CairoExampleNames,
-  CairoExampleNamesProveMode,
-  Examples,
-  ProveExamples,
-} from './examples'
+import { CairoExampleNames, Examples, ProveExamples } from './examples'
+
 type SelectOption = {
   value: number
   label: string
+}
+type OptionType = {
+  value: number
+  label: string
+  isDisabled?: boolean
 }
 
 type Props = {
@@ -27,24 +30,54 @@ type Props = {
   isProveMode: boolean
 }
 
-const examplesOptions = Examples.Cairo.map((_, i) => ({
-  value: i,
-  label: CairoExampleNames[i],
-}))
+const CustomOption = (props: OptionProps<OptionType, false>) => {
+  const { data, isDisabled } = props
+  const tooltipId = `tooltip-${data.value}`
 
-const proveExamplesOptions = ProveExamples.Cairo.map((_, i) => ({
-  value: i,
-  label: CairoExampleNamesProveMode[i],
-}))
+  return (
+    <>
+      <components.Option
+        {...props}
+        innerRef={props.innerRef}
+        innerProps={{
+          ...props.innerProps,
+          ...(isDisabled && {
+            'data-tip': 'Proving is not supported for contracts',
+            'data-for': tooltipId,
+          }),
+        }}
+      />
+      {isDisabled && (
+        <ReactTooltip
+          id={tooltipId}
+          place="right"
+          delayShow={200}
+          effect="solid"
+        />
+      )}
+    </>
+  )
+}
 
 export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
+  const examplesArray = isProveMode ? ProveExamples : Examples
+  const examplesOptions = examplesArray.Cairo.map((code, i) => ({
+    value: i,
+    label: CairoExampleNames[i],
+    isDisabled:
+      isProveMode &&
+      (CairoExampleNames[i].includes('Contract') ||
+        !code.includes('#[executable]')),
+  }))
+
   return (
     <Select
       onChange={onExampleChange}
-      options={isProveMode ? proveExamplesOptions : examplesOptions}
-      defaultValue={isProveMode ? proveExamplesOptions[0] : examplesOptions[0]}
+      options={examplesOptions}
+      defaultValue={examplesOptions[0]}
       components={{
         DropdownIndicator,
+        Option: CustomOption,
       }}
       controlShouldRenderValue={false}
       classNamePrefix="select"
@@ -57,15 +90,28 @@ export function MobileExampleSelector({ onExampleChange, isProveMode }: Props) {
 }
 
 export function ExampleSelector({ onExampleChange, isProveMode }: Props) {
+  const examplesArray = isProveMode ? ProveExamples : Examples
+  const examplesOptions = examplesArray.Cairo.map((code, i) => ({
+    value: i,
+    label: CairoExampleNames[i],
+    isDisabled:
+      isProveMode &&
+      (CairoExampleNames[i].includes('Contract') ||
+        !code.includes('#[executable]')),
+  }))
+
   return (
-    <Select
+    <Select<OptionType, false>
       onChange={onExampleChange}
-      options={isProveMode ? proveExamplesOptions : examplesOptions}
-      defaultValue={isProveMode ? proveExamplesOptions[0] : examplesOptions[0]}
+      options={examplesOptions}
+      defaultValue={examplesOptions[0]}
       classNamePrefix="select"
       placeholder={'Choose Cairo Example'}
       menuPlacement="top"
       isSearchable={false}
+      components={{
+        Option: CustomOption,
+      }}
       instanceId={useId()}
     />
   )

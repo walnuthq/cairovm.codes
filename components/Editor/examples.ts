@@ -170,47 +170,47 @@ fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
 	}
 }`,
 
-    `use core::felt252;
+    //     `use core::felt252;
 
-fn main() {
-	let my_felt252 = 10;
+    // fn main() {
+    // 	let my_felt252 = 10;
 
-	// Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
-	let my_u8: u8 = my_felt252.try_into().unwrap();
+    // 	// Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
+    // 	let my_u8: u8 = my_felt252.try_into().unwrap();
 
-	let my_u16: u16 = my_u8.into();
-	let my_u32: u32 = my_u16.into();
-	let my_u64: u64 = my_u32.into();
-	let _my_u128: u128 = my_u64.into();
+    // 	let my_u16: u16 = my_u8.into();
+    // 	let my_u32: u32 = my_u16.into();
+    // 	let my_u64: u64 = my_u32.into();
+    // 	let _my_u128: u128 = my_u64.into();
 
-	// As a felt252 is smaller than a u256, we can use the into() method
-	let _my_u256: u256 = my_felt252.into();
-	let _my_usize: usize = my_felt252.try_into().unwrap();
-	let _my_other_felt252: felt252 = my_u8.into();
-	let _my_third_felt252: felt252 = my_u16.into();
-}`,
+    // 	// As a felt252 is smaller than a u256, we can use the into() method
+    // 	let _my_u256: u256 = my_felt252.into();
+    // 	let _my_usize: usize = my_felt252.try_into().unwrap();
+    // 	let _my_other_felt252: felt252 = my_u8.into();
+    // 	let _my_third_felt252: felt252 = my_u16.into();
+    // }`,
 
-    `use array::ArrayTrait;
+    //     `use array::ArrayTrait;
 
-fn main () {
-	let mut a = ArrayTrait::new();
+    // fn main () {
+    // 	let mut a = ArrayTrait::new();
 
-	// add some items in the array
-	a.append(1);
-	a.append(2);
+    // 	// add some items in the array
+    // 	a.append(1);
+    // 	a.append(2);
 
-	// get array length
-	assert!(a.len() == 2, "wrong array length");
+    // 	// get array length
+    // 	assert!(a.len() == 2, "wrong array length");
 
-	// 2 ways to read an item from the array
-	// * get() returns an Option so you can handle out-of-bounds error
-	// * at() panics in case of out-of-bounds error
-	let first_element = *a.get(0).unwrap().unbox();
-	// a.get(2) will return None
+    // 	// 2 ways to read an item from the array
+    // 	// * get() returns an Option so you can handle out-of-bounds error
+    // 	// * at() panics in case of out-of-bounds error
+    // 	let first_element = *a.get(0).unwrap().unbox();
+    // 	// a.get(2) will return None
 
-	let second_element = *a.at(1);
-	// a.at(2) will cause an error
-}`,
+    // 	let second_element = *a.at(1);
+    // 	// a.at(2) will cause an error
+    // }`,
     `#[starknet::contract]
 mod SimpleContract {
 	#[storage]
@@ -669,6 +669,113 @@ fn fib(a: felt252, b: felt252, n: felt252) -> felt252 {
 		_ => fib(b, a + b, n - 1),
 	}
 }`,
+    //     `use core::felt252;
+
+    // fn main() {
+    // 	let my_felt252 = 10;
+
+    // 	// Since a felt252 might not fit in a u8, we need to unwrap the Option<T> type
+    // 	let my_u8: u8 = my_felt252.try_into().unwrap();
+
+    // 	let my_u16: u16 = my_u8.into();
+    // 	let my_u32: u32 = my_u16.into();
+    // 	let my_u64: u64 = my_u32.into();
+    // 	let _my_u128: u128 = my_u64.into();
+
+    // 	// As a felt252 is smaller than a u256, we can use the into() method
+    // 	let _my_u256: u256 = my_felt252.into();
+    // 	let _my_usize: usize = my_felt252.try_into().unwrap();
+    // 	let _my_other_felt252: felt252 = my_u8.into();
+    // 	let _my_third_felt252: felt252 = my_u16.into();
+    // }`,
+    //     `use array::ArrayTrait;
+
+    // fn main () {
+    // 	let mut a = ArrayTrait::new();
+
+    // 	// add some items in the array
+    // 	a.append(1);
+    // 	a.append(2);
+
+    // 	// get array length
+    // 	assert!(a.len() == 2, "wrong array length");
+
+    // 	// 2 ways to read an item from the array
+    // 	// * get() returns an Option so you can handle out-of-bounds error
+    // 	// * at() panics in case of out-of-bounds error
+    // 	let first_element = *a.get(0).unwrap().unbox();
+    // 	// a.get(2) will return None
+
+    // 	let second_element = *a.at(1);
+    // 	// a.at(2) will cause an error
+    // }`,
+    `#[starknet::contract]
+mod SimpleContract {
+	#[storage]
+	struct Storage {
+		balance: felt252, 
+	}
+
+	#[generate_trait]
+	impl InternalImpl of InternalTrait {
+			fn internal_function(self: @ContractState) -> felt252 {
+				self.balance.read()
+			}
+	}
+
+	fn other_internal_function(self: @ContractState) -> felt252 {
+		self.balance.read() + 5
+	}
+}
+
+use SimpleContract::{ InternalTrait, other_internal_function };
+
+fn add(a: felt252, b: felt252, c: felt252) -> felt252 {
+	a + b + c
+}
+
+fn main() -> felt252 {
+	let mut state = SimpleContract::contract_state_for_testing();
+	state.balance.write(10);
+
+	let balance = state.balance.read();
+	let internal_balance = state.internal_function();
+	let other_balance = other_internal_function(@state);
+	
+	let res = add(balance, internal_balance, other_balance);
+	res
+}`,
+    `#[starknet::contract]
+mod Fibonacci {
+	#[storage]
+	struct Storage {
+		n: u128, 
+	}
+	
+	#[generate_trait]
+	impl CalculationImpl of CalculationTrait {
+		fn calculate_fib(self: @ContractState) -> u128 {
+			fib(1, 1, self.n.read())
+		}
+	}
+
+	fn fib(a: u128, b: u128, n: u128) -> u128 {
+		match n {
+			0 => a,
+			_ => fib(b, a + b, n - 1),
+		}
+	}
+}
+
+use Fibonacci::CalculationTrait;
+
+fn main() -> u128 {
+	let mut state = Fibonacci::contract_state_for_testing();
+	state.n.write(5);
+	
+	let result = state.calculate_fib();
+	result
+}`,
   ],
   Sierra: [
     `type felt252 = felt252 [storable: true, drop: true, dup: true, zero_sized: false];
@@ -892,6 +999,10 @@ export const CairoExampleNamesProveMode = [
   'Dictionaries',
   'Ownership',
   'Fibonacci',
+  //   'Type casting',
+  //   'Arrays',
+  'Simple Contract',
+  'Fibonacci Contract',
 ]
 export const CairoExampleNames = [
   'Simple program',
@@ -901,8 +1012,8 @@ export const CairoExampleNames = [
   'Dictionaries',
   'Ownership',
   'Fibonacci',
-  'Type casting',
-  'Arrays',
+  //   'Type casting',
+  //   'Arrays',
   'Simple Contract',
   'Fibonacci Contract',
 ]

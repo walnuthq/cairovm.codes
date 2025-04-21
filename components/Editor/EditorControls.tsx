@@ -11,6 +11,7 @@ import { cn } from '../../util/styles'
 
 import ExampleSelector, { MobileExampleSelector } from './ExampleSelector'
 import { Checkbox } from 'components/ui/Checkbox'
+import { Examples, ProveExamples } from './examples'
 
 type SelectOption = {
   value: number
@@ -30,6 +31,8 @@ type EditorControlsProps = {
   onShowArgumentsHelper: () => void
   isProveMode: boolean
   setProveMode: (proveMode: boolean) => void
+  exampleOption: number
+  cairoCode: string
 }
 
 const EditorControls = ({
@@ -43,6 +46,8 @@ const EditorControls = ({
   onShowArgumentsHelper,
   isProveMode,
   setProveMode,
+  exampleOption,
+  cairoCode,
 }: EditorControlsProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -78,7 +83,7 @@ const EditorControls = ({
   const onExampleChange = (option: SelectOption | null) => {
     handleChangeExampleOption(option)
   }
-
+  console.log(cairoCode.includes('#[starknet::contract]'))
   return (
     <>
       <Input
@@ -140,8 +145,35 @@ const EditorControls = ({
             <Checkbox
               text="Prove & Verify"
               value={'Prove mode'}
-              isChecked={isProveMode}
+              isChecked={
+                isProveMode &&
+                !cairoCode.includes('#[starknet::contract]') &&
+                cairoCode.includes('#[executable]')
+              }
+              tooltip={
+                ProveExamples.Cairo[exampleOption].includes(
+                  '#[starknet::contract]',
+                ) || cairoCode.includes('#[starknet::contract]')
+                  ? 'Proving is not supported for contracts'
+                  : !ProveExamples.Cairo[exampleOption].includes(
+                      '#[executable]',
+                    ) ||
+                    (!cairoCode.includes('#[executable]') &&
+                      cairoCode !== Examples.Cairo[exampleOption])
+                  ? 'Examples without #[executable] are not available for proving'
+                  : undefined
+              }
+              tooltipId="prove-and-verify"
               onChange={() => setProveMode(!isProveMode)}
+              isDisabled={
+                ProveExamples.Cairo[exampleOption].includes(
+                  '#[starknet::contract]',
+                ) ||
+                cairoCode.includes('#[starknet::contract]') ||
+                !ProveExamples.Cairo[exampleOption].includes('#[executable]') ||
+                (!cairoCode.includes('#[executable]') &&
+                  cairoCode !== Examples.Cairo[exampleOption])
+              }
             />
           </div>
           <Input
