@@ -154,7 +154,7 @@ const EditorControls = ({
                 ProveExamples.Cairo[exampleOption].includes(
                   '#[starknet::contract]',
                 ) || cairoCode.includes('#[starknet::contract]')
-                  ? 'Contract examples are not available for proving'
+                  ? 'Proving is not supported for contracts'
                   : !ProveExamples.Cairo[exampleOption].includes(
                       '#[executable]',
                     ) ||

@@ -42,7 +42,7 @@ const CustomOption = (props: OptionProps<OptionType, false>) => {
         innerProps={{
           ...props.innerProps,
           ...(isDisabled && {
-            'data-tip': 'This example is not available for proving.',
+            'data-tip': 'Proving is not supported for contracts',
             'data-for': tooltipId,
           }),
         }}
